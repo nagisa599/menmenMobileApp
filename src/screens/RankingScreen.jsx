@@ -4,12 +4,18 @@ import { View, StyleSheet, Text } from 'react-native';
 import Tab from '../components/Tab';
 import RankingList from '../components/RankingList';
 
-export default function RankingScreen() {
+export default function RankingScreen(props) {
+  const { navigation } = props;
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
         <Tab label="ランキング" onPress={() => {}} active />
-        <Tab label="称号" onPress={() => {}} />
+        <Tab
+          label="称号"
+          onPress={() => {
+            navigation.navigate('TitleScreen');
+          }}
+        />
       </View>
       <View style={styles.subTitle}>
         <Text style={styles.text}>直近3ヶ月の来店回数</Text>
