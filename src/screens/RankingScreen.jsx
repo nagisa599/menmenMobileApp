@@ -11,11 +11,15 @@ export default function RankingScreen() {
         <Tab label="ランキング" onPress={() => {}} active />
         <Tab label="称号" onPress={() => {}} />
       </View>
-      <Text>直近3ヶ月の来店回数</Text>
-      <RankingList rank={1} times={30} />
-      <RankingList rank={2} times={24} />
-      <RankingList rank={3} times={20} />
-      <RankingList rank={4} times={19} />
+      <View style={styles.subTitle}>
+        <Text style={styles.text}>直近3ヶ月の来店回数</Text>
+      </View>
+      <View style={styles.listContainer}>
+        <RankingList rank={1} times={30} />
+        <RankingList rank={2} times={24} />
+        <RankingList rank={3} times={20} />
+        <RankingList rank={4} times={19} />
+      </View>
     </View>
   );
 }
@@ -25,5 +29,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 30,
+  },
+  subTitle: {
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 20,
+  },
+  listContainer: {
+    marginTop: 20,
   },
 });
