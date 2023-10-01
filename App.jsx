@@ -12,7 +12,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName="Singup"
+        initialRouteName="Signup"
         screenOptions={{
           headerStyle: {
             backgroundColor: '#C0C0C0',
