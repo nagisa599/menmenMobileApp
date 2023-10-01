@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 
 import Tab from '../components/Tab';
+import RankingList from '../components/RankingList';
 
 export default function RankingScreen() {
   return (
@@ -10,6 +11,11 @@ export default function RankingScreen() {
         <Tab label="ランキング" onPress={() => {}} active />
         <Tab label="称号" onPress={() => {}} />
       </View>
+      <Text>直近3ヶ月の来店回数</Text>
+      <RankingList rank={1} times={30} />
+      <RankingList rank={2} times={24} />
+      <RankingList rank={3} times={20} />
+      <RankingList rank={4} times={19} />
     </View>
   );
 }
