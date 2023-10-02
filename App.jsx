@@ -5,19 +5,29 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CouponScreen from './src/screens/CouponScreen';
 import FriendScreen from './src/screens/FriendScreen';
 import HomeScreen from './src/screens/HomeScreen';
-import MypageScreen from './src/screens/MypageScree';
+import MypageScreen from './src/screens/MypageScreen';
 import RankingScreen from './src/screens/RankingScreen';
 import TitleScreen from './src/screens/TitleScreen';
 import getTabBarIcon from './src/components/FooterTab';
+import SettingScreen from './src/screens/SettingScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function RankingStack() {
   return (
-    <Stack.Navigator initialRouteName="TitleScreen">
+    <Stack.Navigator initialRouteName="RankingScreen">
       <Stack.Screen name="RankingScreen" component={RankingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="TitleScreen" component={TitleScreen} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+}
+
+function MypageStack() {
+  return (
+    <Stack.Navigator initialRouteName="MypageScreen">
+      <Stack.Screen name="MypageScreen" component={MypageScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="SettingScreen" component={SettingScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -73,7 +83,7 @@ export default function App() {
         />
         <Tab.Screen
           name="マイページ"
-          component={MypageScreen}
+          component={MypageStack}
           options={{
             tabBarIcon: getTabBarIcon({ name: 'マイページ' }),
           }}

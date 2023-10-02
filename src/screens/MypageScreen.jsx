@@ -17,7 +17,9 @@ export default function MypageScreen(props) {
         <Tab label="マイページ" onPress={() => {}} active />
         <Tab
           label="設定"
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate('SettingScreen');
+          }}
         />
       </View>
       <View style={styles.maininfo}>
@@ -71,7 +73,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: 'black',
-    borderRadius: 10
+    borderRadius: 10,
   },
   icon: {
     width: 90,
