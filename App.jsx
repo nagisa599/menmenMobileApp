@@ -29,15 +29,16 @@ export default function App() {
         screenOptions={{
           headerStyle: {
             backgroundColor: '#C0C0C0',
+            height: 120,
           },
-          headerTitle: 'MenMen',
+          headerTitle: 'Men Men',
           headerTintColor: '#000000',
-          headerBackTitle: 'back',
+          headerBackTitle: 'Back',
           tabBarInactiveTintColor: 'black',
           tabBarActiveTintColor: 'tomato',
           headerTitleStyle: {
             fontStyle: 'italic',
-            fontSize: 40,
+            fontSize: 35,
           },
         }}
       >
