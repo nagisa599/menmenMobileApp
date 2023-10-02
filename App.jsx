@@ -10,9 +10,7 @@ import RankingScreen from './src/screens/RankingScreen';
 import TitleScreen from './src/screens/TitleScreen';
 import MenuScreen from './src/screens/MenuScreen';
 import getTabBarIcon from './src/components/FooterTab';
-import SingUpScreen from './src/screens/SingupScreen';
 import SettingScreen from './src/screens/SettingScreen';
-
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -34,6 +32,7 @@ function MenuStack() {
   );
 }
 
+
 function Singup() {
   return (
     <Stack.Navigator initialRouteName="SingUp">
@@ -41,6 +40,7 @@ function Singup() {
     </Stack.Navigator>
   );
 }
+
 function MypageStack() {
   return (
     <Stack.Navigator initialRouteName="MypageScreen">
@@ -54,7 +54,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName="SingupScreen"
+        initialRouteName="Singup"
         screenOptions={{
           headerStyle: {
             backgroundColor: '#C0C0C0',
