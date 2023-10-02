@@ -8,6 +8,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import MypageScreen from './src/screens/MypageScree';
 import RankingScreen from './src/screens/RankingScreen';
 import TitleScreen from './src/screens/TitleScreen';
+import getTabBarIcon from './src/components/FooterTab';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -34,19 +35,49 @@ export default function App() {
           headerTitle: 'Men Men',
           headerTintColor: '#000000',
           headerBackTitle: 'Back',
-          tabBarInactiveTintColor: 'black',
-          tabBarActiveTintColor: 'tomato',
           headerTitleStyle: {
             fontStyle: 'italic',
             fontSize: 35,
           },
+          tabBarInactiveTintColor: 'black',
+          tabBarActiveTintColor: 'tomato',
         }}
       >
-        <Tab.Screen name="メニュー" component={HomeScreen} />
-        <Tab.Screen name="クーポン" component={CouponScreen} />
-        <Tab.Screen name="ランキング" component={RankingStack} />
-        <Tab.Screen name="フレンド" component={FriendScreen} />
-        <Tab.Screen name="マイページ" component={MypageScreen} />
+        <Tab.Screen
+          name="メニュー"
+          component={HomeScreen}
+          options={{
+            tabBarIcon: getTabBarIcon({ name: 'メニュー' }),
+          }}
+        />
+        <Tab.Screen
+          name="クーポン"
+          component={CouponScreen}
+          options={{
+            tabBarIcon: getTabBarIcon({ name: 'クーポン' }),
+          }}
+        />
+        <Tab.Screen
+          name="ランキング"
+          component={RankingStack}
+          options={{
+            tabBarIcon: getTabBarIcon({ name: 'ランキング' }),
+          }}
+        />
+        <Tab.Screen
+          name="フレンド"
+          component={FriendScreen}
+          options={{
+            tabBarIcon: getTabBarIcon({ name: 'フレンド' }),
+          }}
+        />
+        <Tab.Screen
+          name="マイページ"
+          component={MypageScreen}
+          options={{
+            tabBarIcon: getTabBarIcon({ name: 'マイページ' }),
+          }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
