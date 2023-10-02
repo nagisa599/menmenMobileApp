@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, StyleSheet, Text, ScrollView,Image,
+  View, StyleSheet, Text, ScrollView,
 } from 'react-native';
 import Tab from '../components/Tab';
 import Menu from '../components/Menu';
@@ -39,7 +39,9 @@ export default function MenuScreen(props) {
       </View>
       <ScrollView>
         <View style={styles.menuBox}>
-          <Image style={styles.menuPicture} source={require('../../assets/ラーメン１.jpg')}/>
+          <View style={styles.menuPicture}>
+            <Text>写真</Text>
+          </View>
           <Text style={styles.menudetail}>ラーメン</Text>
           <Text>９８０円</Text>
           <Text>200グラム</Text>
