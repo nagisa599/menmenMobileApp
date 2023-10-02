@@ -8,6 +8,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import MypageScreen from './src/screens/MypageScree';
 import RankingScreen from './src/screens/RankingScreen';
 import TitleScreen from './src/screens/TitleScreen';
+import MenuScreen from './src/screens/MenuScreen';
 import getTabBarIcon from './src/components/FooterTab';
 
 const Tab = createBottomTabNavigator();
@@ -18,6 +19,14 @@ function RankingStack() {
     <Stack.Navigator initialRouteName="TitleScreen">
       <Stack.Screen name="RankingScreen" component={RankingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="TitleScreen" component={TitleScreen} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+}
+function MenuStack() {
+  return (
+    <Stack.Navigator initialRouteName="MenuScreen">
+      <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="MenuScreen" component={MenuScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -45,7 +54,7 @@ export default function App() {
       >
         <Tab.Screen
           name="メニュー"
-          component={HomeScreen}
+          component={MenuStack}
           options={{
             tabBarIcon: getTabBarIcon({ name: 'メニュー' }),
           }}
