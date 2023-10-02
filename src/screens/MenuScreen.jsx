@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, StyleSheet, Text, ScrollView,Image,
+  View, StyleSheet, Text, ScrollView, Image,
 } from 'react-native';
 import Tab from '../components/Tab';
 import Menu from '../components/Menu';
