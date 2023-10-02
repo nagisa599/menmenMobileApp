@@ -5,6 +5,7 @@ import { bool, string, number } from 'prop-types';
 export default function getTabBarIcon(route) {
   function IconComponent({ focused, color, size }) {
     let iconName;
+
     if (route.name === 'メニュー') {
       iconName = focused ? 'home' : 'home-outline';
     } else if (route.name === 'クーポン') {
