@@ -32,6 +32,15 @@ function MenuStack() {
   );
 }
 
+
+function Singup() {
+  return (
+    <Stack.Navigator initialRouteName="SingUp">
+      <Stack.Screen name="SingUp" component={SingUpScreen} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+}
+
 function MypageStack() {
   return (
     <Stack.Navigator initialRouteName="MypageScreen">
