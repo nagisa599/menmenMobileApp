@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, StyleSheet, Text, ScrollView, Image,
+  View, StyleSheet, ScrollView,
 } from 'react-native';
 import Tab from '../components/Tab';
 import Menu from '../components/Menu';
+
+const hiyashityuka = require('../../assets/hiyashityuka.jpg');
+const kakuni = require('../../assets/kakuni.jpg');
 
 export default function MenuScreen(props) {
   const [menus, setMenu] = useState([]);
@@ -11,17 +14,19 @@ export default function MenuScreen(props) {
     const dummy = [];
     dummy.push({
       id: '0',
-      name: 'とんこつラーメン',
+      image: hiyashityuka,
+      name: '冷やし中華',
       price: 720,
-      quantity: 200,
+      student: true,
       favorite: 4,
     });
     dummy.push({
       id: '1',
-      name: 'みそラーメン',
-      price: 120,
-      quantity: 2000,
-      favorite: 4,
+      image: kakuni,
+      name: '角煮変更',
+      price: 200,
+      student: false,
+      favorite: 3,
     });
     setMenu(dummy);
   }, []);
@@ -29,24 +34,15 @@ export default function MenuScreen(props) {
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
+        <Tab label="メニュー" onPress={() => {}} active />
         <Tab
           label="その他"
           onPress={() => {
             navigation.navigate('HomeScreen');
           }}
         />
-        <Tab label="メニュー" onPress={() => {}} active />
       </View>
       <ScrollView>
-        <View style={styles.menuBox}>
-          <View style={styles.menuPicture}>
-            <Text>写真</Text>
-          </View>
-          <Text style={styles.menudetail}>ラーメン</Text>
-          <Text>９８０円</Text>
-          <Text>200グラム</Text>
-          <Text>★</Text>
-        </View>
         <Menu menus={menus} />
       </ScrollView>
     </View>
@@ -54,23 +50,12 @@ export default function MenuScreen(props) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 30,
-  },
-  menuBox: {
-    // marginTop: 20,
-    paddingVertical: 20,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    width: '65%',
-  },
-  menuPicture: {
-    backgroundColor: 'blue',
-    height: 160,
-    width: '100%',
-    marginLeft: 'auto',
-    marginRight: 'auto',
   },
 });

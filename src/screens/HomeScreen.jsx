@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, StyleSheet, Text,
+  View, StyleSheet, Text, ScrollView,
 } from 'react-native';
 import Calender from '../components/Calender';
 import Tab from '../components/Tab';
@@ -10,25 +10,30 @@ export default function HomeScreen(props) {
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
-        <Tab label="その他" onPress={() => {}} active />
         <Tab
           label="メニュー"
           onPress={() => {
             navigation.navigate('MenuScreen');
           }}
         />
+        <Tab label="その他" onPress={() => {}} active />
       </View>
-      <Calender />
-      <View style={styles.businessHourBox}>
-        <View style={styles.businessHour}>
-          <Text>写真</Text>
+      <ScrollView>
+        <Calender />
+        <View style={styles.businessHourBox}>
+          <View style={styles.businessHour}>
+            <Text>営業時間の写真</Text>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',

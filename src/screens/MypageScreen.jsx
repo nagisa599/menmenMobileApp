@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, Image, ScrollView,
+  View, Text, StyleSheet, Image, ScrollView, ActivityIndicator,
 } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 
@@ -10,9 +10,11 @@ import StampCard from '../components/StampCard';
 
 export default function MypageScreen(props) {
   const { navigation } = props;
+  const [isImageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <ScrollView>
+    <View style={styles.container}>
+      { !isImageLoaded && <ActivityIndicator size="large" style={styles.loader} /> }
       <View style={styles.tabContainer}>
         <Tab label="マイページ" onPress={() => {}} active />
         <Tab
@@ -22,42 +24,58 @@ export default function MypageScreen(props) {
           }}
         />
       </View>
-      <View style={styles.maininfo}>
-        <View>
-          <Image source={myLocalImage} style={styles.icon} />
-        </View>
-        <View style={styles.nameContainer}>
-          <Text style={styles.username}>ラーメンおじじああああああああああああああああ</Text>
-          <Text style={styles.userid}>ID: ff938dkg</Text>
-        </View>
-      </View>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>好きなラーメン・トッピング</Text>
-        <View style={styles.favorite}>
-          <View style={styles.ramen}>
-            <MaterialIcons name="ramen-dining" size={22} color="black" />
-            <Text style={styles.item}>まぜそば</Text>
+      <ScrollView>
+        <View style={styles.maininfo}>
+          <View>
+            <Image
+              source={myLocalImage}
+              style={styles.icon}
+              onLoad={() => {
+                setImageLoaded(true);
+              }}
+            />
           </View>
-          <View style={styles.topping}>
-            <AntDesign name="pluscircleo" size={22} color="black" />
-            <Text style={styles.item}>ねぎ</Text>
+          <View style={styles.nameContainer}>
+            <Text style={styles.username}>ラーメンおじじああああああああああああああああ</Text>
+            <Text style={styles.userid}>ID: ff938dkg</Text>
           </View>
         </View>
-      </View>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>スタンプカード</Text>
-        <View style={styles.stamp}>
-          <StampCard />
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>好きなラーメン・トッピング</Text>
+          <View style={styles.favorite}>
+            <View style={styles.ramen}>
+              <MaterialIcons name="ramen-dining" size={22} color="black" />
+              <Text style={styles.item}>まぜそば</Text>
+            </View>
+            <View style={styles.topping}>
+              <AntDesign name="pluscircleo" size={22} color="black" />
+              <Text style={styles.item}>ねぎ</Text>
+            </View>
+          </View>
         </View>
-      </View>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>称号</Text>
-      </View>
-    </ScrollView>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>スタンプカード</Text>
+          <View style={styles.stamp}>
+            <StampCard />
+          </View>
+        </View>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>称号</Text>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    flex: 1,
+  },
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
