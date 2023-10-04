@@ -11,6 +11,7 @@ import TitleScreen from './src/screens/TitleScreen';
 import MenuScreen from './src/screens/MenuScreen';
 import getTabBarIcon from './src/components/FooterTab';
 import SettingScreen from './src/screens/SettingScreen';
+import SignUpScreen from './src/screens/SignUpScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -32,11 +33,10 @@ function MenuStack() {
   );
 }
 
-
-function Singup() {
+function Signup() {
   return (
-    <Stack.Navigator initialRouteName="SingUp">
-      <Stack.Screen name="SingUp" component={SingUpScreen} options={{ headerShown: false }} />
+    <Stack.Navigator initialRouteName="SignUp">
+      <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -54,7 +54,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName="Singup"
+        initialRouteName="SingUp"
         screenOptions={{
           headerStyle: {
             backgroundColor: '#C0C0C0',
@@ -73,7 +73,7 @@ export default function App() {
       >
         <Tab.Screen
           name="メニュー"
-          component={MenuStack}
+          component={Signup}
           options={{
             tabBarIcon: getTabBarIcon({ name: 'メニュー' }),
           }}
