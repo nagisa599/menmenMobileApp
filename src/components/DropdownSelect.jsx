@@ -7,6 +7,7 @@ import RNPickerSelect from 'react-native-picker-select';
 
 export default function DropdownSelect(props) {
   const { contentItems, setChange } = props;
+  // eslint-disable-next-line no-unused-vars
   const [selectedValue, setSelectedValue] = useState(null);
 
   const onChange = (value) => {

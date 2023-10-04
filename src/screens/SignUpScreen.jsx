@@ -32,13 +32,9 @@ export default function SignUpScreen() {
   const [ramen, setRamen] = useState(0);
   const [topping, setTopping] = useState(0);
 
-  const handleDateChange = (date) => {
-    setBirthDay(date);
-  };
-
   const handleRegister = () => {
     // 登録ロジック
-    console.log(name, password, phoneNumber, birthday, ramen, topping)
+    console.log(name, password, phoneNumber, birthday, ramen, topping);
   };
 
   return (

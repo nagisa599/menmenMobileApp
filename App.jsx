@@ -33,7 +33,7 @@ function MenuStack() {
   );
 }
 
-function Signup() {
+function SignUp() {
   return (
     <Stack.Navigator initialRouteName="SignUp">
       <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
@@ -73,7 +73,7 @@ export default function App() {
       >
         <Tab.Screen
           name="メニュー"
-          component={Signup}
+          component={SignUp}
           options={{
             tabBarIcon: getTabBarIcon({ name: 'メニュー' }),
           }}
