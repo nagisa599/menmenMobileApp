@@ -3,7 +3,7 @@ import {
   View, StyleSheet,
 } from 'react-native';
 import { func } from 'prop-types';
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line import/no-extraneous-dependencies, import/no-unresolved
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function BirthdayInput(props) {

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import {
-  View, StyleSheet, Text, TextInput, ScrollView,
+  View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity,
 } from 'react-native';
 
 import BirthdayInput from '../components/BirthdayInput';
+import DropdownSelect from '../components/DropdownSelect';
 
 const ramenItem = [
-  { label: '未登録', value: '0' },
   { label: 'ラーメン', value: '1' },
   { label: 'まぜそば', value: '2' },
   { label: '汁なし', value: '3' },
@@ -16,7 +16,6 @@ const ramenItem = [
 ];
 
 const toppingItem = [
-  { label: '未登録', value: '0' },
   { label: 'チーズ', value: '1' },
   { label: '明太子', value: '2' },
   { label: 'のり', value: '3' },
@@ -30,11 +29,16 @@ export default function SignUpScreen() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [birthday, setBirthDay] = useState('');
-  const [ramen, setRamen] = useState('');
-  const [topping, setTopping] = useState('');
+  const [ramen, setRamen] = useState(0);
+  const [topping, setTopping] = useState(0);
 
   const handleDateChange = (date) => {
     setBirthDay(date);
+  };
+
+  const handleRegister = () => {
+    // 登録ロジック
+    console.log(name, password, phoneNumber, birthday, ramen, topping)
   };
 
   return (
@@ -42,7 +46,7 @@ export default function SignUpScreen() {
       <View style={styles.titleContainer}>
         <Text style={styles.title}>新規ユーザー登録</Text>
       </View>
-      <ScrollView>
+      <ScrollView style={{ paddingHorizontal: 30 }}>
         <View style={styles.itemContainer}>
           <Text style={styles.item}>メールアドレス</Text>
           <TextInput
@@ -94,15 +98,24 @@ export default function SignUpScreen() {
         </View>
         <View style={styles.itemContainer}>
           <Text style={styles.item}>誕生日</Text>
-          <BirthdayInput onDateChange={handleDateChange} />
+          <BirthdayInput onDateChange={setBirthDay} />
         </View>
         <View style={styles.itemContainer}>
           <Text style={styles.item}>お気に入りラーメン</Text>
-          {/* <DropdownItem label="選択" itemList={ramenItem} /> */}
+          <View style={styles.dropdownContainer}>
+            <DropdownSelect contentItems={ramenItem} setChange={setRamen} />
+          </View>
         </View>
         <View style={styles.itemContainer}>
           <Text style={styles.item}>お気に入りトッピング</Text>
-          {/* <DropdownItem label="選択" itemList={toppingItem} /> */}
+          <View style={styles.dropdownContainer}>
+            <DropdownSelect contentItems={toppingItem} setChange={setTopping} />
+          </View>
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+            <Text style={styles.buttonText}>登録</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -112,8 +125,6 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 30,
-    marginBottom: 50,
   },
   titleContainer: {
     marginVertical: 20,
@@ -143,5 +154,24 @@ const styles = StyleSheet.create({
   },
   item: {
     fontSize: 20,
+  },
+  dropdownContainer: {
+    alignItems: 'flex-start',
+    width: '40%',
+  },
+  buttonContainer: {
+    marginTop: 20,
+    marginBottom: 40,
+    alignItems: 'center',
+  },
+  registerButton: {
+    backgroundColor: '#FFA500',
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'black',
+    fontSize: 18,
   },
 });
