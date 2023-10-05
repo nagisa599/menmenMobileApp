@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity,
 } from 'react-native';
+import { func } from 'prop-types';
 
 import BirthdayInput from '../components/BirthdayInput';
 import DropdownSelect from '../components/DropdownSelect';
@@ -24,7 +25,8 @@ const toppingItem = [
   { label: '七味', value: '6' },
 ];
 
-export default function SignUpScreen() {
+export default function SignUpScreen(props) {
+  const { onSignedUp } = props;
   const [phoneNumber, setPhoneNumber] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -34,6 +36,7 @@ export default function SignUpScreen() {
 
   const handleRegister = () => {
     // 登録ロジック
+    onSignedUp();
     console.log(name, password, phoneNumber, birthday, ramen, topping);
   };
 
@@ -117,6 +120,10 @@ export default function SignUpScreen() {
     </View>
   );
 }
+
+SignUpScreen.propTypes = {
+  onSignedUp: func.isRequired,
+};
 
 const styles = StyleSheet.create({
   container: {
