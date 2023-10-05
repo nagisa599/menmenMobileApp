@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { func } from 'prop-types';
 import CouponScreen from './src/screens/CouponScreen';
 import FriendScreen from './src/screens/FriendScreen';
 import HomeScreen from './src/screens/HomeScreen';
@@ -15,6 +16,20 @@ import SignUpScreen from './src/screens/SignUpScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+const commonHeaderOptions = {
+  headerStyle: {
+    backgroundColor: '#C0C0C0',
+    height: 120,
+  },
+  headerTitle: 'Men Men',
+  headerTintColor: '#000000',
+  headerBackTitle: 'Back',
+  headerTitleStyle: {
+    fontStyle: 'italic',
+    fontSize: 35,
+  },
+};
 
 function RankingStack() {
   return (
@@ -33,13 +48,19 @@ function MenuStack() {
   );
 }
 
-function SignUp() {
+function SignUpStack({ onSignedUp }) {
   return (
-    <Stack.Navigator initialRouteName="SignUp">
-      <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
+    <Stack.Navigator initialRouteName="SignUp" screenOptions={commonHeaderOptions}>
+      <Stack.Screen name="SignUp">
+        {() => <SignUpScreen onSignedUp={onSignedUp} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }
+
+SignUpStack.propTypes = {
+  onSignedUp: func.isRequired,
+};
 
 function MypageStack() {
   return (
@@ -51,29 +72,32 @@ function MypageStack() {
 }
 
 export default function App() {
+  const [isSignedUp, setIsSignedUp] = useState(false);
+
+  const handleSignedUp = () => {
+    setIsSignedUp(true);
+  };
+
+  if (!isSignedUp) {
+    return (
+      <NavigationContainer>
+        <SignUpStack onSignedUp={handleSignedUp} />
+      </NavigationContainer>
+    );
+  }
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName="SingUp"
+        initialRouteName="メニュー"
         screenOptions={{
-          headerStyle: {
-            backgroundColor: '#C0C0C0',
-            height: 120,
-          },
-          headerTitle: 'Men Men',
-          headerTintColor: '#000000',
-          headerBackTitle: 'Back',
-          headerTitleStyle: {
-            fontStyle: 'italic',
-            fontSize: 35,
-          },
+          ...commonHeaderOptions,
           tabBarInactiveTintColor: 'black',
           tabBarActiveTintColor: 'tomato',
         }}
       >
         <Tab.Screen
           name="メニュー"
-          component={SignUp}
+          component={MenuStack}
           options={{
             tabBarIcon: getTabBarIcon({ name: 'メニュー' }),
           }}
