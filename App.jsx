@@ -1,75 +1,16 @@
 import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { func } from 'prop-types';
 import CouponScreen from './src/screens/CouponScreen';
 import FriendScreen from './src/screens/FriendScreen';
-import HomeScreen from './src/screens/HomeScreen';
-import MypageScreen from './src/screens/MypageScreen';
-import RankingScreen from './src/screens/RankingScreen';
-import TitleScreen from './src/screens/TitleScreen';
-import MenuScreen from './src/screens/MenuScreen';
 import getTabBarIcon from './src/components/FooterTab';
-import SettingScreen from './src/screens/SettingScreen';
-import SignUpScreen from './src/screens/SignUpScreen';
+import MenuStack from './src/navigators/MenuNavigator';
+import RankingStack from './src/navigators/RankingNavigator';
+import SignUpStack from './src/navigators/SignUpNavigator';
+import MypageStack from './src/navigators/MypageNavigator';
+import commonHeaderOptions from './src/styles/NavigationHeaderStyles';
 
 const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
-
-const commonHeaderOptions = {
-  headerStyle: {
-    backgroundColor: '#C0C0C0',
-    height: 120,
-  },
-  headerTitle: 'Men Men',
-  headerTintColor: '#000000',
-  headerBackTitle: 'Back',
-  headerTitleStyle: {
-    fontStyle: 'italic',
-    fontSize: 35,
-  },
-};
-
-function RankingStack() {
-  return (
-    <Stack.Navigator initialRouteName="RankingScreen">
-      <Stack.Screen name="RankingScreen" component={RankingScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="TitleScreen" component={TitleScreen} options={{ headerShown: false }} />
-    </Stack.Navigator>
-  );
-}
-function MenuStack() {
-  return (
-    <Stack.Navigator initialRouteName="MenuScreen">
-      <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="MenuScreen" component={MenuScreen} options={{ headerShown: false }} />
-    </Stack.Navigator>
-  );
-}
-
-function SignUpStack({ onSignedUp }) {
-  return (
-    <Stack.Navigator initialRouteName="SignUp" screenOptions={commonHeaderOptions}>
-      <Stack.Screen name="SignUp">
-        {() => <SignUpScreen onSignedUp={onSignedUp} />}
-      </Stack.Screen>
-    </Stack.Navigator>
-  );
-}
-
-SignUpStack.propTypes = {
-  onSignedUp: func.isRequired,
-};
-
-function MypageStack() {
-  return (
-    <Stack.Navigator initialRouteName="MypageScreen">
-      <Stack.Screen name="MypageScreen" component={MypageScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="SettingScreen" component={SettingScreen} options={{ headerShown: false }} />
-    </Stack.Navigator>
-  );
-}
 
 export default function App() {
   const [isSignedUp, setIsSignedUp] = useState(false);
