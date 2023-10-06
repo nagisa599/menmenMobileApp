@@ -36,7 +36,7 @@ export default function MypageScreen(props) {
             />
           </View>
           <View style={styles.nameContainer}>
-            <Text style={styles.username}>ラーメンおじじああああああああああああああああ</Text>
+            <Text style={styles.username}>ラーメンおじじ</Text>
             <Text style={styles.userid}>ID: ff938dkg</Text>
           </View>
         </View>
