@@ -9,7 +9,7 @@ export default function StampCard() {
   const [stamps, setStamps] = useState(Array(totalStamps).fill(null));
 
   const activateStamp = () => {
-    const index = stamps.findIndex(stamp => !stamp); // 最初のnull値を見つける
+    const index = stamps.findIndex((stamp) => !stamp); // 最初のnull値を見つける
     if (index !== -1) {
       const newStamps = [...stamps];
       newStamps[index] = new Date().toLocaleDateString(); // 現在の日付を設定
@@ -49,6 +49,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginBottom: 20,
+    width: 300,
+    alignSelf: 'center',
   },
   stamp: {
     width: 50,
