@@ -1,54 +1,95 @@
 import React, { useState } from 'react';
 import {
+  View, Text, Modal, TouchableOpacity, FlatList, StyleSheet,
+} from 'react-native';
+import {
   arrayOf, string, shape, func,
 } from 'prop-types';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import RNPickerSelect from 'react-native-picker-select';
 
 export default function DropdownSelect(props) {
   const { contentItems, setChange } = props;
-  // eslint-disable-next-line no-unused-vars
-  const [selectedValue, setSelectedValue] = useState(null);
+  const [selectedValue, setSelectedValue] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const onChange = (value) => {
     setSelectedValue(value);
     setChange(value);
+    setModalVisible(false);
   };
 
   return (
-    <RNPickerSelect
-      onValueChange={onChange}
-      items={contentItems}
-      placeholder={{
-        label: '未登録',
-        value: 0,
-        color: 'black',
-      }}
-      style={{
-        inputIOS: {
-          fontSize: 16,
-          paddingVertical: 12,
-          paddingHorizontal: 10,
-          borderRadius: 4,
-          borderColor: '#DDDDDD',
-          color: 'black',
-          paddingRight: 30,
-          backgroundColor: 'white',
-        },
-        inputAndroid: {
-          fontSize: 16,
-          paddingHorizontal: 10,
-          paddingVertical: 8,
-          borderWidth: 0.5,
-          borderColor: 'gray',
-          borderRadius: 8,
-          color: 'black',
-          paddingRight: 30,
-        },
-      }}
-    />
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.dropdownButton}>
+        <Text>{selectedValue ? contentItems.find((item) => item.value === selectedValue).label : 'Select'}</Text>
+      </TouchableOpacity>
+
+      <Modal
+        animationType="fade"
+        transparent
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPressOut={() => setModalVisible(false)}
+        >
+          <View style={styles.modalView}>
+            <FlatList
+              data={contentItems}
+              keyExtractor={(item) => item.value}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => onChange(item.value)} style={styles.item}>
+                  <Text>{item.label}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+  dropdownButton: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#DDDDDD',
+    borderRadius: 4,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 半透明のグレー
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    width: '80%', // この値はお好みに合わせて調整してください
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  item: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#DDDDDD',
+  },
+});
 
 DropdownSelect.propTypes = {
   contentItems: arrayOf(shape({
