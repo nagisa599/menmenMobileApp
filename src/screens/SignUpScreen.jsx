@@ -8,6 +8,7 @@ import BirthdayInput from '../components/BirthdayInput';
 import DropdownSelect from '../components/DropdownSelect';
 
 const ramenItem = [
+  { label: '未登録', value: '0' },
   { label: 'ラーメン', value: '1' },
   { label: 'まぜそば', value: '2' },
   { label: '汁なし', value: '3' },
@@ -17,6 +18,7 @@ const ramenItem = [
 ];
 
 const toppingItem = [
+  { label: '未登録', value: '0' },
   { label: 'チーズ', value: '1' },
   { label: '明太子', value: '2' },
   { label: 'のり', value: '3' },
