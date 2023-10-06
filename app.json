@@ -15,16 +15,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nagisa33.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.nagisa33.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "scheme": "test",
+    "extra": {
+      "eas": {
+        "projectId": "fda118ac-a55c-46e6-b210-deb161d4dc96"
+      }
     }
   }
 }

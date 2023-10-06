@@ -3,6 +3,7 @@ import {
   View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity,
 } from 'react-native';
 import { func } from 'prop-types';
+import { getAuth } from 'firebase/auth';
 
 import BirthdayInput from '../components/BirthdayInput';
 import DropdownSelect from '../components/DropdownSelect';
@@ -26,7 +27,7 @@ const toppingItem = [
   { label: 'うずら', value: '5' },
   { label: '七味', value: '6' },
 ];
-
+const auth = getAuth();
 export default function SignUpScreen(props) {
   const { onSignedUp } = props;
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -51,7 +52,7 @@ export default function SignUpScreen(props) {
         <View style={styles.itemContainer}>
           <Text style={styles.item}>メールアドレス</Text>
           <TextInput
-            value="Gmail Address"
+            value={auth.currentUser.email}
             style={styles.mail}
             autoCapitalize="none"
             editable={false}
