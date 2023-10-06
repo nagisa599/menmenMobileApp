@@ -1,58 +1,7 @@
-// import React, { useState } from 'react';
-// import {
-//   View, StyleSheet, Button, Platform,
-// } from 'react-native';
-// import { func } from 'prop-types';
-// import DateTimePicker from '@react-native-community/datetimepicker';
-
-// export default function BirthdayInput(props) {
-//   const { onDateChange } = props;
-//   const [date, setDate] = useState(new Date());
-//   const [showPicker, setShowPicker] = useState(false);
-
-//   const onChange = (event, selectedDate) => {
-//     const currentDate = selectedDate || date;
-//     setDate(currentDate);
-//     onDateChange(currentDate);
-//     if (Platform.OS === 'android') {
-//       setShowPicker(false);
-//     }
-//   };
-
-//   const showDatepicker = () => {
-//     setShowPicker(true);
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <Button title="Select Date" onPress={showDatepicker} />
-//       {showPicker && (
-//         <DateTimePicker
-//           testID="dateTimePicker"
-//           value={date}
-//           mode="date"
-//           display="default"
-//           onChange={onChange}
-//         />
-//       )}
-//     </View>
-//   );
-// }
-
-// BirthdayInput.propTypes = {
-//   onDateChange: func.isRequired,
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     alignItems: 'flex-start',
-//     flexDirection: 'column',
-//   },
-// });
-
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { func } from 'prop-types';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Picker } from '@react-native-picker/picker';
 
 export default function BirthdayInput(props) {
