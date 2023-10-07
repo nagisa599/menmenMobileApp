@@ -18,6 +18,5 @@ if (!getApps().length) {
   app = getApps()[0]; // 既存のアプリケーションインスタンスを取得
   auth = getAuth(app); // 既存の認証インスタンスを取得
 }
-
 const db = getFirestore(app);
 export default db;

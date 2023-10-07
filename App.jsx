@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
+import { getApp, initializeApp } from 'firebase/app';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CouponScreen from './src/screens/CouponScreen';
@@ -15,16 +15,17 @@ import { firebaseConfig } from './env';
 /* eslint-disable */
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
-import { GoogleAuthProvider, onAuthStateChanged, signInWithCredential,getAuth } from 'firebase/auth';
+import { GoogleAuthProvider, onAuthStateChanged, signInWithCredential,getAuth, initializeAuth } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GoogleLoginScreen from './src/screens/GoogleLoginScreen';
 /* eslint-able */
 
 const Tab = createBottomTabNavigator();
-WebBrowser.maybeCompleteAuthSession();
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app); 
+
+WebBrowser.maybeCompleteAuthSession(); 
 export default function App() {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth();
   const [isSignedUp, setIsSignedUp] = useState(false);
   const [userInfo, setUserInfo] = useState();
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -65,7 +66,6 @@ export default function App() {
   const handleSignedUp = () => {
     setIsSignedUp(true);
   };
-  
   if(userInfo) {
   if (!isSignedUp) {
     return (

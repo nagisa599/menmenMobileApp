@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity,
 } from 'react-native';
 import { func } from 'prop-types';
-import { getAuth } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import BirthdayInput from '../components/BirthdayInput';
 import DropdownSelect from '../components/DropdownSelect';
@@ -27,8 +27,8 @@ const toppingItem = [
   { label: 'うずら', value: '5' },
   { label: '七味', value: '6' },
 ];
-const auth = getAuth();
 export default function SignUpScreen(props) {
+  const [userInfo, setuserInfo] = useState('');
   const { onSignedUp } = props;
   const [phoneNumber, setPhoneNumber] = useState('');
   const [name, setName] = useState('');
@@ -42,7 +42,20 @@ export default function SignUpScreen(props) {
     onSignedUp();
     console.log(name, password, phoneNumber, birthday, ramen, topping);
   };
+  const setUser = async () => {
+    try {
+      const userJSON = await AsyncStorage.getItem('@user');
+      const userData = userJSON ? JSON.parse(userJSON) : null;
+      console.log(userData);
+      setuserInfo(userData);
+    } catch (e) {
+      alert(e.message);
+    }
+  };
 
+  useEffect(() => {
+    setUser();
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -52,7 +65,7 @@ export default function SignUpScreen(props) {
         <View style={styles.itemContainer}>
           <Text style={styles.item}>メールアドレス</Text>
           <TextInput
-            value={auth.currentUser.email}
+            value={userInfo.email}
             style={styles.mail}
             autoCapitalize="none"
             editable={false}
