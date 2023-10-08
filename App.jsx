@@ -77,7 +77,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName="メニュー"
+        initialRouteName="メニュ＾"
         screenOptions={{
           ...commonHeaderOptions,
           tabBarInactiveTintColor: 'black',

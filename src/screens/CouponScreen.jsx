@@ -1,12 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView,
+  View, Text, StyleSheet, ScrollView, Alert,
 } from 'react-native';
+import {
+  getFirestore, getDocs, collection, query, where,
+} from 'firebase/firestore';
 
 import CouponItem from '../components/CouponItem';
 import FilterItem from '../components/FilterItem';
 
 export default function CouponScreen() {
+  const [coupons, setcoupons] = useState([]);
+  useEffect(() => {
+    // 期間限定メニューの追加
+    const fetchLimitTimeMenu = async () => {
+      try {
+        const db = getFirestore();
+        const ref = query(collection(db, 'coupons'));
+        const querySnapshot = await getDocs(ref);
+        const dbCoupon = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          dbCoupon.push({
+            name: data.name,
+            expiredate: data.expiredate,
+            target: data.target,
+            content: data.content,
+          });
+        });
+        setcoupons(dbCoupon);
+        console.log(dbCoupon);
+      } catch (error) {
+        console.error(error);
+        Alert.alert('データの読み込みに失敗しました');
+      }
+    };
+    fetchLimitTimeMenu(); // 非同期関数を即座に呼び出す
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.filterContainer}>

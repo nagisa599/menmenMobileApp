@@ -35,27 +35,30 @@ export default function MenuScreen(props) {
     });
     setRegularMenu(dummy);
     // 期間限定メニューの追加
-    const db = getFirestore();
-    const ref = query(collection(db, 'ramens'), where('limit', '==', true));
-    let unsubscribe = () => {};
-    unsubscribe = getDocs(ref).then((onSnapshot) => {
-      const limitTimeMenu = [];
-      onSnapshot.forEach((doc) => {
-        const data = doc.data();
-        limitTimeMenu.push({
-          imageURL: data.imageURL,
-          name: data.name,
-          price: data.price,
-          student: true,
-          favorite: data.favorite,
+    const fetchLimitTimeMenu = async () => {
+      try {
+        const db = getFirestore();
+        const ref = query(collection(db, 'ramens'), where('limit', '==', true));
+        const querySnapshot = await getDocs(ref);
+        const limitTimeMenu = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          limitTimeMenu.push({
+            imageURL: data.imageURL,
+            name: data.name,
+            price: data.price,
+            student: true,
+            favorite: data.favorite,
+          });
         });
-      });
-      setlimitmenus(limitTimeMenu);
-    }, (error) => {
-      console.log(error);
-      Alert.alert('データの読み込みに失敗しました');
-    });
-    return unsubscribe;
+        setlimitmenus(limitTimeMenu);
+        console.log(limitTimeMenu);
+      } catch (error) {
+        console.error(error);
+        Alert.alert('データの読み込みに失敗しました');
+      }
+    };
+    fetchLimitTimeMenu(); // 非同期関数を即座に呼び出す
   }, []);
   const { navigation } = props;
   return (
