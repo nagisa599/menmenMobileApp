@@ -1,8 +1,9 @@
-import { firebaseConfig } from './env';
 import { getFirestore } from 'firebase/firestore';
 import { initializeApp, getApps } from 'firebase/app';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth';
+import { firebaseConfig } from './env';
 
 let app;
 let auth;

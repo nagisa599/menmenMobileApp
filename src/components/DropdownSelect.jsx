@@ -3,7 +3,7 @@ import {
   View, Text, Modal, TouchableOpacity, FlatList, StyleSheet,
 } from 'react-native';
 import {
-  arrayOf, string, shape, func,
+  arrayOf, string, shape, func, number,
 } from 'prop-types';
 
 export default function DropdownSelect(props) {
@@ -20,7 +20,7 @@ export default function DropdownSelect(props) {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.dropdownButton}>
-        <Text>{selectedValue ? contentItems.find((item) => item.value === selectedValue).label : 'Select'}</Text>
+        <Text>{selectedValue ? contentItems.find((item) => item.value === selectedValue).label : '未選択'}</Text>
       </TouchableOpacity>
 
       <Modal
@@ -52,6 +52,14 @@ export default function DropdownSelect(props) {
     </View>
   );
 }
+
+DropdownSelect.propTypes = {
+  contentItems: arrayOf(shape({
+    label: string,
+    value: number,
+  })).isRequired,
+  setChange: func.isRequired,
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -90,11 +98,3 @@ const styles = StyleSheet.create({
     borderBottomColor: '#DDDDDD',
   },
 });
-
-DropdownSelect.propTypes = {
-  contentItems: arrayOf(shape({
-    label: string,
-    value: string,
-  })).isRequired,
-  setChange: func.isRequired,
-};
