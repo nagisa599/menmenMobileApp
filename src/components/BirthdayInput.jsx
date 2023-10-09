@@ -19,8 +19,8 @@ export default function BirthdayInput(props) {
     }
   }, [selectedMonth]);
 
-  const handleDateChange = () => {
-    onDateChange(`${selectedMonth}-${selectedDay}`);
+  const handleDateChange = (month, day) => {
+    onDateChange(`${month}-${day}`);
   };
 
   return (
@@ -30,7 +30,7 @@ export default function BirthdayInput(props) {
         style={styles.picker}
         onValueChange={(itemValue) => {
           setSelectedMonth(itemValue);
-          handleDateChange();
+          handleDateChange(itemValue, selectedDay);
         }}
       >
         {months.map((month) => (
@@ -42,7 +42,7 @@ export default function BirthdayInput(props) {
         style={styles.picker}
         onValueChange={(itemValue) => {
           setSelectedDay(itemValue);
-          handleDateChange();
+          handleDateChange(selectedMonth, itemValue);
         }}
       >
         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => (

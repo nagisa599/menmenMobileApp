@@ -1,17 +1,24 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { func } from 'prop-types';
 
+import { func, shape } from 'prop-types';
 import commonHeaderOptions from '../styles/NavigationHeaderStyles';
 import SignUpScreen from '../screens/SignUpScreen';
 
 const Stack = createNativeStackNavigator();
 
-export default function SignUpStack({ onSignedUp }) {
+export default function SignUpStack(props) {
+  const { onSignedUp, userInfo, setUserInfo } = props;
   return (
     <Stack.Navigator initialRouteName="SignUp" screenOptions={commonHeaderOptions}>
       <Stack.Screen name="SignUp">
-        {() => <SignUpScreen onSignedUp={onSignedUp} />}
+        {() => (
+          <SignUpScreen
+            onSignedUp={onSignedUp}
+            userInfo={userInfo}
+            setUserInfo={setUserInfo}
+          />
+        )}
       </Stack.Screen>
     </Stack.Navigator>
   );
@@ -19,4 +26,6 @@ export default function SignUpStack({ onSignedUp }) {
 
 SignUpStack.propTypes = {
   onSignedUp: func.isRequired,
+  userInfo: shape().isRequired,
+  setUserInfo: func.isRequired,
 };
