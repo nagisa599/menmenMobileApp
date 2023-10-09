@@ -8,13 +8,12 @@ import SignUpScreen from '../screens/SignUpScreen';
 const Stack = createNativeStackNavigator();
 
 export default function SignUpStack(props) {
-  const { onSignedUp, userInfo, setUserInfo } = props;
+  const { userInfo, setUserInfo } = props;
   return (
     <Stack.Navigator initialRouteName="SignUp" screenOptions={commonHeaderOptions}>
       <Stack.Screen name="SignUp">
         {() => (
           <SignUpScreen
-            onSignedUp={onSignedUp}
             userInfo={userInfo}
             setUserInfo={setUserInfo}
           />
@@ -25,7 +24,6 @@ export default function SignUpStack(props) {
 }
 
 SignUpStack.propTypes = {
-  onSignedUp: func.isRequired,
   userInfo: shape().isRequired,
   setUserInfo: func.isRequired,
 };

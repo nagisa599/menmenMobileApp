@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity, ActivityIndicator,
+  View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity,
   Alert, TouchableWithoutFeedback, Keyboard,
 } from 'react-native';
 import { func, shape } from 'prop-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { doc, setDoc } from 'firebase/firestore';
-import { onAuthStateChanged, getAuth } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 
 import db from '../../firebaseConfig';
 import BirthdayInput from '../components/BirthdayInput';
@@ -34,10 +34,7 @@ const toppingItem = [
 ];
 
 export default function SignUpScreen(props) {
-  const { onSignedUp, userInfo, setUserInfo } = props;
-  // const [userInfo, setuserInfo] = useState('');
-  // const [phoneNumber, setPhoneNumber] = useState('');
-  // const [email, setEmail] = useState('');
+  const { userInfo, setUserInfo } = props;
   const [name, setName] = useState('');
   const [birthday, setBirthDay] = useState('');
   const [ramen, setRamen] = useState(0);
@@ -45,13 +42,13 @@ export default function SignUpScreen(props) {
   const [createdAt, setCreatedAt] = useState(new Date());
 
   const handleRegister = async (userData) => {
+    // eslint-disable-next-line no-unused-vars
     const auth = getAuth();
 
     if (!userData) {
       Alert.alert('ユーザーデータが存在しません');
       return;
     }
-    console.log('ユーザーデータがあります');
 
     const userUid = userData.uid;
     const userPath = `users/${userUid}`;
@@ -88,85 +85,10 @@ export default function SignUpScreen(props) {
 
       await AsyncStorage.setItem('@user', JSON.stringify(combinedUserData));
       setUserInfo(combinedUserData);
-      console.log('combinedUserData:', combinedUserData);
-      console.log('name:', combinedUserData.name);
-      // onSignedUp();
     } catch (error) {
       Alert.alert(error.message);
     }
   };
-
-  // const handleRegister = async (userData) => {
-
-  // const auth = getAuth();
-  // const userUid = userData.uid;
-  // const userPath = `users/${userUid}`;
-  // const userDoc = doc(db, userPath);
-  // setCreatedAt(new Date());
-  // if (!name.trim()) {
-  //   Alert.alert('ユーザー名を入力してください');
-  //   return;
-  // }
-  // if (!birthday.trim()) {
-  //   Alert.alert('誕生日を入力してください');
-  //   return;
-  // }
-
-  // setDoc(userDoc, {
-  //   email,
-  //   name,
-  //   birthday,
-  //   ramen,
-  //   topping,
-  //   createdAt,
-  // }).then(() => {
-  //   const unsub = onAuthStateChanged(auth, async (user) => {
-  //     console.log('user:', user);
-  //     if (user) {
-  //       const combinedUserData = {
-  //         ...user,
-  //         name,
-  //         birthday,
-  //         ramen,
-  //         topping,
-  //         createdAt,
-  //       };
-  //       console.log('combindUserData前:', combinedUserData);
-  //       try {
-  //         await AsyncStorage.setItem('@user', JSON.stringify(combinedUserData));
-  //       } catch (err) {
-  //         console.log('err:', err);
-  //       }
-  //       setuserInfo(combinedUserData);
-  //       console.log('combindUserData後:', combinedUserData);
-  //     } else {
-  //       // ユーザーがいない場合(不正)
-  //       console.log('else');
-  //     }
-  //   });
-  //   unsub();
-  //   onSignedUp();
-  // console.log(combinedUserData);
-  // }).catch((error) => {
-  //   Alert.alert(error.message);
-  // });
-  // };
-
-  // const setUser = async () => {
-  //   try {
-  //     const userJSON = await AsyncStorage.getItem('@user');
-  //     const userData = userJSON ? JSON.parse(userJSON) : null;
-  //     setUserInfo(userData);
-  //     setEmail(userData.email);
-  //   } catch (e) {
-  //     alert(e.message);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   console.log(userInfo);
-  //   setUser();
-  // }, []);
 
   return (
     <View style={styles.container}>
@@ -253,7 +175,6 @@ export default function SignUpScreen(props) {
 }
 
 SignUpScreen.propTypes = {
-  onSignedUp: func.isRequired,
   userInfo: shape(),
   setUserInfo: func.isRequired,
 };
