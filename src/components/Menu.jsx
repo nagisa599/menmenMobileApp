@@ -15,7 +15,7 @@ export default function Menu(props) {
   return (
     <View style={styles.container}>
       {menus.map((menu) => (
-        <View key={menu.id} style={styles.menuBox}>
+        <View key={menu.name} style={styles.menuBox}>
           <View>
             <Image
               source={menu.image}
