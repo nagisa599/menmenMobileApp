@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// eslint-disable-next-line import/no-unresolved
+import { IOS_CLIENT_ID, ANDROID_CLIENT_ID } from '@env';
 import CouponScreen from './src/screens/CouponScreen';
 import FriendScreen from './src/screens/FriendScreen';
 import getTabBarIcon from './src/components/FooterTab';
@@ -15,7 +17,7 @@ import db from './firebaseConfig';
 /* eslint-disable */
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
-import { GoogleAuthProvider, onAuthStateChanged, signInWithCredential,getAuth, initializeAuth } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithCredential,getAuth } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 /* eslint-able */
 
@@ -26,8 +28,8 @@ export default function App() {
   const auth = getAuth();
   const [userInfo, setUserInfo] = useState();
   const [request, response, promptAsync] = Google.useAuthRequest({
-    iosClientId: '768644207627-jt4cfhrnmoei12nol1fkm4c5kfqcq17i.apps.googleusercontent.com',
-    androidClientId: '768644207627-mldrc5c1tvd4noucmfrhopdc5r633kpa.apps.googleusercontent.com',
+    iosClientId: IOS_CLIENT_ID,
+    androidClientId: ANDROID_CLIENT_ID,
   });
 
   const checkLocalUser = async() => {
