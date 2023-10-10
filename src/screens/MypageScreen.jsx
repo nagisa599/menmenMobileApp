@@ -1,20 +1,87 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View, Text, StyleSheet, Image, ScrollView, ActivityIndicator,
+  View, Text, StyleSheet, Image, ScrollView,
 } from 'react-native';
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import Tab from '../components/Tab';
 import myLocalImage from '../../assets/profile.jpg';
 import StampCard from '../components/StampCard';
+import Loading from '../components/Loading';
 
 export default function MypageScreen(props) {
   const { navigation } = props;
   const [isImageLoaded, setImageLoaded] = useState(false);
+  const [userInfo, setUserInfo] = useState({});
+  const [isLoading, setLoading] = useState(false);
+
+  const ChangeIDtoName = async (id) => {
+    const db = getFirestore();
+
+    const ramenPath = `ramens/${id}/`;
+    const ref = doc(db, ramenPath);
+
+    try {
+      const ramenDoc = await getDoc(ref);
+      if (ramenDoc.exists()) {
+        const ramenData = ramenDoc.data();
+        return ramenData.name;
+      }
+      console.log('メニュー情報がありません');
+    } catch (error) {
+      console.log('refが不正です');
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    const auth = getAuth();
+    const db = getFirestore();
+
+    // マイページ開く際にFirebaseの認証状態が完全に復元されてないとエラーが起きるためonAuthStateChangedで監視する
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const currentUserUid = user.uid;
+        const userPath = `users/${currentUserUid}/`;
+        const userInfoDocRef = doc(db, userPath);
+        setLoading(true);
+        try {
+          const userDoc = await getDoc(userInfoDocRef);
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+
+            const ramenName = await ChangeIDtoName(userData.ramen);
+            const toppingName = await ChangeIDtoName(userData.topping);
+
+            setUserInfo({
+              userName: userData.name,
+              userID: userData.Id,
+              userRamen: ramenName,
+              userTopping: toppingName,
+            });
+          } else {
+            console.log('ユーザー情報がない');
+          }
+          setLoading(false);
+        } catch (e) {
+          console.log('error:', e);
+          setLoading(false);
+        }
+      } else {
+        console.log('ユーザーはログインしていません');
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
-      { !isImageLoaded && <ActivityIndicator size="large" style={styles.loader} /> }
+      <Loading isLoading={isLoading} isImageLoaded={isImageLoaded} />
       <View style={styles.tabContainer}>
         <Tab label="マイページ" onPress={() => {}} active />
         <Tab
@@ -36,8 +103,8 @@ export default function MypageScreen(props) {
             />
           </View>
           <View style={styles.nameContainer}>
-            <Text style={styles.username}>ラーメンおじじ</Text>
-            <Text style={styles.userid}>ID: ff938dkg</Text>
+            <Text style={styles.username}>{userInfo.userName}</Text>
+            <Text style={styles.userid}>{userInfo.userID}</Text>
           </View>
         </View>
         <View style={styles.titleContainer}>
@@ -45,11 +112,11 @@ export default function MypageScreen(props) {
           <View style={styles.favorite}>
             <View style={styles.ramen}>
               <MaterialIcons name="ramen-dining" size={22} color="black" />
-              <Text style={styles.item}>まぜそば</Text>
+              <Text style={styles.item}>{userInfo.userRamen}</Text>
             </View>
             <View style={styles.topping}>
               <AntDesign name="pluscircleo" size={22} color="black" />
-              <Text style={styles.item}>ねぎ</Text>
+              <Text style={styles.item}>{userInfo.userTopping}</Text>
             </View>
           </View>
         </View>
