@@ -17,7 +17,7 @@ import db from './firebaseConfig';
 /* eslint-disable */
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
-import { GoogleAuthProvider, signInWithCredential,getAuth } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithCredential,getAuth, onAuthStateChanged } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 /* eslint-able */
 
@@ -71,8 +71,21 @@ export default function App() {
     const fetchData = async () => {
         await checkLocalUser();
     };
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const providerData = user.providerData;
+        const isGoogleUser = providerData.some(data => data.providerId === 'google.com');
+
+        if (!isGoogleUser) {
+          Alert.alert('不正なログインです');
+        }
+      } else {
+        Alert.alert('不正なログインです');
+      }
+    });
 
     fetchData();
+    return () => unsub();
   }, []);
 
   if(userInfo) {
