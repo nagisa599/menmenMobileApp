@@ -16,11 +16,8 @@ export default function CouponScreen() {
     const fetchData = async () => {
       const mycoupons = [];
       try {
-        const auth = getAuth();
-        const user = auth.currentUser;
         const db = getFirestore();
         const ref = couponFilter();
-        //const ref = query(collection(db, `users/${user.uid}/hasCoupons`), where('expire', '>', new Date()), where('used', '==', false));
         const querySnapshot = await getDocs(ref);
         await Promise.all(querySnapshot.docs.map(async (doc2) => { // 全ての非同期初期が終わったら
           const couponid = doc2.id;
@@ -32,6 +29,7 @@ export default function CouponScreen() {
               id: doc2.id,
               name: data.name,
               content: data.content,
+              used: doc2.data().used,
               expireDate: doc2.data().expire.toDate(),
             });
           } else {
