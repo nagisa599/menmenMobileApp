@@ -10,15 +10,13 @@ const data = [
   { label: 'なし', value: '0' },
   { label: '1ヶ月以内', value: '1' },
   { label: '3ヶ月以内', value: '2' },
-  { label: '期間限定', value: '3' },
-  { label: '有効期限なし', value: '4' },
-  { label: '使用済み', value: '5' },
+  { label: '使用済み', value: '3' },
 ];
 
-export default function FilterItem() {
+export default function FilterItem(props) {
   const [value, setValue] = useState('0');
   const [isFocus, setIsFocus] = useState(false);
-
+  const { setFilter } = props;
   const renderLabel = () => {
     if (value || isFocus) {
       return (
@@ -29,7 +27,6 @@ export default function FilterItem() {
     }
     return null;
   };
-
   return (
     <View style={styles.container}>
       {renderLabel()}
@@ -52,6 +49,7 @@ export default function FilterItem() {
         onChange={(item) => {
           setValue(item.value);
           setIsFocus(false);
+          setFilter(item.value);
         }}
         renderLeftIcon={() => (
           <Ionicons
@@ -65,7 +63,6 @@ export default function FilterItem() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     padding: 16,

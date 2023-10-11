@@ -89,7 +89,7 @@ export default function App() {
   }, []);
 
   if(userInfo) {
-    if (!userInfo.name) {
+    if (!userInfo.email) {
       return (
         <NavigationContainer>
           <SignUpStack userInfo={userInfo} setUserInfo={setUserInfo} />
