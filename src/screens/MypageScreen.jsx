@@ -57,7 +57,7 @@ export default function MypageScreen(props) {
 
             setUserInfo({
               userName: userData.name,
-              userID: userData.Id,
+              userID: userData.userId,
               userRamen: ramenName,
               userTopping: toppingName,
             });
@@ -104,7 +104,7 @@ export default function MypageScreen(props) {
           </View>
           <View style={styles.nameContainer}>
             <Text style={styles.username}>{userInfo.userName}</Text>
-            <Text style={styles.userid}>{userInfo.userID}</Text>
+            <Text style={styles.userid}>{`ID: ${userInfo.userID}`}</Text>
           </View>
         </View>
         <View style={styles.titleContainer}>
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   userid: {
-    fontSize: 18,
+    fontSize: 12,
   },
   titleContainer: {
     marginHorizontal: 30,

@@ -6,7 +6,7 @@ import {
 import { func, shape } from 'prop-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 import db from '../../firebaseConfig';
@@ -40,6 +40,18 @@ export default function SignUpScreen(props) {
   const [ramen, setRamen] = useState(0);
   const [topping, setTopping] = useState(0);
   const [createdAt, setCreatedAt] = useState(new Date());
+  const [isUnique, setIsUnique] = useState(true);
+
+  const isUsernameUnique = async (username) => {
+    const userRef = doc(db, `username/${username}`);
+    const userSnap = await getDoc(userRef);
+    return !userSnap.exists();
+  };
+
+  const checkUsername = async (username) => {
+    const unique = await isUsernameUnique(username);
+    setIsUnique(unique);
+  };
 
   const handleRegister = async (userData) => {
     // eslint-disable-next-line no-unused-vars
@@ -47,6 +59,11 @@ export default function SignUpScreen(props) {
 
     if (!userData) {
       Alert.alert('ユーザーデータが存在しません');
+      return;
+    }
+
+    if (!isUnique) {
+      Alert.alert('ユーザー名がすでに使われています\n 変更してください');
       return;
     }
 
@@ -73,6 +90,8 @@ export default function SignUpScreen(props) {
         topping,
         createdAt,
       });
+
+      await setDoc(doc(db, `username/${name}`), {});
 
       const combinedUserData = {
         ...userData,
@@ -129,10 +148,12 @@ export default function SignUpScreen(props) {
                 ユーザー名
                 <Text style={styles.star}>＊</Text>
               </Text>
+              {!isUnique && <Text style={styles.star}>このユーザー名はすでに使われています</Text>}
               <TextInput
                 value={name}
                 style={styles.input}
                 onChangeText={(text) => {
+                  checkUsername(text);
                   setName(text);
                 }}
                 autoCapitalize="none"
