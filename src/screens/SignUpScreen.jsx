@@ -91,7 +91,9 @@ export default function SignUpScreen(props) {
         createdAt,
       });
 
-      await setDoc(doc(db, `username/${name}`), {});
+      await setDoc(doc(db, `username/${name}`), {
+        uid: userUid,
+      });
 
       const combinedUserData = {
         ...userData,
