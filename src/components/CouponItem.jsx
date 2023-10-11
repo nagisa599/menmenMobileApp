@@ -1,27 +1,60 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View, StyleSheet, Text, TouchableOpacity, Alert,
 } from 'react-native';
 import { string, instanceOf, shape } from 'prop-types';
+import { getAuth } from 'firebase/auth';
+import {
+  getFirestore, setDoc, doc,
+} from 'firebase/firestore';
 
 export default function CouponItem(props) {
+  const [isCouponUsed, setIsCouponUsed] = useState(false);
   const { coupon } = props;
   const formattedDate = new Date(coupon.expireDate).toLocaleString('ja-JP');
-  console.log(formattedDate);
-
+  const useCoupon = async () => {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      const db = getFirestore();
+      const ref = doc(db, `users/${user.uid}/hasCoupons`, coupon.id);
+      await setDoc(ref, {
+        expire: coupon.expireDate,
+        used: true,
+        usedDate: new Date(),
+      });
+      setIsCouponUsed(true);
+    } catch (error) {
+      console.log('クーポン利用に失敗しました');
+    }
+  };
+  if (isCouponUsed) {
+    return null;
+  }
   // couponIdからクーポンの情報を取得
   return (
     <TouchableOpacity
       style={[styles.container]}
       onPress={() => {
-        Alert.alert('このクーポンを本当に使用しますか？');
+        Alert.alert(
+          'クーポンを利用しますか？',
+          '',
+          [
+            {
+              text: 'キャンセル',
+              style: 'cancel',
+            },
+            {
+              text: '利用する',
+              onPress: () => {
+                useCoupon();
+                Alert.alert('クーポンを使用しました！');
+              },
+            },
+          ],
+        );
       }}
     >
-      <View style={styles.id}>
-        <Text>
-          {`クーポンID: ${coupon.name}`}
-        </Text>
-      </View>
       <View style={styles.couponContainer}>
         <Text style={styles.title}>{coupon.name}</Text>
         <Text style={styles.content}>{coupon.content}</Text>
@@ -35,6 +68,7 @@ CouponItem.propTypes = {
     name: string,
     content: string,
     expireDate: instanceOf(Date),
+    id: string,
   }).isRequired,
 };
 

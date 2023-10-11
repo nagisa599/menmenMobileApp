@@ -11,6 +11,7 @@ import FilterItem from '../components/FilterItem';
 
 export default function CouponScreen() {
   const [coupons, setcoupons] = useState([]);
+  const [filter, setFilter] = useState('0');
   useEffect(() => {
     const fetchData = async () => {
       const mycoupons = [];
@@ -18,7 +19,8 @@ export default function CouponScreen() {
         const auth = getAuth();
         const user = auth.currentUser;
         const db = getFirestore();
-        const ref = query(collection(db, `users/${user.uid}/hasCoupons`), where('used', '==', false));
+        const ref = couponFilter();
+        //const ref = query(collection(db, `users/${user.uid}/hasCoupons`), where('expire', '>', new Date()), where('used', '==', false));
         const querySnapshot = await getDocs(ref);
         await Promise.all(querySnapshot.docs.map(async (doc2) => { // 全ての非同期初期が終わったら
           const couponid = doc2.id;
@@ -27,6 +29,7 @@ export default function CouponScreen() {
           if (docSnapshot.exists()) {
             const data = docSnapshot.data();
             mycoupons.push({
+              id: doc2.id,
               name: data.name,
               content: data.content,
               expireDate: doc2.data().expire.toDate(),
@@ -42,14 +45,58 @@ export default function CouponScreen() {
       }
     };
     fetchData();
-  }, []); // 第二引数に空の配列を渡して、コンポーネントがマウントされた時だけ実行されるように設定
+  }, [filter]); // 第二引数に空の配列を渡して、コンポーネントがマウントされた時だけ実行されるように設定
+
+  const couponFilter = () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const db = getFirestore();
+    const today = new Date();
+    let ref;
+    /* eslint-disable */
+    switch (filter) {
+      case '0':
+        ref = query(
+          collection(db, `users/${user.uid}/hasCoupons`),
+          where('expire', '>', today),
+          where('used', '==', false)
+        );
+        break;
+      case '1':
+        ref = query(
+          collection(db, `users/${user.uid}/hasCoupons`),
+          where('expire', '>', today),
+          where('expire', '<', new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())),
+          where('used', '==', false)
+        );
+        break;
+      case '2':
+        ref = query(
+          collection(db, `users/${user.uid}/hasCoupons`),
+          where('expire', '>', today),
+          where('expire', '<', new Date(today.getFullYear(), today.getMonth() + 3, today.getDate())),
+          where('used', '==', false)
+        );
+        break;
+      case '3':
+        ref = query(
+          collection(db, `users/${user.uid}/hasCoupons`),
+          where('used', '==', true)
+        );
+        break;
+      
+    };
+    return ref;
+    
+  };
+  /* eslint-enable */
   return (
     <View style={styles.container}>
       <View style={styles.filterContainer}>
         <View style={styles.subtitle}>
           <Text style={styles.subtitleText}>クーポン一覧</Text>
         </View>
-        <FilterItem />
+        <FilterItem setFilter={setFilter} />
       </View>
       <ScrollView contentContainerStyle={styles.itemContainer}>
         {coupons.map((coupon) => (
