@@ -3,40 +3,46 @@ import {
   View, Text, StyleSheet, ScrollView, Alert,
 } from 'react-native';
 import {
-  getFirestore, getDocs, collection, query, where,
+  getFirestore, getDocs, collection, query, where, getDoc, doc,
 } from 'firebase/firestore';
-
+import { getAuth } from 'firebase/auth';
 import CouponItem from '../components/CouponItem';
 import FilterItem from '../components/FilterItem';
 
 export default function CouponScreen() {
   const [coupons, setcoupons] = useState([]);
   useEffect(() => {
-    // 期間限定メニューの追加
-    const fetchLimitTimeMenu = async () => {
+    const fetchData = async () => {
+      const mycoupons = [];
       try {
+        const auth = getAuth();
+        const user = auth.currentUser;
         const db = getFirestore();
-        const ref = query(collection(db, 'coupons'));
+        const ref = query(collection(db, `users/${user.uid}/hasCoupons`), where('used', '==', false));
         const querySnapshot = await getDocs(ref);
-        const dbCoupon = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          dbCoupon.push({
-            name: data.name,
-            expiredate: data.expiredate,
-            target: data.target,
-            content: data.content,
-          });
-        });
-        setcoupons(dbCoupon);
-        console.log(dbCoupon);
+        await Promise.all(querySnapshot.docs.map(async (doc2) => { // 全ての非同期初期が終わったら
+          const couponid = doc2.id;
+          const ref2 = doc(db, 'coupons', couponid);
+          const docSnapshot = await getDoc(ref2);
+          if (docSnapshot.exists()) {
+            const data = docSnapshot.data();
+            mycoupons.push({
+              name: data.name,
+              content: data.content,
+              expireDate: doc2.data().expire.toDate(),
+            });
+          } else {
+            console.log('読み込みデータなし');
+          }
+        }));
+        setcoupons(mycoupons);
       } catch (error) {
         console.error(error);
         Alert.alert('データの読み込みに失敗しました');
       }
     };
-    fetchLimitTimeMenu(); // 非同期関数を即座に呼び出す
-  }, []);
+    fetchData();
+  }, []); // 第二引数に空の配列を渡して、コンポーネントがマウントされた時だけ実行されるように設定
   return (
     <View style={styles.container}>
       <View style={styles.filterContainer}>
@@ -46,10 +52,9 @@ export default function CouponScreen() {
         <FilterItem />
       </View>
       <ScrollView contentContainerStyle={styles.itemContainer}>
-        <CouponItem couponId={456} style={{ backgroundColor: '#99FFFF' }} />
-        <CouponItem couponId={456} style={{ backgroundColor: '#99FF99' }} />
-        <CouponItem couponId={456} />
-        <CouponItem couponId={456} />
+        {coupons.map((coupon) => (
+          <CouponItem coupon={coupon} key={coupon.name} />
+        ))}
       </ScrollView>
     </View>
   );
