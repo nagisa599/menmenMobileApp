@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import {
   View, StyleSheet, Text, TouchableOpacity, Alert,
 } from 'react-native';
-import { string, instanceOf, shape } from 'prop-types';
+import {
+  string, instanceOf, shape, bool,
+} from 'prop-types';
 import { getAuth } from 'firebase/auth';
 import {
   getFirestore, setDoc, doc,
@@ -30,6 +32,17 @@ export default function CouponItem(props) {
   };
   if (isCouponUsed) {
     return null;
+  }
+  if (coupon.used) {
+    return (
+      <View style={[styles.container]}>
+        <View style={styles.couponContainer}>
+          <Text style={styles.title}>{`${coupon.name}（使用済み)`}</Text>
+          <Text style={styles.content}>{coupon.content}</Text>
+          <Text style={styles.content}>{`有効期限 ${formattedDate}`}</Text>
+        </View>
+      </View>
+    );
   }
   // couponIdからクーポンの情報を取得
   return (
@@ -69,6 +82,7 @@ CouponItem.propTypes = {
     content: string,
     expireDate: instanceOf(Date),
     id: string,
+    used: bool,
   }).isRequired,
 };
 

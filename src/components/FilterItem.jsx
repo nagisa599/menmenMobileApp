@@ -5,6 +5,7 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Dropdown } from 'react-native-element-dropdown';
 import { Ionicons } from '@expo/vector-icons';
+import { func } from 'prop-types';
 
 const data = [
   { label: 'なし', value: '0' },
@@ -63,6 +64,9 @@ export default function FilterItem(props) {
     </View>
   );
 }
+FilterItem.propTypes = {
+  setFilter: func.isRequired,
+};
 const styles = StyleSheet.create({
   container: {
     padding: 16,
