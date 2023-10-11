@@ -104,7 +104,6 @@ export default function MypageScreen(props) {
           </View>
           <View style={styles.nameContainer}>
             <Text style={styles.username}>{userInfo.userName}</Text>
-            <Text style={styles.userid}>{`ID: ${userInfo.userID}`}</Text>
           </View>
         </View>
         <View style={styles.titleContainer}>
@@ -168,12 +167,10 @@ const styles = StyleSheet.create({
   nameContainer: {
     flex: 1,
     marginLeft: 20,
+    alignItems: 'center',
   },
   username: {
-    fontSize: 24,
-  },
-  userid: {
-    fontSize: 12,
+    fontSize: 28,
   },
   titleContainer: {
     marginHorizontal: 30,
