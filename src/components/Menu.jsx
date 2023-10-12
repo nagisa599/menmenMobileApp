@@ -15,16 +15,14 @@ export default function Menu(props) {
   return (
     <View style={styles.container}>
       {menus.map((menu) => (
-        <View key={menu.name} style={styles.menuBox}>
-          <View>
-            <Image
-              source={menu.image}
-              style={styles.menuPicture}
-            />
-          </View>
+        <View key={menu.id} style={styles.menuBox}>
+          <Image
+            source={menu.image}
+            style={styles.menuPicture}
+          />
           <View style={styles.info}>
             <Text style={styles.name}>{menu.name}</Text>
-            <Text style={styles.item}>{`￥${menu.price}`}</Text>
+            <Text style={styles.item}>{`¥${menu.price}`}</Text>
             <Text style={styles.item}>{menu.student ? '学割対象' : '学割対象外'}</Text>
             <Text style={styles.item}>{`人気度: ${renderStars(menu.favorite)}`}</Text>
           </View>
@@ -45,30 +43,47 @@ Menu.propTypes = {
     favorite: number,
   })).isRequired,
 };
+
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   menuBox: {
-    // marginTop: 20,
+    marginTop: 20,
     paddingVertical: 20,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    width: '65%',
+    width: '80%',
+    borderRadius: 10,
+    backgroundColor: '#f9f9f9',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   menuPicture: {
-    height: 200,
-    width: '100%',
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    height: 150,
+    width: 150,
+    borderRadius: 10,
   },
   info: {
-    alignItems: 'flex-end',
+    flex: 1,
+    marginLeft: 20,
   },
   name: {
     fontWeight: 'bold',
-    fontSize: 24,
+    fontSize: 18,
+    marginBottom: 5,
   },
   item: {
-    fontSize: 16,
+    fontSize: 14,
+    color: '#888',
   },
 });
