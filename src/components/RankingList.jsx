@@ -32,12 +32,24 @@ RankingList.defaultProps = {
 
 const styles = StyleSheet.create({
   container: {
-    borderTopWidth: 1, // 最後のところはまた後でFlatListやmapでborderつける
+    borderWidth: 1, // 最後のところはまた後でFlatListやmapでborderつける
     borderColor: 'rgba(0, 0, 0, 0.7)',
     flexDirection: 'row',
     paddingVertical: 30,
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: 'rgb(242, 242, 242)',
+    borderRadius: 20,
+    marginBottom: 30,
+    marginHorizontal: 40,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.10,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   rank: {
     marginLeft: 30,
