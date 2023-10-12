@@ -91,7 +91,7 @@ export default function MypageScreen(props) {
           }}
         />
       </View>
-      <ScrollView>
+      <ScrollView style={styles.listContainer}>
         <View style={styles.maininfo}>
           <View>
             <Image
@@ -146,6 +146,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 30,
+    backgroundColor: 'rgb(242, 242, 242)',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.10,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  listContainer: {
+    paddingTop: 30,
   },
   maininfo: {
     paddingVertical: 20,
