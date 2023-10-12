@@ -79,25 +79,43 @@ LimitMenu.propTypes = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   menuBox: {
+    marginTop: 20,
     paddingVertical: 20,
-    width: '65%',
+    width: '80%',
+    borderRadius: 10,
+    backgroundColor: '#f9f9f9',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   menuPicture: {
-    height: 200,
-    width: '100%',
+    height: 150,
+    width: 150,
+    borderRadius: 10,
   },
   info: {
-    alignItems: 'flex-end',
+    flex: 1,
+    marginLeft: 20,
   },
   name: {
     fontWeight: 'bold',
-    fontSize: 24,
+    fontSize: 18,
+    marginBottom: 5,
   },
   item: {
-    fontSize: 16,
+    fontSize: 14,
+    color: '#888',
   },
 });
