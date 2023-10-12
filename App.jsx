@@ -3,25 +3,21 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 // eslint-disable-next-line import/no-unresolved
 import { IOS_CLIENT_ID, ANDROID_CLIENT_ID } from '@env';
-import CouponScreen from './src/screens/CouponScreen';
-import FriendScreen from './src/screens/FriendScreen';
-import getTabBarIcon from './src/components/FooterTab';
-import MenuStack from './src/navigators/MenuNavigator';
-import RankingStack from './src/navigators/RankingNavigator';
-import SignUpStack from './src/navigators/SignUpNavigator';
-import GoogleSingUppStack from './src/navigators/GoogleSingUpNavigation';
-import MypageStack from './src/navigators/MypageNavigator';
-import commonHeaderOptions from './src/styles/NavigationHeaderStyles';
-// eslint-disable-next-line no-unused-vars
-import db from './firebaseConfig';
 /* eslint-disable */
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { GoogleAuthProvider, signInWithCredential,getAuth, onAuthStateChanged } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import SignUpStack from './src/navigators/SignUpNavigator';
+import GoogleSingUppStack from './src/navigators/GoogleSingUpNavigation';
+import MainTabs from './src/navigators/TabScreen';
+import db from './firebaseConfig';
+import ComingCheckScreen from './src/screens/ComingCheckScreen';
 /* eslint-able */
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 WebBrowser.maybeCompleteAuthSession(); 
 export default function App() {
@@ -89,7 +85,7 @@ export default function App() {
   }, []);
 
   if(userInfo) {
-    if (!userInfo.email) {
+    if (!userInfo.name) {
       return (
         <NavigationContainer>
           <SignUpStack userInfo={userInfo} setUserInfo={setUserInfo} />
@@ -98,50 +94,10 @@ export default function App() {
     } else {
       return (
         <NavigationContainer>
-          <Tab.Navigator
-            initialRouteName="メニュー"
-            screenOptions={{
-              ...commonHeaderOptions,
-              tabBarInactiveTintColor: 'black',
-              tabBarActiveTintColor: 'tomato',
-            }}
-          >
-            <Tab.Screen
-              name="メニュー"
-              component={MenuStack}
-              options={{
-                tabBarIcon: getTabBarIcon({ name: 'メニュー' }),
-              }}
-            />
-            <Tab.Screen
-              name="クーポン"
-              component={CouponScreen}
-              options={{
-                tabBarIcon: getTabBarIcon({ name: 'クーポン' }),
-              }}
-            />
-            <Tab.Screen
-              name="ランキング"
-              component={RankingStack}
-              options={{
-                tabBarIcon: getTabBarIcon({ name: 'ランキング' }),
-              }}
-            />
-            <Tab.Screen
-              name="フレンド"
-              component={FriendScreen}
-              options={{
-                tabBarIcon: getTabBarIcon({ name: 'フレンド' }),
-              }}
-            />
-            <Tab.Screen
-              name="マイページ"
-              component={MypageStack}
-              options={{
-                tabBarIcon: getTabBarIcon({ name: 'マイページ' }),
-              }}
-            />
-          </Tab.Navigator>
+          <Stack.Navigator initialRouteName='MainTabs'>
+            <Stack.Screen name='MainTabs' component={MainTabs} options={{ headerShown: false }} />
+            <Stack.Screen name="ComingCheck" component={ComingCheckScreen} options={{ headerTitle: 'QRコード読み取り' }} />
+          </Stack.Navigator>
         </NavigationContainer>
       );
     }
