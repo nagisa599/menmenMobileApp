@@ -126,7 +126,7 @@ export default function MypageScreen(props) {
             <StampCard visited={userInfo.visited} />
           </View>
         </View>
-        <Generator />
+        {/* <Generator /> */}
         <View style={styles.titleContainer}>
           <Text style={styles.title}>称号</Text>
         </View>
