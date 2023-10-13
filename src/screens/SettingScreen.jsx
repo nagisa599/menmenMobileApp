@@ -26,8 +26,20 @@ export default function SettingScreen(props) {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <SettingItem content="ユーザー情報の変更" style={styles.item} />
         <SettingItem content="アンケートへの回答" style={styles.item} />
-        <SettingItem content="お問い合わせ" style={styles.item} />
-        <SettingItem content="利用規約" style={styles.item} />
+        <SettingItem
+          content="お問い合わせ"
+          style={styles.item}
+          onPress={() => {
+            navigation.navigate('InquiryScreen');
+          }}
+        />
+        <SettingItem
+          content="利用規約"
+          style={styles.item}
+          onPress={() => {
+            navigation.navigate('TermsOfUseScreen');
+          }}
+        />
         <SettingItem content="ヘルプ" style={styles.item} />
       </ScrollView>
     </View>
