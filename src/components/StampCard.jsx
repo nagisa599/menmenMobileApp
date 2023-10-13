@@ -38,7 +38,7 @@ export default function StampCard(props) {
         ))}
       </View>
       <TouchableOpacity
-        onPress={() => { navigation.navigate('ComingCheck'); }}
+        onPress={() => { navigation.navigate('ComingCheck', { activateStamp }); }}
         style={[styles.button, visited ? styles.buttonDisabled : {}]}
         disabled={visited}
       >

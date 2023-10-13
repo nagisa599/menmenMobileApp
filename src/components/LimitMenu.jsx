@@ -72,7 +72,7 @@ LimitMenu.propTypes = {
       price: number,
       student: bool,
       favorite: number,
-    })
+    }),
   ).isRequired,
 };
 
