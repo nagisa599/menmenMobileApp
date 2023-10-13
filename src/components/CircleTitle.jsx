@@ -1,32 +1,81 @@
 import React from 'react';
-import { Text, StyleSheet, View } from 'react-native';
-import { string } from 'prop-types';
+import { StyleSheet, View, Image } from 'react-native';
+import { number } from 'prop-types';
+import logoImage1 from '../../assets/FIRST.png';
+import logoImage2 from '../../assets/SECOND.png';
+import logoImage3 from '../../assets/THIRD.png';
+import logoImage4 from '../../assets/FOUR.png';
+import logoImage5 from '../../assets/FIVE.png';
 
 export default function CircleTitle(props) {
-  const { content } = props;
-  return (
-    <View style={styles.circle}>
-      <Text style={styles.text}>{content}</Text>
-    </View>
-  );
+  const { title } = props;
+  if (title === 0) {
+    return (
+      <View style={styles.header}>
+        <Image source={logoImage1} style={styles.logo1} />
+      </View>
+    );
+  }
+  if (title > 12) {
+    return (
+      <View style={styles.header}>
+        <Image source={logoImage5} style={styles.logo5} />
+      </View>
+    );
+  }
+  if (title > 8) {
+    return (
+      <View style={styles.header}>
+        <Image source={logoImage4} style={styles.logo4} />
+      </View>
+    );
+  }
+  if (title > 4) {
+    return (
+      <View style={styles.header}>
+        <Image source={logoImage3} style={styles.logo3} />
+      </View>
+    );
+  }
+  if (title > 0) {
+    return (
+      <View style={styles.header}>
+        <Image source={logoImage2} style={styles.logo2} />
+      </View>
+    );
+  }
 }
 
 CircleTitle.propTypes = {
-  content: string.isRequired,
+  title: number.isRequired,
 };
 
 const styles = StyleSheet.create({
-  circle: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: 'rgb(0, 0, 0)',
-    borderWidth: 1,
-    backgroundColor: '#FFCC00',
+  logo1: {
+    width: 290, // ロゴ画像の幅
+    height: 350, // ロゴ画像の高さ
   },
-  text: {
-    fontSize: 20,
+  logo2: {
+    width: 330,
+    height: 330,
+  },
+  logo3: {
+    width: 280,
+    height: 280,
+  },
+  logo4: {
+    width: 240,
+    height: 360,
+  },
+  logo5: {
+    width: 240,
+    height: 280,
+  },
+  header: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 150,
+    paddingTop: 200,
+    paddingBottom: 150,
   },
 });

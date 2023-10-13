@@ -22,7 +22,7 @@ export default function GoogleLoginScreen(props) {
     try {
       await AsyncStorage.setItem('@user', JSON.stringify(user));
     } catch (error) {
-      console.error("Error saving user to AsyncStorage:", error);
+      console.error('Error saving user to AsyncStorage:', error);
     }
   };
 

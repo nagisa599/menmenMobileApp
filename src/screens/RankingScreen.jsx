@@ -5,7 +5,6 @@ import {
 import {
   getFirestore, getDocs, collection, query, orderBy,
 } from 'firebase/firestore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Tab from '../components/Tab';
 import RankingList from '../components/RankingList';
 
@@ -53,7 +52,7 @@ export default function RankingScreen(props) {
   // };
   useEffect(() => {
     fetchRanking();
-      // saveRankingToAsyncStorage(ranking)
+  // saveRankingToAsyncStorage(ranking)
   }, []);
 
   return (

@@ -90,6 +90,7 @@ export default function SignUpScreen(props) {
         topping,
         createdAt,
         visited: 0,
+        times: [],
       });
 
       await setDoc(doc(db, `username/${name}`), {
