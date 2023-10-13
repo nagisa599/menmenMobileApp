@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Text, View, StyleSheet, Pressable,
+  Text, View, StyleSheet, Pressable, Alert,
 } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
@@ -21,13 +21,7 @@ export default function ComingCheckScreen() {
   // QRコードがスキャンされると、読み取ったリンクを開く
   // リンクを開く事がでない場合にはメッセージを表示する
   const handleBarCodeScanned = ({ data }) => {
-    console.log(data);
-    // Linking.openURL(data)
-    //   .then(() => setScanned(true))
-    //   .catch((err) => {
-    //     setScanned(true);
-    //     alert('リンクを開く事ができませんでした。');
-    //   });
+    // console.log(data);
   };
 
   return (
@@ -39,8 +33,25 @@ export default function ComingCheckScreen() {
       {/* カメラアにクセスすることが許可されている場合 */}
       {hasPermission && (
         <BarCodeScanner
-          barCodeTypes={['qr']}
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+          onBarCodeScanned={(scannerResult) => {
+            if (!scanned) {
+              setScanned(true);
+              Alert.alert(
+                'スキャン結果',
+                scannerResult.data,
+                [
+                  {
+                    test: '閉じる',
+                    onPress: () => {
+                      setScanned(false);
+                      handleBarCodeScanned(scannerResult);
+                    },
+                  },
+                ],
+              );
+            }
+          }}
           style={StyleSheet.absoluteFillObject}
         />
       )}

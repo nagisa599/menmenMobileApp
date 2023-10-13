@@ -10,6 +10,7 @@ import Tab from '../components/Tab';
 import myLocalImage from '../../assets/profile.jpg';
 import StampCard from '../components/StampCard';
 import Loading from '../components/Loading';
+import Generator from '../components/Generator';
 
 export default function MypageScreen(props) {
   const { navigation } = props;
@@ -125,6 +126,7 @@ export default function MypageScreen(props) {
             <StampCard visited={userInfo.visited} />
           </View>
         </View>
+        <Generator />
         <View style={styles.titleContainer}>
           <Text style={styles.title}>称号</Text>
         </View>
