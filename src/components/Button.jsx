@@ -24,17 +24,17 @@ Button.defaultProps = {
 const styles = StyleSheet.create({
   buttonContainer: {
     backgroundColor: 'black',
-    borderRadius: 4,
-    alignSelf: 'flex-start', // 自分自身を並べる。左側に
+    borderRadius: 30,
+    // alignSelf: 'flex-start', // 自分自身を並べる。左側に
     marginBottom: 24,
-    height: 50,
-    width: '30%',
+    height: 60,
+    width: 350,
   },
   buttonLabel: {
-    fontSize: 16,
+    fontSize: 18,
     lineHeight: 32,
-    paddingHorizontal: 32,
-    paddingVertical: 8,
+    paddingHorizontal: 100,
+    paddingVertical: 15,
     color: '#ffffff',
   },
 });
