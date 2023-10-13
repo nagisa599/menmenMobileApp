@@ -14,6 +14,7 @@ import GoogleSingUppStack from './src/navigators/GoogleSingUpNavigation';
 import MainTabs from './src/navigators/TabScreen';
 import db from './firebaseConfig';
 import ComingCheckScreen from './src/screens/ComingCheckScreen';
+import Generator from './src/components/Generator';
 /* eslint-able */
 
 const Tab = createBottomTabNavigator();
@@ -98,6 +99,7 @@ export default function App() {
           <Stack.Navigator initialRouteName='MainTabs'>
             <Stack.Screen name='MainTabs' component={MainTabs} options={{ headerShown: false }} />
             <Stack.Screen name="ComingCheck" component={ComingCheckScreen} options={{ headerTitle: 'QRコード読み取り' }} />
+            <Stack.Screen name="Generator" component={Generator} option={{ headerTitle: 'QRコード生成' }} />
           </Stack.Navigator>
         </NavigationContainer>
       );

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Image, StyleSheet, Text, TextInput,
+  View, Image, StyleSheet, TextInput,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { func } from 'prop-types';
@@ -21,7 +21,7 @@ export default function GoogleLoginScreen(props) {
     try {
       await AsyncStorage.setItem('@user', JSON.stringify(user));
     } catch (error) {
-      console.error("Error saving user to AsyncStorage:", error);
+      console.error('Error saving user to AsyncStorage:', error);
     }
   };
 
@@ -67,12 +67,12 @@ export default function GoogleLoginScreen(props) {
           onChangeText={(text) => { setPassword(text); }}
           autoCapitalize="none"
           placeholder="パスワード"
-          secureTextEntry={true}
+          secureTextEntry
           textContentType="password"
         />
         <Button
           label="ログイン（新規登録）"
-          onPress={handlePress}
+          onPress={() => handlePress}
         />
       </View>
     </View>
