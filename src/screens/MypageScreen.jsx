@@ -57,9 +57,9 @@ export default function MypageScreen(props) {
 
             setUserInfo({
               userName: userData.name,
-              userID: userData.userId,
               userRamen: ramenName,
               userTopping: toppingName,
+              visited: userData.visited,
             });
           } else {
             console.log('ユーザー情報がない');
@@ -122,7 +122,7 @@ export default function MypageScreen(props) {
         <View style={styles.titleContainer}>
           <Text style={styles.title}>スタンプカード</Text>
           <View style={styles.stamp}>
-            <StampCard />
+            <StampCard visited={userInfo.visited} />
           </View>
         </View>
         <View style={styles.titleContainer}>

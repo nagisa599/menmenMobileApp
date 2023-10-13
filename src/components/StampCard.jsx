@@ -1,9 +1,13 @@
+import { useNavigation } from '@react-navigation/native';
+import { bool } from 'prop-types';
 import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
 } from 'react-native';
 
-export default function StampCard() {
+export default function StampCard(props) {
+  const { visited } = props;
+  const navigation = useNavigation();
   const totalStamps = 10;
   // スタンプの日付を保存するためのステート
   const [stamps, setStamps] = useState(Array(totalStamps).fill(null));
@@ -33,12 +37,20 @@ export default function StampCard() {
           </View>
         ))}
       </View>
-      <TouchableOpacity onPress={activateStamp} style={styles.button}>
-        <Text style={styles.buttonText}>Stamp!</Text>
+      <TouchableOpacity
+        onPress={() => { navigation.navigate('ComingCheck'); }}
+        style={[styles.button, visited ? styles.buttonDisabled : {}]}
+        disabled={visited}
+      >
+        <Text style={styles.buttonText}>来店記録をとる</Text>
       </TouchableOpacity>
     </View>
   );
 }
+
+StampCard.propTypes = {
+  visited: bool.isRequired,
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -70,5 +82,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
+  },
+  buttonDisabled: {
+    backgroundColor: 'lightgray', // 例: 無効なボタンの背景色を変更
   },
 });
