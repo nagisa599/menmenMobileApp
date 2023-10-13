@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Image, StyleSheet, TextInput,
+  View, Image, StyleSheet, Text, TextInput, ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { func } from 'prop-types';
@@ -8,6 +8,7 @@ import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 import AppleLoginButton from '../components/AppleLoginButton';
 import NotLoginButton from '../components/NotLoginButton';
+import KeyboardSafeView from '../components/KeyBoradAvoidingView';
 
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
 import Button from '../components/Button';
@@ -38,7 +39,8 @@ export default function GoogleLoginScreen(props) {
       });
   }
   return (
-    <View style={styles.container}>
+    <ScrollView>
+    <KeyboardSafeView style={styles.container}>
       <View style={styles.logoContainer}>
         <Image source={logoImage} style={styles.logo} />
       </View>
@@ -75,7 +77,8 @@ export default function GoogleLoginScreen(props) {
           onPress={() => handlePress}
         />
       </View>
-    </View>
+    </KeyboardSafeView>
+    </ScrollView>
   );
 }
 

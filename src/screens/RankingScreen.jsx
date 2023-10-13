@@ -1,13 +1,60 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View, StyleSheet, Text, ScrollView,
+  View, StyleSheet, Text, ScrollView, Alert,
 } from 'react-native';
-
+import {
+  getFirestore, getDocs, collection, query, orderBy,
+} from 'firebase/firestore';
 import Tab from '../components/Tab';
 import RankingList from '../components/RankingList';
 
 export default function RankingScreen(props) {
+  const [ranking, setRanking] = useState([]);
   const { navigation } = props;
+  // const checkLocalRanking = async () => {
+  //   try {
+  //     const rankingJSON = await AsyncStorage.getItem("@ranking");
+  //     const rankingData = rankingJSON ? JSON.parse(rankingJSON) : null;
+  //     setRanking(rankingData);
+  //     console.log(rankingData);
+  //   } catch (e) {
+  //     alert(e.message);
+  //   }
+  // };
+
+  const fetchRanking = async () => {
+    try {
+      const db = getFirestore();
+      const ref = query(collection(db, 'ranking'), orderBy('times', 'desc'));
+      const querySnapshot = await getDocs(ref);
+      const databaseRanking = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        databaseRanking.push({
+          name: data.name,
+          times: data.times,
+          updateTime: new Date(),
+        });
+      });
+      setRanking(databaseRanking);
+      console.log(databaseRanking);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('データの読み込みに失敗しました');
+    }
+  };
+  // const saveRankingToAsyncStorage = async (rankings) => {
+  //   try {
+  //     await AsyncStorage.setItem('@ranking', JSON.stringify(rankings));
+  //   } catch (error) {
+  //     console.error("Error saving user to AsyncStorage:", error);
+  //   }
+  // };
+  useEffect(() => {
+    fetchRanking();
+  // saveRankingToAsyncStorage(ranking)
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.shadowContainer}>
@@ -25,10 +72,15 @@ export default function RankingScreen(props) {
         </View>
       </View>
       <ScrollView style={styles.listContainer}>
-        <RankingList rank={1} times={30} />
-        <RankingList rank={2} times={24} />
-        <RankingList rank={3} times={20} />
-        <RankingList rank={4} times={19} />
+        {ranking.map((rankingComponent, index) => (
+          <View key={rankingComponent.name}>
+            <RankingList
+              rank={index + 1}
+              times={rankingComponent.times}
+              name={rankingComponent.name}
+            />
+          </View>
+        ))}
       </ScrollView>
     </View>
   );

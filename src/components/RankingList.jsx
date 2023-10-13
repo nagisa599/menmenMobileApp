@@ -1,18 +1,30 @@
 import React from 'react';
 import {
-  StyleSheet, TouchableOpacity, Text, View,
+  StyleSheet, TouchableOpacity, Text, View
 } from 'react-native';
-import { number } from 'prop-types';
+import { number, string } from 'prop-types';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export default function RankingList(props) {
-  const { rank, times } = props;
+  const { rank, times, name } = props;
+
+  let containerStyle = styles.container;
+  let rankStyle = styles.rank;
+
+  // ランキングが1位の場合にスタイルを変更
+  if (rank === 1) {
+    containerStyle = { ...styles.container };
+    rankStyle = { ...styles.rank, color: 'red' };
+  }
+
   return (
-    <TouchableOpacity style={styles.container}>
-      <Text style={styles.rank}>
+    <TouchableOpacity style={containerStyle}>
+      {rank === 1 && <FontAwesome5 name="crown" size={30} color="gold" style={styles.icon} />}
+      <Text style={rankStyle}>
         {`${rank} .`}
       </Text>
       <View style={styles.info}>
-        <Text style={styles.user}>ユーザー名</Text>
+        <Text style={styles.user}>{name}</Text>
         <Text style={styles.times}>
           {`${times} 回!`}
         </Text>
@@ -24,6 +36,7 @@ export default function RankingList(props) {
 RankingList.propTypes = {
   rank: number,
   times: number.isRequired,
+  name: string.isRequired,
 };
 
 RankingList.defaultProps = {

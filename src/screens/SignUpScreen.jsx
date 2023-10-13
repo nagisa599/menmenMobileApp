@@ -89,8 +89,8 @@ export default function SignUpScreen(props) {
         ramen,
         topping,
         createdAt,
+        times: [],
         visited: false,
-        times: 0,
       });
 
       await setDoc(doc(db, `username/${name}`), {

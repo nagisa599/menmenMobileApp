@@ -1,5 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image } from 'react-native';
+import {
+  View, StyleSheet, Text, Image,
+} from 'react-native';
 import Tab from '../components/Tab';
 
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
@@ -21,7 +23,9 @@ export default function InquiryScreen(props) {
       </View>
       <View style={styles.contentContainer}>
         <Text style={styles.title}>お問い合わせ</Text>
-        <Text style={styles.description}>お問い合わせ内容についてお知らせください。お手続きに関するご質問やお困りごとがあれば、お気軽にご連絡ください。</Text>
+        <Text style={styles.description}>
+          お問い合わせ内容についてお知らせください。お手続きに関するご質問やお困りごとがあれば、お気軽にご連絡ください。
+        </Text>
         <Text style={styles.contactInfo}>Twitter: @example_twitter</Text>
         <Text style={styles.contactInfo}>電話番号: 012-345-6789</Text>
         <Text style={styles.contactInfo}>メール: info@example.com</Text>
@@ -38,7 +42,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: 150,
-    paddingTop: 150,
+    paddingTop: 100,
   },
   logo: {
     width: 200, // ロゴ画像の幅

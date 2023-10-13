@@ -1,11 +1,34 @@
-import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-
+import React, { useEffect, useState } from 'react';
+import {
+  View, StyleSheet, Text, Alert,
+} from 'react-native';
+import {
+  getFirestore, getDoc, doc,
+} from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import Tab from '../components/Tab';
 import CircleTitle from '../components/CircleTitle';
 
 export default function TitleScreen(props) {
   const { navigation } = props;
+  const [title, setTitle] = useState(1);
+  const setTitleImage = async () => {
+    try {
+      const db = getFirestore();
+      const auth = getAuth();
+      const user = auth.currentUser;
+      const ref = doc(db, `users/${user.uid}/`);
+      const docSnap = await getDoc(ref);
+      const myTimes = docSnap.data().times.length;
+      setTitle(myTimes);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('データの読み込みに失敗しました');
+    }
+  };
+  useEffect(() => {
+    setTitleImage();
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
@@ -21,9 +44,7 @@ export default function TitleScreen(props) {
         <View style={styles.firstTextContainer}>
           <Text style={styles.firstText}>あなたの称号は・・・</Text>
         </View>
-        <View style={styles.circle}>
-          <CircleTitle content="ちょいラーメン好き" />
-        </View>
+        <CircleTitle title={13} />
         <View style={styles.lastTextContainer}>
           <Text style={styles.lastText}>です！</Text>
         </View>
@@ -45,7 +66,7 @@ const styles = StyleSheet.create({
     paddingLeft: 30,
   },
   firstText: {
-    fontSize: 30,
+    fontSize: 40,
   },
   circle: {
     alignItems: 'center',
@@ -57,6 +78,6 @@ const styles = StyleSheet.create({
     paddingRight: 30,
   },
   lastText: {
-    fontSize: 30,
+    fontSize: 40,
   },
 });

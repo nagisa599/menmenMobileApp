@@ -1,11 +1,11 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Text } from 'react-native';
-import { string } from 'prop-types';
+import { func, string } from 'prop-types';
 
 export default function SettingItem(props) {
-  const { content } = props;
+  const { content, onPress } = props;
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <Text style={styles.content}>{content}</Text>
     </TouchableOpacity>
   );
@@ -13,6 +13,7 @@ export default function SettingItem(props) {
 
 SettingItem.propTypes = {
   content: string.isRequired,
+  onPress: func.isRequired,
 };
 
 const styles = StyleSheet.create({
