@@ -69,12 +69,12 @@ export default function GoogleLoginScreen(props) {
           onChangeText={(text) => { setPassword(text); }}
           autoCapitalize="none"
           placeholder="パスワード"
-          secureTextEntry={true}
+          secureTextEntry
           textContentType="password"
         />
         <Button
           label="ログイン（新規登録）"
-          onPress={handlePress}
+          onPress={() => handlePress}
         />
       </View>
     </KeyboardSafeView>

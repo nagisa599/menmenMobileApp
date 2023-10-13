@@ -7,7 +7,7 @@ import { PropTypes } from 'prop-types';
 function EmailPasswordForm({ onSubmit }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-z  const handleLogin = () => {
+  const handleLogin = () => {
     // メールアドレスとパスワードを使ってログインの処理を行う
     onSubmit(email, password);
   };
@@ -26,7 +26,7 @@ z  const handleLogin = () => {
         <TextInput
           style={styles.input}
           placeholder="パスワード"
-          secureTextEntry={true}
+          secureTextEntry
           onChangeText={setPassword}
           value={password}
         />
@@ -34,7 +34,7 @@ z  const handleLogin = () => {
       <Button title="ログイン" onPress={handleLogin} />
     </View>
   );
-};
+}
 
 EmailPasswordForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,

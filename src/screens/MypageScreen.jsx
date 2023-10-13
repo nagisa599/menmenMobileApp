@@ -10,6 +10,7 @@ import Tab from '../components/Tab';
 import myLocalImage from '../../assets/profile.jpg';
 import StampCard from '../components/StampCard';
 import Loading from '../components/Loading';
+import Generator from '../components/Generator';
 
 export default function MypageScreen(props) {
   const { navigation } = props;
@@ -57,9 +58,9 @@ export default function MypageScreen(props) {
 
             setUserInfo({
               userName: userData.name,
-              userID: userData.userId,
               userRamen: ramenName,
               userTopping: toppingName,
+              visited: userData.visited,
             });
           } else {
             console.log('ユーザー情報がない');
@@ -122,9 +123,10 @@ export default function MypageScreen(props) {
         <View style={styles.titleContainer}>
           <Text style={styles.title}>スタンプカード</Text>
           <View style={styles.stamp}>
-            <StampCard />
+            <StampCard visited={userInfo.visited} />
           </View>
         </View>
+        {/* <Generator /> */}
         <View style={styles.titleContainer}>
           <Text style={styles.title}>称号</Text>
         </View>
