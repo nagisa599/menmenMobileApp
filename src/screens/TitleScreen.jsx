@@ -22,7 +22,6 @@ export default function TitleScreen(props) {
       const myTimes = docSnap.data().times.length;
       setTitle(myTimes);
     } catch (error) {
-      console.error(error);
       Alert.alert('データの読み込みに失敗しました');
     }
   };

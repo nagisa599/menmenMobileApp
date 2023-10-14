@@ -9,7 +9,6 @@ import {
 export default function DropdownSelect(props) {
   const { contentItems, setChange, previous } = props;
   const [selectedValue, setSelectedValue] = useState(previous);
-  console.log(selectedValue);
   const [modalVisible, setModalVisible] = useState(false);
 
   const onChange = (value) => {

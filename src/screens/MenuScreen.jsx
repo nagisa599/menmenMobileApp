@@ -7,8 +7,6 @@ import {
 import RNFS from 'react-native-fs';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import Menu from '../components/Menu';
-// import LimitMenu from '../components/LimitMenu';
-// import Topping from '../components/Topping';
 import Tab from '../components/Tab';
 import SmallTab from '../components/SmallTab';
 import LoadingScreen from './LoadingScreen';

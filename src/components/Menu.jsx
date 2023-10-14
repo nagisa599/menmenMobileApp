@@ -8,7 +8,6 @@ import {
 
 export default function Menu(props) {
   const { menus } = props;
-  console.log(menus);
 
   function renderStars(favoriteCount) {
     return Array(favoriteCount).fill('⭐️').join('');
@@ -19,7 +18,7 @@ export default function Menu(props) {
     displayMenus.push({ id: 'dummy', isDummy: true });
   }
 
-  const renderItem = ({ item, index }) => {
+  const renderItem = ({ item }) => {
     if (item.isDummy) {
       return (
         <View style={{
