@@ -9,7 +9,6 @@ import logoImage5 from '../../assets/FIVE.png';
 
 export default function CircleTitle(props) {
   const { title } = props;
-  console.log(title);
   if (title === 0) {
     return (
       <View style={styles.header}>

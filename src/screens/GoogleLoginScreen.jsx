@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Image, StyleSheet, Text, TextInput, ScrollView,
+  View, Image, StyleSheet, TextInput, ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { func } from 'prop-types';
@@ -40,50 +40,50 @@ export default function GoogleLoginScreen(props) {
   }
   function notLogin() {
     const user = {
-      name:'notLogin'
+      name: 'notLogin',
     };
     setUserInfo(user);
   }
   return (
     <ScrollView>
-    <KeyboardSafeView style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Image source={logoImage} style={styles.logo} />
-      </View>
-      <View style={styles.googleButton}>
-        <GoogleLoginButton onPress={() => promptAsync()} />
-      </View>
-      <View style={styles.button}>
-        <AppleLoginButton onPress={() => promptAsync()} />
-      </View>
-      <View style={styles.marginBottom}>
-        <NotLoginButton onPress={() => notLogin()} />
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={(text) => { setEmail(text); }}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          placeholder="メールアドレス"
-          textContentType="emailAddress"
-        />
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={(text) => { setPassword(text); }}
-          autoCapitalize="none"
-          placeholder="パスワード"
-          secureTextEntry={true}
-          textContentType="password"
-        />
-        <Button
-          label="ログイン（新規登録）"
-          onPress={() => handlePress()}
-        />
-      </View>
-    </KeyboardSafeView>
+      <KeyboardSafeView style={styles.container}>
+        <View style={styles.logoContainer}>
+          <Image source={logoImage} style={styles.logo} />
+        </View>
+        <View style={styles.googleButton}>
+          <GoogleLoginButton onPress={() => promptAsync()} />
+        </View>
+        <View style={styles.button}>
+          <AppleLoginButton onPress={() => promptAsync()} />
+        </View>
+        <View style={styles.marginBottom}>
+          <NotLoginButton onPress={() => notLogin()} />
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={(text) => { setEmail(text); }}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            placeholder="メールアドレス"
+            textContentType="emailAddress"
+          />
+          <TextInput
+            style={styles.input}
+            value={password}
+            onChangeText={(text) => { setPassword(text); }}
+            autoCapitalize="none"
+            placeholder="パスワード"
+            secureTextEntry
+            textContentType="password"
+          />
+          <Button
+            label="ログイン（新規登録）"
+            onPress={() => handlePress()}
+          />
+        </View>
+      </KeyboardSafeView>
     </ScrollView>
   );
 }
