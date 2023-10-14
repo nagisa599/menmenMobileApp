@@ -17,6 +17,7 @@ export default function MypageScreen(props) {
   const [isImageLoaded, setImageLoaded] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [isLoading, setLoading] = useState(false);
+  const [visited, setVisited] = useState(true);
 
   const ChangeIDtoName = async (id) => {
     const db = getFirestore();
@@ -60,8 +61,8 @@ export default function MypageScreen(props) {
               userName: userData.name,
               userRamen: ramenName,
               userTopping: toppingName,
-              visited: userData.visited,
             });
+            setVisited(userData.visited);
           } else {
             console.log('ユーザー情報がない');
           }
@@ -79,6 +80,9 @@ export default function MypageScreen(props) {
       unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+  }, [visited]);
 
   return (
     <View style={styles.container}>
@@ -123,10 +127,10 @@ export default function MypageScreen(props) {
         <View style={styles.titleContainer}>
           <Text style={styles.title}>スタンプカード</Text>
           <View style={styles.stamp}>
-            <StampCard visited={userInfo.visited} />
+            <StampCard visited={visited} setVisited={setVisited} />
           </View>
         </View>
-        {/* <Generator /> */}
+        <Generator />
         <View style={styles.titleContainer}>
           <Text style={styles.title}>称号</Text>
         </View>
