@@ -38,6 +38,18 @@ export default function MypageScreen(props) {
     return null;
   };
 
+  function convertFirestoreTimestampToDate(timestamp) {
+    const milliseconds = (timestamp.seconds * 1000) + (timestamp.nanoseconds / 1000000);
+    return new Date(milliseconds);
+  }
+
+  function formatDateToYYYYMMDD(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   useEffect(() => {
     const auth = getAuth();
     const db = getFirestore();
@@ -57,12 +69,27 @@ export default function MypageScreen(props) {
             const ramenName = await ChangeIDtoName(userData.ramen);
             const toppingName = await ChangeIDtoName(userData.topping);
 
+            let lastVisitDate = null;
+
+            if (userData.times && userData.times.length > 0) {
+              lastVisitDate = userData.times[userData.times.length - 1];
+              lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
+              lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
+            }
+
+            const today = formatDateToYYYYMMDD(new Date());
+
+            if (lastVisitDate === today) {
+              setVisited(true);
+            } else {
+              setVisited(false);
+            }
+
             setUserInfo({
               userName: userData.name,
               userRamen: ramenName,
               userTopping: toppingName,
             });
-            setVisited(userData.visited);
           } else {
             console.log('ユーザー情報がない');
           }
