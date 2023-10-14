@@ -11,17 +11,10 @@ export default function StampCard(props) {
   const { visited, setVisited, userVisited } = props;
   const navigation = useNavigation();
   const totalStamps = 10;
-  const [stamps, setStamps] = useState(Array(totalStamps).fill(null));
+  const maxPages = Math.ceil(userVisited.length / totalStamps);
+  // const initialStampsSize = Math.max(userVisited.length, totalStamps);
+  const [stamps, setStamps] = useState(Array(totalStamps * maxPages).fill(null));
   const [currentPage, setCurrentPage] = useState(0); // 現在のページ番号
-
-  // const activateStamp = () => {
-  //   const index = stamps.findIndex((stamp) => !stamp);
-  //   if (index !== -1) {
-  //     const newStamps = [...stamps];
-  //     newStamps[index] = new Date().toLocaleDateString();
-  //     setStamps(newStamps);
-  //   }
-  // };
 
   const activateStamp = (date) => {
     const index = stamps.findIndex((stamp) => !stamp);
@@ -33,6 +26,13 @@ export default function StampCard(props) {
   };
 
   useEffect(() => {
+    const requiredStampsSize = Math.max(userVisited.length, totalStamps);
+    if (stamps.length < requiredStampsSize) {
+      setStamps(
+        (prevStamps) => [...prevStamps, ...Array(requiredStampsSize - prevStamps.length)
+          .fill(null)],
+      );
+    }
     // すでにアクティベートされたスタンプを考慮して、新しいスタンプの配列を生成
     const newStamps = [...stamps];
     userVisited.forEach((date) => {
