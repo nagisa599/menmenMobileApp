@@ -24,7 +24,13 @@ export default function SettingScreen(props) {
         />
       </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <SettingItem content="ユーザー情報の変更" style={styles.item} />
+        <SettingItem
+          content="ユーザー情報の変更"
+          style={styles.item}
+          onPress={() => {
+            navigation.navigate('EditUserInfoScreen');
+          }}
+        />
         <SettingItem content="アンケートへの回答" style={styles.item} />
         <SettingItem
           content="お問い合わせ"

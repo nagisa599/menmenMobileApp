@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, TouchableOpacity, Text, View
+  StyleSheet, TouchableOpacity, Text, View,
 } from 'react-native';
 import { number, string } from 'prop-types';
 import { FontAwesome5 } from '@expo/vector-icons';

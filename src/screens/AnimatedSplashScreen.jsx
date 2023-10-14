@@ -5,7 +5,6 @@ import {
 import { func } from 'prop-types';
 import logo from '../../assets/menmen-logo.png';
 
-
 function AnimatedSplashScreen(props) {
   const { setSplashVisible } = props;
   const [animation] = useState(new Animated.Value(0));
@@ -61,7 +60,8 @@ function AnimatedSplashScreen(props) {
       </Animated.Text>
     </TouchableOpacity>
   );
-};
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -102,11 +102,13 @@ export default function App() {
       return (
         <userInfoContext.Provider value = {{userInfo,setUserInfo}} >
         <NavigationContainer>
+        {isSplashVisible ? <AnimatedSplashScreen setSplashVisible={setSplashVisible}/>:
           <Stack.Navigator initialRouteName='MainTabs'>
             <Stack.Screen name='MainTabs' component={MainTabs} options={{ headerShown: false }}  />
             <Stack.Screen name="ComingCheck" component={ComingCheckScreen} options={{ headerTitle: 'QRコード読み取り' }} />
             <Stack.Screen name="Generator" component={Generator} option={{ headerTitle: 'QRコード生成' }} />
           </Stack.Navigator>
+        }  
         </NavigationContainer>
         </userInfoContext.Provider>
       );
