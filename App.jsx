@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 // eslint-disable-next-line import/no-unresolved
@@ -21,6 +21,8 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 WebBrowser.maybeCompleteAuthSession(); 
+export const userInfoContext = createContext();
+
 export default function App() {
   const auth = getAuth();
   const [userInfo, setUserInfo] = useState();
@@ -95,13 +97,15 @@ export default function App() {
       );
     } else {
       return (
+        <userInfoContext.Provider value = {{userInfo,setUserInfo}} >
         <NavigationContainer>
           <Stack.Navigator initialRouteName='MainTabs'>
-            <Stack.Screen name='MainTabs' component={MainTabs} options={{ headerShown: false }} />
+            <Stack.Screen name='MainTabs' component={MainTabs} options={{ headerShown: false }}  />
             <Stack.Screen name="ComingCheck" component={ComingCheckScreen} options={{ headerTitle: 'QRコード読み取り' }} />
             <Stack.Screen name="Generator" component={Generator} option={{ headerTitle: 'QRコード生成' }} />
           </Stack.Navigator>
         </NavigationContainer>
+        </userInfoContext.Provider>
       );
     }
   } else {

@@ -38,6 +38,12 @@ export default function GoogleLoginScreen(props) {
         console.log(error.code, error.message);
       });
   }
+  function notLogin() {
+    const user = {
+      name:'notLogin'
+    };
+    setUserInfo(user);
+  }
   return (
     <ScrollView>
     <KeyboardSafeView style={styles.container}>
@@ -51,7 +57,7 @@ export default function GoogleLoginScreen(props) {
         <AppleLoginButton onPress={() => promptAsync()} />
       </View>
       <View style={styles.marginBottom}>
-        <NotLoginButton onPress={() => promptAsync()} />
+        <NotLoginButton onPress={() => notLogin()} />
       </View>
       <View style={styles.inputContainer}>
         <TextInput
