@@ -44,7 +44,7 @@ export default function TitleScreen(props) {
         <View style={styles.firstTextContainer}>
           <Text style={styles.firstText}>あなたの称号は・・・</Text>
         </View>
-        <CircleTitle title={13} />
+        <CircleTitle title={title} />
         <View style={styles.lastTextContainer}>
           <Text style={styles.lastText}>です！</Text>
         </View>
