@@ -7,45 +7,56 @@ import {
   arrayOf, shape, string, number, bool,
 } from 'prop-types';
 
-export default function LimitMenu(props) {
+export default function Topping(props) {
   const storage = getStorage();
   const { menus } = props;
   const [imageUrls, setImageUrls] = useState([]);
+
+  useEffect(() => {
+    const fetchMenuImages = async () => {
+      const menuImagesPromises = menus.map(async (menu) => {
+        const imageRef = ref(storage, menu.imageURL);
+        try {
+          const url = await getDownloadURL(imageRef);
+          return url;
+        } catch (error) {
+          console.error('Error getting download URL: ', error);
+          return null;
+        }
+      });
+
+      // すべての非同期処理が完了した後に実行
+      Promise.all(menuImagesPromises)
+        .then((urls) => {
+          setImageUrls(urls.filter((url) => url !== null));
+        })
+        .catch((error) => {
+          console.error('Error fetching menu images: ', error);
+        });
+    };
+
+    fetchMenuImages();
+  }, []);
 
   function renderStars(favoriteCount) {
     return Array(favoriteCount).fill('⭐️').join('');
   }
 
-  const displayMenus = [...menus];
-  if (menus.length % 2 !== 0) {
-    displayMenus.push({ id: 'dummy', isDummy: true });
-  }
-
-  const renderItem = ({ item, index }) => {
-    if (item.isDummy) {
-      return (
-        <View style={{
-          width: '40%', margin: 10, padding: 10, marginLeft: 25,
-        }}
-        />
-      );
-    }
-    return (
-      <View style={[styles.menuBox, item.today ? { backgroundColor: 'lightcoral' } : {}]}>
-        <Image source={{ uri: imageUrls[index] }} style={styles.menuPicture} />
-        <View style={styles.info}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.price}>{`¥${item.price}`}</Text>
-          <Text style={styles.item}>{item.student ? '学割対象' : '学割対象外'}</Text>
-          <Text style={styles.item}>{`人気度: ${renderStars(item.favorite)}`}</Text>
-        </View>
+  const renderItem = ({ item, index }) => (
+    <View style={[styles.menuBox, item.today ? { backgroundColor: 'lightcoral' } : {}]}>
+      <Image source={{ uri: imageUrls[index] }} style={styles.menuPicture} />
+      <View style={styles.info}>
+        <Text style={styles.name}>{item.name}</Text>
+        <Text style={styles.price}>{`¥${item.price}`}</Text>
+        <Text style={styles.item}>{item.student ? '学割対象' : '学割対象外'}</Text>
+        <Text style={styles.item}>{`人気度: ${renderStars(item.favorite)}`}</Text>
       </View>
-    );
-  };
+    </View>
+  );
 
   return (
     <FlatList
-      data={displayMenus}
+      data={menus}
       renderItem={renderItem}
       keyExtractor={(menu) => menu.id}
       numColumns={2} // 2列で表示
@@ -54,7 +65,7 @@ export default function LimitMenu(props) {
   );
 }
 
-LimitMenu.propTypes = {
+Topping.propTypes = {
   menus: arrayOf(
     shape({
       id: string,

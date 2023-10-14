@@ -8,28 +8,47 @@ import {
 
 export default function Menu(props) {
   const { menus } = props;
+  console.log(menus);
 
   function renderStars(favoriteCount) {
     return Array(favoriteCount).fill('⭐️').join('');
   }
 
-  const renderItem = ({ item }) => (
-    <View key={item.id} style={styles.menuBox}>
-      <Image source={item.image} style={styles.menuPicture} />
-      <View style={styles.info}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.price}>{`¥${item.price}`}</Text>
-        <Text style={styles.item}>{item.student ? '学割対象' : '学割対象外'}</Text>
-        <Text style={styles.item}>{`人気度: ${renderStars(item.favorite)}`}</Text>
+  const displayMenus = [...menus];
+  if (menus.length % 2 !== 0) {
+    displayMenus.push({ id: 'dummy', isDummy: true });
+  }
+
+  const renderItem = ({ item, index }) => {
+    if (item.isDummy) {
+      return (
+        <View style={{
+          width: '40%', margin: 10, padding: 10, marginLeft: 25,
+        }}
+        />
+      );
+    }
+    return (
+      <View style={[styles.menuBox, item.today ? { backgroundColor: 'lightcoral' } : {}]}>
+        <Image
+          source={typeof item.imageURL === 'number' ? item.imageURL : { uri: `file://${item.imageURL}` }}
+          style={styles.menuPicture}
+        />
+        <View style={styles.info}>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.price}>{`¥${item.price}`}</Text>
+          <Text style={styles.item}>{item.student ? '学割対象' : '学割対象外'}</Text>
+          <Text style={styles.item}>{`人気度: ${renderStars(item.favorite)}`}</Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <FlatList
-      data={menus}
+      data={displayMenus}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(menu) => menu.id}
       numColumns={2} // 2列で表示
       contentContainerStyle={styles.container}
     />
@@ -40,7 +59,7 @@ Menu.propTypes = {
   menus: arrayOf(shape({
     id: string,
     name: string,
-    image: string,
+    image: number,
     price: number,
     student: bool,
     favorite: number,
@@ -87,10 +106,10 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 12,
-    color: '#888',
+    color: 'black',
   },
   item: {
     fontSize: 12,
-    color: '#888',
+    color: 'black',
   },
 });
