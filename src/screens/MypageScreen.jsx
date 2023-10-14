@@ -91,7 +91,6 @@ export default function MypageScreen(props) {
               const date = convertFirestoreTimestampToDate(data);
               return formatDateToYYYYMMDD(date);
             });
-            console.log(formattedDates);
 
             setUserInfo({
               userName: userData.name,

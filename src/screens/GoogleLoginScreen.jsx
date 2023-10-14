@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   input: {
-    fontsize: 16,
+    fontSize: 16,
     height: 60,
     borderColor: '#DDDDDD',
     borderWidth: 1,
