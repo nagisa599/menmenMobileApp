@@ -73,7 +73,6 @@ export default function App() {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const providerData = user.providerData;
-        console.log(providerDate);
         const isGoogleUser = providerData.some(data => data.providerId === 'google.com');
 
         if (!isGoogleUser) {
