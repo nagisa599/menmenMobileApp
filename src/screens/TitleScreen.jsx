@@ -11,7 +11,7 @@ import CircleTitle from '../components/CircleTitle';
 
 export default function TitleScreen(props) {
   const { navigation } = props;
-  const [title, setTitle] = useState(1);
+  const [title, setTitle] = useState(0);
   const setTitleImage = async () => {
     try {
       const db = getFirestore();

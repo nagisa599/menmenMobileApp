@@ -28,7 +28,7 @@ export default function Menu(props) {
       );
     }
     return (
-      <View style={[styles.menuBox, item.today ? { backgroundColor: 'lightcoral' } : {}]}>
+      <View style={[styles.menuBox, item.today ? { backgroundColor: 'lightcoral' } : { backgroundColor: '#C0C0C0' }]}>
         <Image
           source={typeof item.imageURL === 'number' ? item.imageURL : { uri: `file://${item.imageURL}` }}
           style={styles.menuPicture}
@@ -67,9 +67,7 @@ Menu.propTypes = {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
-    paddingVertical: 0,
   },
   menuBox: {
     margin: 10,
