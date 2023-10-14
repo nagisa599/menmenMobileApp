@@ -11,8 +11,7 @@ export default function StampCard(props) {
   const { visited, setVisited, userVisited } = props;
   const navigation = useNavigation();
   const totalStamps = 10;
-  const maxPages = Math.ceil(userVisited.length / totalStamps);
-  // const initialStampsSize = Math.max(userVisited.length, totalStamps);
+  const maxPages = userVisited.length === 0 ? 1 : Math.ceil(userVisited.length / totalStamps);
   const [stamps, setStamps] = useState(Array(totalStamps * maxPages).fill(null));
   const [currentPage, setCurrentPage] = useState(0); // 現在のページ番号
 

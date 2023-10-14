@@ -6,7 +6,8 @@ import {
   getFirestore, getDocs, collection, query, where, getDoc, doc,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { userInfoContext } from '../../App';
+// import { userInfoContext } from '../../App';
+import userInfoContext from '../utils/UserInfoContext';
 import CouponItem from '../components/CouponItem';
 import FilterItem from '../components/FilterItem';
 
@@ -66,7 +67,6 @@ export default function CouponScreen() {
   };
 
   const couponFilter = () => {
-    const auth = getAuth();
     const user = auth.currentUser;
     const db = getFirestore();
     const today = new Date();
