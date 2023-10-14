@@ -15,6 +15,7 @@ import MainTabs from './src/navigators/TabScreen';
 import db from './firebaseConfig';
 import ComingCheckScreen from './src/screens/ComingCheckScreen';
 import Generator from './src/components/Generator';
+import AnimatedSplashScreen from './src/screens/AnimatedSplashScreen';
 /* eslint-able */
 
 const Tab = createBottomTabNavigator();
@@ -24,6 +25,8 @@ WebBrowser.maybeCompleteAuthSession();
 export const userInfoContext = createContext();
 
 export default function App() {
+  const [isSplashVisible, setSplashVisible] = useState(true);
+
   const auth = getAuth();
   const [userInfo, setUserInfo] = useState();
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -67,6 +70,7 @@ export default function App() {
   }, [response]);
 
   useEffect(() => {
+
     const fetchData = async () => {
         await checkLocalUser();
     };
@@ -110,7 +114,7 @@ export default function App() {
   } else {
     return (
       <NavigationContainer>
-        <GoogleSingUppStack promptAsync={promptAsync} setUserInfo={setUserInfo}/>
+         {isSplashVisible ? <AnimatedSplashScreen setSplashVisible={setSplashVisible}/> :  <GoogleSingUppStack promptAsync={promptAsync} setUserInfo={setUserInfo}/>}
       </NavigationContainer>
     );
   }
