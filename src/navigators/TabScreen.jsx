@@ -2,9 +2,9 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import commonHeaderOptions from '../styles/NavigationHeaderStyles';
 import MenuStack from './MenuNavigator';
-import CouponScreen from '../screens/CouponScreen';
 import RankingStack from './RankingNavigator';
 import FriendScreen from '../screens/FriendScreen';
+import CouponScreen from '../screens/CouponScreen';
 import MypageStack from './MypageNavigator';
 import getTabBarIcon from '../components/FooterTab';
 

@@ -1,19 +1,18 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity,
   Alert, TouchableWithoutFeedback, Keyboard,
 } from 'react-native';
-import { func, shape } from 'prop-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 import db from '../../firebaseConfig';
-import BirthdayInput from '../components/BirthdayInput';
+
 import DropdownSelect from '../components/DropdownSelect';
 import Tab from '../components/Tab';
-import { userInfoContext } from '../../App';
+import userInfoContext from '../utils/UserInfoContext';
 
 // ramenコレクションの情報に置き換える
 const ramenItem = [
@@ -44,6 +43,7 @@ export default function EditUserInfoScreen(props) {
   const [topping, setTopping] = useState(0);
   const [createdAt, setCreatedAt] = useState(new Date());
   const [isUnique, setIsUnique] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const isUsernameUnique = async (username) => {
     const userRef = doc(db, `username/${username}`);
@@ -108,14 +108,42 @@ export default function EditUserInfoScreen(props) {
         topping,
         createdAt,
       };
-
       await AsyncStorage.setItem('@user', JSON.stringify(combinedUserData));
       setUserInfo(combinedUserData);
+      Alert.alert(
+        '変更完了',
+        '',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.navigate('SettingScreen');
+            },
+          },
+        ],
+      );
     } catch (error) {
       Alert.alert(error.message);
     }
   };
-  //const fetchUserData = async () => {
+  const fetchUserData = async () => {
+    try {
+      setIsLoading(true);
+      const ref = doc(db, `users/${userInfo.uid}/`);
+      const docSnap = await getDoc(ref);
+      const userData = docSnap.data();
+      setName(userData.name);
+      setBirthDay(userData.birthday);
+      setRamen(userData.ramen);
+      setTopping(userData.topping);
+      setIsLoading(false);
+    } catch {
+      Alert.alert('ユーザの情報が得られませんでした。');
+    }
+  };
+  useEffect(() => {
+    fetchUserData();
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
@@ -177,31 +205,37 @@ export default function EditUserInfoScreen(props) {
                   textContentType="username"
                 />
               </View>
-              <View style={styles.itemContainer}>
-                <Text style={styles.item}>
-                  誕生日
-                  <Text style={styles.star}>＊</Text>
-                </Text>
-                <BirthdayInput onDateChange={setBirthDay} />
-              </View>
-              <View style={styles.itemContainer}>
-                <Text style={styles.item}>お気に入りラーメン</Text>
-                <View style={styles.dropdownContainer}>
-                  <DropdownSelect contentItems={ramenItem} setChange={setRamen} />
+              {!isLoading && (
+                <View style={styles.itemContainer}>
+                  <Text style={styles.item}>お気に入りラーメン</Text>
+                  <View style={styles.dropdownContainer}>
+                    <DropdownSelect
+                      contentItems={ramenItem}
+                      setChange={setRamen}
+                      previous={ramen}
+                    />
+                  </View>
                 </View>
-              </View>
-              <View style={styles.itemContainer}>
-                <Text style={styles.item}>お気に入りトッピング</Text>
-                <View style={styles.dropdownContainer}>
-                  <DropdownSelect contentItems={toppingItem} setChange={setTopping} />
+              )}
+              {!isLoading && (
+                <View style={styles.itemContainer}>
+                  <Text style={styles.item}>お気に入りトッピング</Text>
+                  <View style={styles.dropdownContainer}>
+                    <DropdownSelect
+                      contentItems={toppingItem}
+                      setChange={setTopping}
+                      previous={topping}
+                    />
+                  </View>
                 </View>
-              </View>
+              )}
               <View style={styles.buttonContainer}>
                 <TouchableOpacity
                   style={styles.registerButton}
                   onPress={() => handleRegister(userInfo)}
                 >
-                  <Text style={styles.buttonText}>登録</Text>
+
+                  <Text style={styles.buttonText}>変更</Text>
                 </TouchableOpacity>
               </View>
             </View>

@@ -1,5 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import {
+  View, StyleSheet, ScrollView, Text,
+} from 'react-native';
 import Tab from '../components/Tab';
 
 export default function TermsOfUseScreen(props) {

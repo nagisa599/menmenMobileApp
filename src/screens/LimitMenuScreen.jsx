@@ -8,14 +8,13 @@ import {
 
 import Tab from '../components/Tab';
 import Menu from '../components/Menu';
-import MenuTab from '../components/MenuTab';
 import LimitMenu from '../components/LimitMenu';
 import LoadingScreen from './LoadingScreen';
 
 const hiyashityuka = require('../../assets/hiyashityuka.jpg');
 const kakuni = require('../../assets/kakuni.jpg');
 
-export default function MenuScreen(props) {
+export default function LimitMenuScreen(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [regularmenus, setRegularMenu] = useState([]);
   const [limitemenus, setlimitmenus] = useState([]);
@@ -57,18 +56,15 @@ export default function MenuScreen(props) {
         });
         setlimitmenus(limitTimeMenu);
         console.log(limitTimeMenu);
-        // etIsLoading(false);
+        //setIsLoading(false);
       } catch (error) {
         console.error(error);
         Alert.alert('データの読み込みに失敗しました');
         // setIsLoading(false);
       }
     };
-    setTimeout(() => {
-      setIsLoading(false); // ローディング終了
-    }, 3000); // 3秒後にローディング終了（実際の非同期処理の完了を模倣）
     fetchLimitTimeMenu(); // 非同期関数を即座に呼び出す
-    // setIsLoading(false);
+    setIsLoading(false);
   }, []);
   const { navigation } = props;
   if (isLoading) {
@@ -86,13 +82,13 @@ export default function MenuScreen(props) {
           }}
         />
       </View>
-      <View style={styles.tabMenuContainer}>
-        <MenuTab label="メニュー" onPress={() => {}} active />
-        <MenuTab
+      <View style={styles.tabContainer}>
+        <Tab label="メニュー" onPress={() => { navigation.navigate('MenuScreen'); }} />
+        <Tab
           label="期間限定メニュー"
           onPress={() => {
-            navigation.navigate('LimitMenuScreen');
           }}
+          active
         />
       </View>
       <ScrollView>
@@ -111,20 +107,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 30,
-    backgroundColor: 'rgb(242, 242, 242)',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.10,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  tabMenuContainer: {
-    flexDirection: 'row',
-    justifyContent: 'start',
-    paddingLeft: 30,
     backgroundColor: 'rgb(242, 242, 242)',
     shadowColor: '#000',
     shadowOffset: {
