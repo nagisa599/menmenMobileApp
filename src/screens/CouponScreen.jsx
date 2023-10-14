@@ -55,13 +55,10 @@ export default function CouponScreen() {
             used: doc2.data().used,
             expireDate: doc2.data().expire.toDate(),
           });
-        } else {
-          console.log('読み込みデータなし');
         }
       }));
       setcoupons(mycoupons);
     } catch (error) {
-      console.error(error);
       Alert.alert('データの読み込みに失敗しました');
     }
   };

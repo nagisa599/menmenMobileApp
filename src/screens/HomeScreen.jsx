@@ -1,9 +1,11 @@
 import React from 'react';
 import {
-  View, StyleSheet, Text, ScrollView,
+  View, StyleSheet, Image, ScrollView,
 } from 'react-native';
 import Calender from '../components/Calender';
 import Tab from '../components/Tab';
+
+const time = require('../../assets/time.png');
 
 export default function HomeScreen(props) {
   const { navigation } = props;
@@ -22,7 +24,7 @@ export default function HomeScreen(props) {
         <Calender />
         <View style={styles.businessHourBox}>
           <View style={styles.businessHour}>
-            <Text>営業時間の写真</Text>
+            <Image source={time} style={styles.imageStyle} />
           </View>
         </View>
       </ScrollView>
@@ -39,15 +41,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingVertical: 30,
   },
-  firstTextContainer: {
-    marginTop: 40,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    paddingLeft: 30,
-  },
-  firstText: {
-    fontSize: 30,
-  },
   circle: {
     alignItems: 'center',
     paddingVertical: 40,
@@ -62,15 +55,20 @@ const styles = StyleSheet.create({
   },
   businessHourBox: {
     width: '75%',
+    height: 276,
     marginLeft: 'auto',
     marginRight: 'auto',
-    paddingTop: 20,
+    marginVertical: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   businessHour: {
     paddingVertical: 80,
-    borderWidth: 3,
-    borderColor: 'rgba(0,0,0,0.100)',
     width: '100%',
   },
-
+  imageStyle: {
+    width: '100%',
+    height: '140%',
+    resizeMode: 'contain',
+  },
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, ActivityIndicator, Text, StyleSheet
+  View, ActivityIndicator, Text, StyleSheet,
 } from 'react-native';
 
 function LoadingScreen() {
@@ -10,7 +10,7 @@ function LoadingScreen() {
       <Text style={styles.loadingText}>少々お待ちください...</Text>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

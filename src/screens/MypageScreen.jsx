@@ -31,9 +31,8 @@ export default function MypageScreen(props) {
         const ramenData = ramenDoc.data();
         return ramenData.name;
       }
-      console.log('メニュー情報がありません');
     } catch (error) {
-      console.log('refが不正です');
+      console.log(error);
     }
     return null;
   };
@@ -103,7 +102,6 @@ export default function MypageScreen(props) {
           }
           setLoading(false);
         } catch (e) {
-          console.log('error:', e);
           setLoading(false);
         }
       } else {

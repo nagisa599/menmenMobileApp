@@ -4,17 +4,15 @@ import {
   getFirestore, collection, query, where, orderBy, getDocs,
 } from 'firebase/firestore';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import RNFS from 'react-native-fs';
+import * as FileSystem from 'expo-file-system';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import Menu from '../components/Menu';
-// import LimitMenu from '../components/LimitMenu';
-// import Topping from '../components/Topping';
 import Tab from '../components/Tab';
 import SmallTab from '../components/SmallTab';
 import LoadingScreen from './LoadingScreen';
 
-const hiyashityuka = require('../../assets/hiyashityuka.jpg');
-const kakuni = require('../../assets/kakuni.jpg');
+const ramen = require('../../assets/ramen.jpg');
+const halframen = require('../../assets/halframen.jpg');
 
 export default function MenuScreen(props) {
   const { navigation } = props;
@@ -23,9 +21,6 @@ export default function MenuScreen(props) {
   const [regularmenus, setRegularMenu] = useState([]);
   const [limitemenus, setLimitmenus] = useState([]);
   const [toppingMenus, setToppingmenus] = useState([]);
-  const [menuImageUrls, setMenuImageUrls] = useState([]);
-  const [limitImageUrls, setLimitImageUrls] = useState([]);
-  const [toppingImageUrls, setToppingImageUrls] = useState([]);
   const [currentTab, setCurrentTab] = useState('menu');
 
   const storage = getStorage();
@@ -35,20 +30,17 @@ export default function MenuScreen(props) {
     const imageRef = ref(storage, imageURL);
     const url = await getDownloadURL(imageRef);
 
-    const downloadDest = `${RNFS.DocumentDirectoryPath}/${imageURL.split('/').pop()}`;
+    const filename = url.split('/').pop();
+    const downloadDest = `${FileSystem.documentDirectory}${filename}`;
 
-    const options = {
-      fromUrl: url,
-      toFile: downloadDest,
-    };
+    const downloadResult = await FileSystem.downloadAsync(url, downloadDest);
 
-    try {
-      await RNFS.downloadFile(options).promise;
-      return downloadDest;
-    } catch (error) {
-      console.error('Error downloading the image', error);
+    if (downloadResult.status !== 200) {
+      console.error('Error downloading the image:', downloadResult);
       return null;
     }
+
+    return downloadResult.uri;
   }
 
   const fetchData = async () => {
@@ -57,19 +49,19 @@ export default function MenuScreen(props) {
       const dummy = [
         {
           id: '1',
-          imageURL: hiyashityuka,
-          name: '冷やし中華',
-          price: 720,
+          imageURL: ramen,
+          name: 'ラーメン',
+          price: 980,
           student: true,
           favorite: 4,
           today: true,
         },
         {
           id: '2',
-          imageURL: kakuni,
-          name: '角煮変更',
-          price: 200,
-          student: false,
+          imageURL: halframen,
+          name: '半ラーメン',
+          price: 880,
+          student: true,
           favorite: 3,
           today: true,
         },
@@ -98,7 +90,6 @@ export default function MenuScreen(props) {
       };
     });
     const limitMenu = await Promise.all(limitMenuPromises);
-    console.log('limitMenu:', limitMenu);
     setLimitmenus(limitMenu);
   };
 
@@ -155,10 +146,11 @@ export default function MenuScreen(props) {
           <Text>ピンク色は今日食べられるメニューです！</Text>
         </View>
       </View>
-
-      {currentTab === 'menu' && <Menu menus={regularmenus} imageUrls={menuImageUrls} />}
-      {currentTab === 'limit' && <Menu menus={limitemenus} imageUrls={limitImageUrls} />}
-      {currentTab === 'topping' && <Menu menus={toppingMenus} imageUrls={toppingImageUrls} />}
+      <View style={styles.subContainer}>
+        {currentTab === 'menu' && <Menu menus={regularmenus} />}
+        {currentTab === 'limit' && <Menu menus={limitemenus} />}
+        {currentTab === 'topping' && <Menu menus={toppingMenus} />}
+      </View>
     </View>
   );
 }
@@ -191,5 +183,8 @@ const styles = StyleSheet.create({
   explain: {
     alignItems: 'center',
     paddingBottom: 15,
+  },
+  subContainer: {
+    flex: 1,
   },
 });

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Image, StyleSheet, TextInput, ScrollView,
+  View, Image, StyleSheet, TextInput, ScrollView, Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { func } from 'prop-types';
@@ -30,7 +30,6 @@ export default function GoogleLoginScreen(props) {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const { user } = userCredential;
-        console.log(user);
         saveUserToAsyncStorage(user);
         setUserInfo(user);
       })

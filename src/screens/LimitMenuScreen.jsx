@@ -8,7 +8,6 @@ import {
 
 import Tab from '../components/Tab';
 import Menu from '../components/Menu';
-import LimitMenu from '../components/LimitMenu';
 import LoadingScreen from './LoadingScreen';
 
 const hiyashityuka = require('../../assets/hiyashityuka.jpg');
@@ -55,12 +54,8 @@ export default function LimitMenuScreen(props) {
           });
         });
         setlimitmenus(limitTimeMenu);
-        console.log(limitTimeMenu);
-        //setIsLoading(false);
       } catch (error) {
-        console.error(error);
         Alert.alert('データの読み込みに失敗しました');
-        // setIsLoading(false);
       }
     };
     fetchLimitTimeMenu(); // 非同期関数を即座に呼び出す
