@@ -76,7 +76,7 @@ export default function ComingCheckScreen(props) {
   const handleBarCodeScanned = ({ data }) => {
     if (todayToken === data) {
       EatCountCheck();
-      activateStamp();
+      activateStamp(getJSTDate());
       navigation.goBack();
       // Alert.alert('記録しました!');
     } else {

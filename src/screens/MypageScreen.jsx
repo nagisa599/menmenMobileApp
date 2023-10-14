@@ -70,11 +70,13 @@ export default function MypageScreen(props) {
             const toppingName = await ChangeIDtoName(userData.topping);
 
             let lastVisitDate = null;
+            let comingData = [];
 
             if (userData.times && userData.times.length > 0) {
               lastVisitDate = userData.times[userData.times.length - 1];
               lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
               lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
+              comingData = userData.times;
             }
 
             const today = formatDateToYYYYMMDD(new Date());
@@ -85,10 +87,17 @@ export default function MypageScreen(props) {
               setVisited(false);
             }
 
+            const formattedDates = comingData.map((data) => {
+              const date = convertFirestoreTimestampToDate(data);
+              return formatDateToYYYYMMDD(date);
+            });
+            console.log(formattedDates);
+
             setUserInfo({
               userName: userData.name,
               userRamen: ramenName,
               userTopping: toppingName,
+              visited: formattedDates,
             });
           } else {
             console.log('ユーザー情報がない');
@@ -154,7 +163,13 @@ export default function MypageScreen(props) {
         <View style={styles.titleContainer}>
           <Text style={styles.title}>スタンプカード</Text>
           <View style={styles.stamp}>
-            <StampCard visited={visited} setVisited={setVisited} />
+            {!isLoading && (
+            <StampCard
+              visited={visited}
+              setVisited={setVisited}
+              userVisited={userInfo.visited}
+            />
+            )}
           </View>
         </View>
         <Generator />
