@@ -5,7 +5,7 @@ import commonHeaderOptions from '../styles/NavigationHeaderStyles';
 import MenuStack from './MenuNavigator';
 import CouponScreen from '../screens/CouponScreen';
 import RankingStack from './RankingNavigator';
-import FriendScreen from '../screens/FriendScreen';
+import FriendListStack from './FriendNavigator';
 import MypageStack from './MypageNavigator';
 import getTabBarIcon from '../components/FooterTab';
 
@@ -44,7 +44,7 @@ export default function MainTabs() {
       />
       <Tab.Screen
         name="フレンド"
-        component={FriendScreen}
+        component={FriendListStack}
         options={{
           tabBarIcon: getTabBarIcon({ name: 'フレンド' }),
         }}

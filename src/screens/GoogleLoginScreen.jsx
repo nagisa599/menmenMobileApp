@@ -74,7 +74,7 @@ export default function GoogleLoginScreen(props) {
         />
         <Button
           label="ログイン（新規登録）"
-          onPress={() => handlePress}
+          onPress={handlePress()}
         />
       </View>
     </KeyboardSafeView>
