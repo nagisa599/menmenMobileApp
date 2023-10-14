@@ -7,8 +7,9 @@ import {
 } from 'prop-types';
 
 export default function DropdownSelect(props) {
-  const { contentItems, setChange } = props;
-  const [selectedValue, setSelectedValue] = useState(0);
+  const { contentItems, setChange, previous } = props;
+  const [selectedValue, setSelectedValue] = useState(previous);
+  console.log(selectedValue);
   const [modalVisible, setModalVisible] = useState(false);
 
   const onChange = (value) => {
@@ -59,6 +60,7 @@ DropdownSelect.propTypes = {
     value: number,
   })).isRequired,
   setChange: func.isRequired,
+  previous: number.isRequired,
 };
 
 const styles = StyleSheet.create({

@@ -5,6 +5,7 @@ import MypageScreen from '../screens/MypageScreen';
 import SettingScreen from '../screens/SettingScreen';
 import InquiryScreen from '../screens/InqueryScreen';
 import TermsOfUseScreen from '../screens/TermsOfUseScreen';
+import EditUserInfoScreen from '../screens/EditUserInfoScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +16,7 @@ export default function MypageStack() {
       <Stack.Screen name="SettingScreen" component={SettingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="InquiryScreen" component={InquiryScreen} options={{ headerShown: false }} />
       <Stack.Screen name="TermsOfUseScreen" component={TermsOfUseScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="EditUserInfoScreen" component={EditUserInfoScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
