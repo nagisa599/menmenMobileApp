@@ -37,9 +37,7 @@ export default function RankingScreen(props) {
         });
       });
       setRanking(databaseRanking);
-      console.log(databaseRanking);
     } catch (error) {
-      console.error(error);
       Alert.alert('データの読み込みに失敗しました');
     }
   };

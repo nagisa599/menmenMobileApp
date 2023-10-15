@@ -17,6 +17,7 @@ export default function MypageScreen(props) {
   const [isImageLoaded, setImageLoaded] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [isLoading, setLoading] = useState(false);
+  const [visited, setVisited] = useState(true);
 
   const ChangeIDtoName = async (id) => {
     const db = getFirestore();
@@ -30,12 +31,23 @@ export default function MypageScreen(props) {
         const ramenData = ramenDoc.data();
         return ramenData.name;
       }
-      console.log('メニュー情報がありません');
     } catch (error) {
-      console.log('refが不正です');
+      console.log(error);
     }
     return null;
   };
+
+  function convertFirestoreTimestampToDate(timestamp) {
+    const milliseconds = (timestamp.seconds * 1000) + (timestamp.nanoseconds / 1000000);
+    return new Date(milliseconds);
+  }
+
+  function formatDateToYYYYMMDD(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 
   useEffect(() => {
     const auth = getAuth();
@@ -56,18 +68,40 @@ export default function MypageScreen(props) {
             const ramenName = await ChangeIDtoName(userData.ramen);
             const toppingName = await ChangeIDtoName(userData.topping);
 
+            let lastVisitDate = null;
+            let comingData = [];
+
+            if (userData.times && userData.times.length > 0) {
+              lastVisitDate = userData.times[userData.times.length - 1];
+              lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
+              lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
+              comingData = userData.times;
+            }
+
+            const today = formatDateToYYYYMMDD(new Date());
+
+            if (lastVisitDate === today) {
+              setVisited(true);
+            } else {
+              setVisited(false);
+            }
+
+            const formattedDates = comingData.map((data) => {
+              const date = convertFirestoreTimestampToDate(data);
+              return formatDateToYYYYMMDD(date);
+            });
+
             setUserInfo({
               userName: userData.name,
               userRamen: ramenName,
               userTopping: toppingName,
-              visited: userData.visited,
+              visited: formattedDates,
             });
           } else {
             console.log('ユーザー情報がない');
           }
           setLoading(false);
         } catch (e) {
-          console.log('error:', e);
           setLoading(false);
         }
       } else {
@@ -79,6 +113,9 @@ export default function MypageScreen(props) {
       unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+  }, [visited]);
 
   return (
     <View style={styles.container}>
@@ -123,10 +160,16 @@ export default function MypageScreen(props) {
         <View style={styles.titleContainer}>
           <Text style={styles.title}>スタンプカード</Text>
           <View style={styles.stamp}>
-            <StampCard visited={userInfo.visited} />
+            {!isLoading && (
+            <StampCard
+              visited={visited}
+              setVisited={setVisited}
+              userVisited={userInfo.visited}
+            />
+            )}
           </View>
         </View>
-        {/* <Generator /> */}
+        <Generator />
         <View style={styles.titleContainer}>
           <Text style={styles.title}>称号</Text>
         </View>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet, Text, View, Pressable,
+  StyleSheet, Text, View, Pressable, Alert,
 } from 'react-native';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import QRCode from 'react-native-qrcode-svg';
@@ -19,7 +19,7 @@ export default function Generator() {
       if (tokenDoc.exists) {
         setQrCodeValue(tokenDoc.data().token);
       } else {
-        alert('トークンが存在しません');
+        Alert.alert('トークンが存在しません');
       }
     };
 

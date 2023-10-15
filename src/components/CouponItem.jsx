@@ -27,7 +27,7 @@ export default function CouponItem(props) {
       });
       setIsCouponUsed(true);
     } catch (error) {
-      console.log('クーポン利用に失敗しました');
+      Alert.alert('クーポンの利用に失敗しました');
     }
   };
   if (isCouponUsed) {

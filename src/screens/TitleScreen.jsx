@@ -11,7 +11,7 @@ import CircleTitle from '../components/CircleTitle';
 
 export default function TitleScreen(props) {
   const { navigation } = props;
-  const [title, setTitle] = useState(1);
+  const [title, setTitle] = useState(0);
   const setTitleImage = async () => {
     try {
       const db = getFirestore();
@@ -22,7 +22,6 @@ export default function TitleScreen(props) {
       const myTimes = docSnap.data().times.length;
       setTitle(myTimes);
     } catch (error) {
-      console.error(error);
       Alert.alert('データの読み込みに失敗しました');
     }
   };
@@ -44,7 +43,7 @@ export default function TitleScreen(props) {
         <View style={styles.firstTextContainer}>
           <Text style={styles.firstText}>あなたの称号は・・・</Text>
         </View>
-        <CircleTitle title={13} />
+        <CircleTitle title={title} />
         <View style={styles.lastTextContainer}>
           <Text style={styles.lastText}>です！</Text>
         </View>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Text, View, StyleSheet, Pressable, Alert,
+  Text, View, StyleSheet, Alert,
 } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import {
@@ -11,7 +11,7 @@ import { func, shape } from 'prop-types';
 
 export default function ComingCheckScreen(props) {
   const { navigation, route } = props;
-  const { activateStamp } = route.params;
+  const { activateStamp, setVisited } = route.params;
   // アプリはカメラを使う許可が認められるかどうか
   const [hasPermission, setHasPermission] = useState(null);
   // アプリはQRコードをスキャンしたかどうか
@@ -63,6 +63,7 @@ export default function ComingCheckScreen(props) {
           times: newTimes,
           visited: true,
         });
+        setVisited(true);
       }
     } catch (e) {
       Alert.alert('Firebaseの更新に失敗');
@@ -75,9 +76,9 @@ export default function ComingCheckScreen(props) {
   const handleBarCodeScanned = ({ data }) => {
     if (todayToken === data) {
       EatCountCheck();
-      activateStamp();
+      activateStamp(getJSTDate());
       navigation.goBack();
-      Alert.alert('成功です');
+      // Alert.alert('記録しました!');
     } else {
       navigation.goBack();
       Alert.alert('不正な来店です');
@@ -98,8 +99,8 @@ export default function ComingCheckScreen(props) {
             if (!scanned) {
               setScanned(true);
               Alert.alert(
-                'スキャン結果',
-                scannerResult.data,
+                'スキャン成功',
+                '記録しました！',
                 [
                   {
                     test: '閉じる',
@@ -115,12 +116,6 @@ export default function ComingCheckScreen(props) {
           style={StyleSheet.absoluteFillObject}
         />
       )}
-      {/* スキャンが終わってから表示する */}
-      {scanned && (
-        <Pressable onPress={() => setScanned(false)} style={styles.button}>
-          <Text style={styles.text}>別のQRコードを読み取る</Text>
-        </Pressable>
-      )}
     </View>
   );
 }
@@ -129,6 +124,7 @@ ComingCheckScreen.propTypes = {
   route: shape({
     params: shape({
       activateStamp: func,
+      setVisited: func,
     }),
   }).isRequired,
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Image, StyleSheet, Text, TextInput, ScrollView,
+  View, Image, StyleSheet, TextInput, ScrollView, Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { func } from 'prop-types';
@@ -30,7 +30,6 @@ export default function GoogleLoginScreen(props) {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const { user } = userCredential;
-        console.log(user);
         saveUserToAsyncStorage(user);
         setUserInfo(user);
       })
@@ -38,46 +37,52 @@ export default function GoogleLoginScreen(props) {
         console.log(error.code, error.message);
       });
   }
+  function notLogin() {
+    const user = {
+      name: 'notLogin',
+    };
+    setUserInfo(user);
+  }
   return (
     <ScrollView>
-    <KeyboardSafeView style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Image source={logoImage} style={styles.logo} />
-      </View>
-      <View style={styles.googleButton}>
-        <GoogleLoginButton onPress={() => promptAsync()} />
-      </View>
-      <View style={styles.button}>
-        <AppleLoginButton onPress={() => promptAsync()} />
-      </View>
-      <View style={styles.marginBottom}>
-        <NotLoginButton onPress={() => promptAsync()} />
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={(text) => { setEmail(text); }}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          placeholder="メールアドレス"
-          textContentType="emailAddress"
-        />
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={(text) => { setPassword(text); }}
-          autoCapitalize="none"
-          placeholder="パスワード"
-          secureTextEntry
-          textContentType="password"
-        />
-        <Button
-          label="ログイン（新規登録）"
-          onPress={handlePress()}
-        />
-      </View>
-    </KeyboardSafeView>
+      <KeyboardSafeView style={styles.container}>
+        <View style={styles.logoContainer}>
+          <Image source={logoImage} style={styles.logo} />
+        </View>
+        <View style={styles.googleButton}>
+          <GoogleLoginButton onPress={() => promptAsync()} />
+        </View>
+        <View style={styles.button}>
+          <AppleLoginButton onPress={() => promptAsync()} />
+        </View>
+        <View style={styles.marginBottom}>
+          <NotLoginButton onPress={() => notLogin()} />
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={(text) => { setEmail(text); }}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            placeholder="メールアドレス"
+            textContentType="emailAddress"
+          />
+          <TextInput
+            style={styles.input}
+            value={password}
+            onChangeText={(text) => { setPassword(text); }}
+            autoCapitalize="none"
+            placeholder="パスワード"
+            secureTextEntry
+            textContentType="password"
+          />
+          <Button
+            label="ログイン（新規登録）"
+            onPress={() => handlePress()}
+          />
+        </View>
+      </KeyboardSafeView>
     </ScrollView>
   );
 }
@@ -118,7 +123,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   input: {
-    fontsize: 16,
+    fontSize: 16,
     height: 60,
     borderColor: '#DDDDDD',
     borderWidth: 1,

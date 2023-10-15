@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, Alert,
 } from 'react-native';
@@ -6,47 +6,64 @@ import {
   getFirestore, getDocs, collection, query, where, getDoc, doc,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+// import { userInfoContext } from '../../App';
+import userInfoContext from '../utils/UserInfoContext';
 import CouponItem from '../components/CouponItem';
 import FilterItem from '../components/FilterItem';
 
 export default function CouponScreen() {
+  const { setUserInfo } = useContext(userInfoContext);
   const [coupons, setcoupons] = useState([]);
   const [filter, setFilter] = useState('0');
+  const auth = getAuth();
+  const checkUser = auth.currentUser;
   useEffect(() => {
-    const fetchData = async () => {
-      const mycoupons = [];
-      try {
-        const db = getFirestore();
-        const ref = couponFilter();
-        const querySnapshot = await getDocs(ref);
-        await Promise.all(querySnapshot.docs.map(async (doc2) => { // 全ての非同期初期が終わったら
-          const couponid = doc2.id;
-          const ref2 = doc(db, 'coupons', couponid);
-          const docSnapshot = await getDoc(ref2);
-          if (docSnapshot.exists()) {
-            const data = docSnapshot.data();
-            mycoupons.push({
-              id: doc2.id,
-              name: data.name,
-              content: data.content,
-              used: doc2.data().used,
-              expireDate: doc2.data().expire.toDate(),
-            });
-          } else {
-            console.log('読み込みデータなし');
-          }
-        }));
-        setcoupons(mycoupons);
-      } catch (error) {
-        console.error(error);
-        Alert.alert('データの読み込みに失敗しました');
-      }
-    };
-    fetchData();
+    if (checkUser) {
+      fetchData();
+    } else {
+      Alert.alert(
+        'こちらのサービスを利用するには、ログインが必要です',
+        '',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setUserInfo(null);
+            },
+          },
+        ],
+      );
+    }
   }, [filter]); // 第二引数に空の配列を渡して、コンポーネントがマウントされた時だけ実行されるように設定
 
+  const fetchData = async () => {
+    const mycoupons = [];
+    try {
+      const db = getFirestore();
+      const ref = couponFilter();
+      const querySnapshot = await getDocs(ref);
+      await Promise.all(querySnapshot.docs.map(async (doc2) => { // 全ての非同期初期が終わったら
+        const couponid = doc2.id;
+        const ref2 = doc(db, 'coupons', couponid);
+        const docSnapshot = await getDoc(ref2);
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          mycoupons.push({
+            id: doc2.id,
+            name: data.name,
+            content: data.content,
+            used: doc2.data().used,
+            expireDate: doc2.data().expire.toDate(),
+          });
+        }
+      }));
+      setcoupons(mycoupons);
+    } catch (error) {
+      Alert.alert('データの読み込みに失敗しました');
+    }
+  };
+
   const couponFilter = () => {
-    const auth = getAuth();
     const user = auth.currentUser;
     const db = getFirestore();
     const today = new Date();
