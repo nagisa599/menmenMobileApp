@@ -40,51 +40,67 @@ export default function (props) {
           }}
         >
           <Image
-            source={require('../../assets/fujiwarashi.jpg')}
+            source={require('../../assets/山岡士郎.png')}
             style={styles.image}
           />
           <View style={styles.sortinfo}>
-            <Text style={styles.name}>フジワラ</Text>
-            <Text style={styles.date}>2023/09/23 10:42</Text>
+            <Text style={styles.name}>山岡士郎</Text>
+            <Text style={styles.date}>2023/10/13 19:15</Text>
           </View>
           <View style={styles.basicinfo}>
-            <Text style={styles.ranking}>ランキング: 10位</Text>
-            <Text style={styles.degree}>称号　　　: ラーメン王</Text>
-            <Text style={styles.favorite}>お気に入り: 塩ラーメン</Text>
+            <Text style={styles.ranking}>ランキング: 2位</Text>
+            <Text style={styles.degree}>称号　　　: ラーメンスター</Text>
+            <Text style={styles.favorite}>お気に入り: ラーメン汁なし</Text>
           </View>
         </TouchableOpacity>
-
         <View style={styles.individual}>
           <Image
-            source={require('../../assets/fujiwarashi.jpg')}
+            source={require('../../assets/海原雄山.png')}
             style={styles.image}
           />
           <View style={styles.sortinfo}>
-            <Text style={styles.name}>フジワラ</Text>
-            <Text style={styles.date}>2023/09/23 10:42</Text>
+            <Text style={styles.name}>海原雄山</Text>
+            <Text style={styles.date}>2023/10/05 20:40</Text>
           </View>
           <View style={styles.basicinfo}>
-            <Text style={styles.ranking}>ランキング: 10位</Text>
+            <Text style={styles.ranking}>ランキング: 1位</Text>
             <Text style={styles.degree}>称号　　　: ラーメン王</Text>
-            <Text style={styles.favorite}>お気に入り: 塩ラーメン</Text>
+            <Text style={styles.favorite}>お気に入り: まぜそば</Text>
           </View>
         </View>
 
         <View style={styles.individual}>
           <Image
-            source={require('../../assets/fujiwarashi.jpg')}
+            source={require('../../assets/トリコ.png')}
             style={styles.image}
           />
           <View style={styles.sortinfo}>
-            <Text style={styles.name}>フジワラ</Text>
-            <Text style={styles.date}>2023/09/23 10:42</Text>
+            <Text style={styles.name}>トリコ</Text>
+            <Text style={styles.date}>2023/09/28 18:22</Text>
           </View>
           <View style={styles.basicinfo}>
-            <Text style={styles.ranking}>ランキング: 10位</Text>
-            <Text style={styles.degree}>称号　　　: ラーメン王</Text>
-            <Text style={styles.favorite}>お気に入り: 塩ラーメン</Text>
+            <Text style={styles.ranking}>ランキング: 8位</Text>
+            <Text style={styles.degree}>称号　　　: ラーメン通</Text>
+            <Text style={styles.favorite}>お気に入り: 冷やし中華</Text>
           </View>
         </View>
+
+        <View style={styles.individual}>
+          <Image
+            source={require('../../assets/荒岩まこと.png')}
+            style={styles.image}
+          />
+          <View style={styles.sortinfo}>
+            <Text style={styles.name}>荒岩まこと</Text>
+            <Text style={styles.date}>2023/09/23 19:42</Text>
+          </View>
+          <View style={styles.basicinfo}>
+            <Text style={styles.ranking}>ランキング: 5位</Text>
+            <Text style={styles.degree}>称号　　　: ラーメン博士</Text>
+            <Text style={styles.favorite}>お気に入り: まぜそば</Text>
+          </View>
+        </View>
+
       </ScrollView>
     </View>
   );
@@ -140,7 +156,7 @@ const styles = StyleSheet.create({
   },
   basicinfo: {
     justifyContent: 'center',
-    paddingLeft: 15,
+    paddingLeft: 10,
   },
   image: {
     width: 80,

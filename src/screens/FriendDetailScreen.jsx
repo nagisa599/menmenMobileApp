@@ -21,17 +21,18 @@ export default function BookOfTicketScreen(props) {
       </View>
       <ScrollView style={styles.profile}>
         <Image
-          source={require('../../assets/fujiwarashi.jpg')}
+          source={require('../../assets/山岡士郎.png')}
           style={styles.image}
         />
-        <Text style={styles.profileinfo}>名前 : フジワラ</Text>
-        <Text style={styles.profileinfo}>ランキング : 10位</Text>
-        <Text style={styles.profileinfo}>称号 : ラーメン王</Text>
-        <Text style={styles.profileinfo}>最終来店 : 2023/09/23 10:00</Text>
-        <Text style={styles.profileinfo}>総ラーメン : 50杯</Text>
+        <Text style={styles.profileinfo}>名前 : 山岡士郎</Text>
+        <Text style={styles.profileinfo}>ランキング : 2位</Text>
+        <Text style={styles.profileinfo}>称号 : ラーメンスター</Text>
+        <Text style={styles.profileinfo}>最終来店 : 2023/10/13 19:15</Text>
+        <Text style={styles.profileinfo}>総ラーメン : 123杯</Text>
         <Text style={styles.profileinfo}>今週のラーメン : 4杯</Text>
         <Text style={styles.profileinfo}>初来店日 : 2021/08/21</Text>
-        <Text style={styles.profileinfo}>お気に入り : 豚骨味噌チャーシュー</Text>
+        <Text style={styles.profileinfo}>お気に入り : ラーメン汁なし</Text>
+        <Text style={styles.profileinfo}>一言コメント : No ramen no life !</Text>
       </ScrollView>
       <View style={styles.buttoncontainer}>
         <BackButton

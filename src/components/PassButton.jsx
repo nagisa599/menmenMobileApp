@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { string, func } from 'prop-types';
 
-export default function PassButton(props) {
+export default function Button(props) {
   const { label, onPress } = props;
   return (
     <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
@@ -12,12 +12,12 @@ export default function PassButton(props) {
     </TouchableOpacity>
   );
 }
-PassButton.propTypes = {
+Button.propTypes = {
   label: string.isRequired,
   onPress: func,
 };
 
-PassButton.defaultProps = {
+Button.defaultProps = {
   onPress: null,
 };
 
@@ -26,13 +26,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     borderRadius: 10,
     alignSelf: 'center', // 自分自身を並べる。左側に
-    marginLeft: 60,
-    marginTop: 5
+    width: '45%',
+    marginLeft: 10,
   },
   buttonLabel: {
     fontSize: 28,
     paddingHorizontal: 5,
-    paddingVertical: 10,
+    paddingVertical: 15,
     color: '#ffffff',
   },
 });

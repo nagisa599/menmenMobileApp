@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Alert, Image } from 'react-native';
 
 import Tab from '../components/Tab';
 import Button from '../components/Button';
-import PassButton from '../components/PassButton';
+import UseButton from '../components/UseButton';
 import AddButton from '../components/AddButton';
 
 export default function BookOfTicketScreen(props) {
@@ -45,48 +45,72 @@ export default function BookOfTicketScreen(props) {
               <Text>残り<Text style={styles.bigText}>10</Text>枚</Text>
               <Text>~2023/10/11 20:00:00</Text>
             </View>
-            <PassButton label='利用する' onPress={() => { }} />
+            <UseButton label='利用する' onPress={() => { }} />
           </View>
         </View>
         <View style={styles.friendlistheader}>
           <Text style={styles.title}>チケット履歴</Text>
         </View>
-        <ScrollView>
-          <View style={styles.individual}>
-            <Text style={styles.time}>2023/09/25 20:00:00</Text>
+        <ScrollView style={styles.ticketcontainer}>
+          <View style={styles.tickethistory}>
+            <Text style={styles.time}>{'2023/10/15\n20:05:32'}</Text>
             <Text style={styles.fluctuation}>-1枚</Text>
             <Text style={styles.remarks}>使用</Text>
           </View>
 
           <View style={styles.tickethistory}>
-            <Text>2023/09/25 19:15:32</Text>
-            <Text>-2枚</Text>
-            <Text>譲渡</Text>
+            <Text style={styles.time}>{'2023/10/10\n19:15:22'}</Text>
+            <Text style={styles.fluctuation}>-2枚</Text>
+            <Text style={styles.remarks}>譲渡</Text>
           </View>
 
           <View style={styles.tickethistory}>
-            <Text>2023/09/23 18:10:00</Text>
-            <Text>+10枚</Text>
-            <Text>購入</Text>
+            <Text style={styles.time}>{'2023/10/06\n18:10:00'}</Text>
+            <Text style={styles.fluctuation}>-1枚</Text>
+            <Text style={styles.remarks}>使用</Text>
           </View>
 
-          <View style={styles.individual}>
-            <Image
-              source={require('../../assets/fujiwarashi.jpg')}
-              style={styles.image}
-            />
-            <View style={styles.sortinfo}>
-              <Text style={styles.name}>フジワラ</Text>
-              <Text style={styles.date}>2023/09/23 10:42</Text>
-            </View>
-            <View style={styles.basicinfo}>
-              <Text style={styles.ranking}>ランキング: 10位</Text>
-              <Text style={styles.degree}>称号　　　: ラーメン王</Text>
-              <Text style={styles.favorite}>お気に入り: 塩ラーメン</Text>
-            </View>
+          <View style={styles.tickethistory}>
+            <Text style={styles.time}>{'2023/10/01\n19:42:53'}</Text>
+            <Text style={styles.fluctuation}>-1枚</Text>
+            <Text style={styles.remarks}>使用</Text>
           </View>
 
+          <View style={styles.tickethistory}>
+            <Text style={styles.time}>{'2023/09/30\n18:55:31'}</Text>
+            <Text style={styles.fluctuation}>+10枚</Text>
+            <Text style={styles.remarks}>購入</Text>
+          </View>
 
+          <View style={styles.tickethistory}>
+            <Text style={styles.time}>{'2023/09/28\n20:08:35'}</Text>
+            <Text style={styles.fluctuation}>-1枚</Text>
+            <Text style={styles.remarks}>使用</Text>
+          </View>
+
+          <View style={styles.tickethistory}>
+            <Text style={styles.time}>{'2023/09/25\n19:15:32'}</Text>
+            <Text style={styles.fluctuation}>-2枚</Text>
+            <Text style={styles.remarks}>譲渡</Text>
+          </View>
+
+          <View style={styles.tickethistory}>
+            <Text style={styles.time}>{'2023/09/23\n18:15:12'}</Text>
+            <Text style={styles.fluctuation}>-3枚</Text>
+            <Text style={styles.remarks}>譲渡</Text>
+          </View>
+
+          <View style={styles.tickethistory}>
+            <Text style={styles.time}>{'2023/09/22\n20:01:16'}</Text>
+            <Text style={styles.fluctuation}>-1枚</Text>
+            <Text style={styles.remarks}>使用</Text>
+          </View>
+
+          <View style={styles.tickethistory}>
+            <Text style={styles.time}>{'2023/09/20\n19:30:36'}</Text>
+            <Text style={styles.fluctuation}>+10枚</Text>
+            <Text style={styles.remarks}>購入</Text>
+          </View>
         </ScrollView>
       </ScrollView>
     </View>
@@ -162,22 +186,32 @@ const styles = StyleSheet.create({
     color: 'red',
 
   },
-  individual: {
+  ticketcontainer: {
+    borderWidth: 1,
+    borderRadius: 5,
+    margin: 10,
+    height: 400
+  },
+  tickethistory: {
     marginBottom: 2,
     margintop: 1,
     flexDirection: 'row',
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
   },
-  tickethistory: {
-    flexDirection: 'row'
-  },
   time: {
-    fontFamily: 20
+    fontSize: 20,
   },
   fluctuation: {
-    fontSize: 20
+    fontSize: 30,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+    width: 100
   },
   remarks: {
-    fontSize:20
+    fontSize:20,
+    position: ' absolute',
+    right: -90,
   }
 });

@@ -21,17 +21,18 @@ export default function BookOfTicketScreen(props) {
       </View>
       <ScrollView style={styles.profile}>
         <Image
-          source={require('../../assets/fujiwarashi.jpg')}
+          source={require('../../assets/井之頭五郎.png')}
           style={styles.image}
         />
-        <Text style={styles.profileinfo}>名前 : フジワラ</Text>
-        <Text style={styles.profileinfo}>ランキング : 10位</Text>
-        <Text style={styles.profileinfo}>称号 : ラーメン王</Text>
-        <Text style={styles.profileinfo}>最終来店 : 2023/09/23 10:00</Text>
-        <Text style={styles.profileinfo}>総ラーメン : 50杯</Text>
-        <Text style={styles.profileinfo}>今週のラーメン : 4杯</Text>
-        <Text style={styles.profileinfo}>初来店日 : 2021/08/21</Text>
-        <Text style={styles.profileinfo}>お気に入り : 豚骨味噌チャーシュー</Text>
+        <Text style={styles.profileinfo}>名前 : 井之頭五郎</Text>
+        <Text style={styles.profileinfo}>ランキング : 15位</Text>
+        <Text style={styles.profileinfo}>称号 : ラーメン好き</Text>
+        <Text style={styles.profileinfo}>最終来店 : 2023/10/10 18:55</Text>
+        <Text style={styles.profileinfo}>総ラーメン : 13杯</Text>
+        <Text style={styles.profileinfo}>今週のラーメン : 2杯</Text>
+        <Text style={styles.profileinfo}>初来店日 : 2023/04/23</Text>
+        <Text style={styles.profileinfo}>お気に入り : 冷やし中華</Text>
+        <Text style={styles.profileinfo}>一言コメント : ラーメンハマってます!</Text>
       </ScrollView>
       <View style={styles.buttoncontainer}>
         <BackButton
