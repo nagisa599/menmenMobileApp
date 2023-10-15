@@ -3,8 +3,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import commonHeaderOptions from '../styles/NavigationHeaderStyles';
 import MenuStack from './MenuNavigator';
 import RankingStack from './RankingNavigator';
+
+import FriendListStack from './FriendNavigator';
+
 import FriendScreen from '../screens/FriendScreen';
 import CouponScreen from '../screens/CouponScreen';
+
 import MypageStack from './MypageNavigator';
 import getTabBarIcon from '../components/FooterTab';
 
@@ -43,7 +47,7 @@ export default function MainTabs() {
       />
       <Tab.Screen
         name="フレンド"
-        component={FriendScreen}
+        component={FriendListStack}
         options={{
           tabBarIcon: getTabBarIcon({ name: 'フレンド' }),
         }}
