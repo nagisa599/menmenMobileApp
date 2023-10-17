@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Image } from 'react-native';
+import React from 'react';
+import {
+  View, Text, StyleSheet, ScrollView, Image,
+} from 'react-native';
 
 import Tab from '../components/Tab';
-import Button from '../components/Button';
 import UseButton from '../components/UseButton';
 import AddButton from '../components/AddButton';
+
+const ramen1url = require('../../assets/ramen1.jpg');
+const ramen2url = require('../../assets/ramen2.jpg');
 
 export default function BookOfTicketScreen(props) {
   const { navigation } = props;
@@ -30,11 +34,11 @@ export default function BookOfTicketScreen(props) {
         <View style={styles.ticket}>
           <View style={styles.twoimages}>
             <Image
-              source={require('../../assets/ramen1.jpg')}
+              source={ramen1url}
               style={styles.image}
             />
             <Image
-              source={require('../../assets/ramen2.jpg')}
+              source={ramen2url}
               style={styles.image}
             />
           </View>
@@ -42,10 +46,16 @@ export default function BookOfTicketScreen(props) {
           <Text style={{ paddingLeft: 10 }}>※有効期限は購入日から180日です</Text>
           <View style={styles.restticket}>
             <View>
-              <Text>残り<Text style={styles.bigText}>10</Text>枚</Text>
+              <Text>
+                残り
+                <Text style={styles.bigText}>
+                  10
+                </Text>
+                枚
+              </Text>
               <Text>~2023/10/11 20:00:00</Text>
             </View>
-            <UseButton label='利用する' onPress={() => { }} />
+            <UseButton label="利用する" onPress={() => { }} />
           </View>
         </View>
         <View style={styles.friendlistheader}>
@@ -145,10 +155,10 @@ const styles = StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: 5,
-    margin: 5
+    margin: 5,
   },
   ticketcontents: {
-    alignContent: 'center'
+    alignContent: 'center',
   },
   friendlistheader: {
     marginTop: 14,
@@ -175,7 +185,7 @@ const styles = StyleSheet.create({
   },
   restticket: {
     borderTopWidth: 1,
-    borderRadius:5,
+    borderRadius: 5,
     borderColor: 'rgba(0, 0, 0, 0.2)',
     flexDirection: 'row',
     margin: 10,
@@ -190,7 +200,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     margin: 10,
-    height: 400
+    height: 400,
   },
   tickethistory: {
     marginBottom: 2,
@@ -207,11 +217,11 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
-    width: 100
+    width: 100,
   },
   remarks: {
-    fontSize:20,
+    fontSize: 20,
     position: ' absolute',
     right: -90,
-  }
+  },
 });

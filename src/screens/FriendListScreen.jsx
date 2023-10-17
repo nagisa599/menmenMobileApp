@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, Alert, Image, TouchableOpacity,
+  View, Text, StyleSheet, ScrollView, Image, TouchableOpacity,
 } from 'react-native';
-import { string, func, bool } from 'prop-types';
 
 import Tab from '../components/Tab';
 import AddButton from '../components/AddButton';
 
-export default function (props) {
+const Yamaoka = require('../../assets/山岡士郎.png');
+const Kaihara = require('../../assets/海原雄山.png');
+const Torico = require('../../assets/トリコ.png');
+const Araiwa = require('../../assets/荒岩まこと.png');
+
+export default function FriendListScrenn(props) {
   const { navigation } = props;
   return (
     <View style={styles.container}>
@@ -40,7 +44,7 @@ export default function (props) {
           }}
         >
           <Image
-            source={require('../../assets/山岡士郎.png')}
+            source={Yamaoka}
             style={styles.image}
           />
           <View style={styles.sortinfo}>
@@ -49,13 +53,13 @@ export default function (props) {
           </View>
           <View style={styles.basicinfo}>
             <Text style={styles.ranking}>ランキング: 2位</Text>
-            <Text style={styles.degree}>称号　　　: ラーメンスター</Text>
+            <Text style={styles.degree}>称号: ラーメンスター</Text>
             <Text style={styles.favorite}>お気に入り: ラーメン汁なし</Text>
           </View>
         </TouchableOpacity>
         <View style={styles.individual}>
           <Image
-            source={require('../../assets/海原雄山.png')}
+            source={Kaihara}
             style={styles.image}
           />
           <View style={styles.sortinfo}>
@@ -64,14 +68,14 @@ export default function (props) {
           </View>
           <View style={styles.basicinfo}>
             <Text style={styles.ranking}>ランキング: 1位</Text>
-            <Text style={styles.degree}>称号　　　: ラーメン王</Text>
+            <Text style={styles.degree}>称号: ラーメン王</Text>
             <Text style={styles.favorite}>お気に入り: まぜそば</Text>
           </View>
         </View>
 
         <View style={styles.individual}>
           <Image
-            source={require('../../assets/トリコ.png')}
+            source={Torico}
             style={styles.image}
           />
           <View style={styles.sortinfo}>
@@ -80,14 +84,14 @@ export default function (props) {
           </View>
           <View style={styles.basicinfo}>
             <Text style={styles.ranking}>ランキング: 8位</Text>
-            <Text style={styles.degree}>称号　　　: ラーメン通</Text>
+            <Text style={styles.degree}>称号: ラーメン通</Text>
             <Text style={styles.favorite}>お気に入り: 冷やし中華</Text>
           </View>
         </View>
 
         <View style={styles.individual}>
           <Image
-            source={require('../../assets/荒岩まこと.png')}
+            source={Araiwa}
             style={styles.image}
           />
           <View style={styles.sortinfo}>
@@ -96,7 +100,7 @@ export default function (props) {
           </View>
           <View style={styles.basicinfo}>
             <Text style={styles.ranking}>ランキング: 5位</Text>
-            <Text style={styles.degree}>称号　　　: ラーメン博士</Text>
+            <Text style={styles.degree}>称号: ラーメン博士</Text>
             <Text style={styles.favorite}>お気に入り: まぜそば</Text>
           </View>
         </View>
