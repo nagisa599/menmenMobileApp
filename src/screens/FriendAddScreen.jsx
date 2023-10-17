@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Image } from 'react-native';
-import { string, func, bool } from 'prop-types';
+import React from 'react';
+import {
+  View, Text, StyleSheet, ScrollView, Image,
+} from 'react-native';
 
 import Tab from '../components/Tab';
 import PassButton from '../components/PassButton';
 import BackButton from '../components/BackButton';
 
-export default function BookOfTicketScreen(props) {
+const Inoue = require('../../assets/井之頭五郎.png');
+
+export default function FriendAddScreen(props) {
   const { navigation } = props;
   return (
     <View style={styles.container}>
@@ -21,7 +24,7 @@ export default function BookOfTicketScreen(props) {
       </View>
       <ScrollView style={styles.profile}>
         <Image
-          source={require('../../assets/井之頭五郎.png')}
+          source={Inoue}
           style={styles.image}
         />
         <Text style={styles.profileinfo}>名前 : 井之頭五郎</Text>
@@ -36,12 +39,12 @@ export default function BookOfTicketScreen(props) {
       </ScrollView>
       <View style={styles.buttoncontainer}>
         <BackButton
-          label='戻る'
+          label="戻る"
           onPress={() => {
             navigation.goBack();
           }}
         />
-        <PassButton label='友達登録する' />
+        <PassButton label="友達登録する" />
       </View>
     </View>
   );
@@ -85,10 +88,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     lineHeight: 24,
     marginLeft: 20,
-    marginTop: 5
+    marginTop: 5,
   },
   buttoncontainer: {
     flexDirection: 'row',
-    alignContent: 'space-between'
-  }
+    alignContent: 'space-between',
+  },
 });

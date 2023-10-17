@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View, Text, StyleSheet, TextInput,
+} from 'react-native';
 
 import Tab from '../components/Tab';
 import SearchButton from '../components/SearchButton';
@@ -62,12 +64,12 @@ const styles = StyleSheet.create({
     margin: 30,
     alignItems: 'center',
     borderWidth: 5,
-    borderColor:'rgba(0, 0, 0, 0.1)',
-    height: 300
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    height: 300,
   },
   userID: {
     fontSize: 28,
-    lineHeight: 40
+    lineHeight: 40,
   },
   userIDnum: {
     fontSize: 24,
@@ -76,10 +78,10 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     width: 250,
     marginBottom: 30,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   friendID: {
-    fontSize: 28
+    fontSize: 28,
   },
   inputID: {
     fontSize: 24,
@@ -90,5 +92,4 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
   },
-
 });
