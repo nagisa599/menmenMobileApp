@@ -1,31 +1,34 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View, StyleSheet, Text, TouchableOpacity, Alert,
 } from 'react-native';
 import {
-  string, instanceOf, shape, bool,
+  string, instanceOf, shape, bool, func, arrayOf,
 } from 'prop-types';
-import { getAuth } from 'firebase/auth';
 import {
-  getFirestore, setDoc, doc,
+  setDoc, doc,
 } from 'firebase/firestore';
+import db from '../../firebaseConfig';
+import userInfoContext from '../utils/UserInfoContext';
 
 export default function CouponItem(props) {
   const [isCouponUsed, setIsCouponUsed] = useState(false);
-  const { coupon } = props;
+  const { coupon, setCoupons, coupons } = props;
+  const { userInfo } = useContext(userInfoContext);
   const formattedDate = new Date(coupon.expireDate).toLocaleString('ja-JP');
+  // coupon使用メソッド。（クーポンをタップすると発火する。）
   const useCoupon = async () => {
     try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      const db = getFirestore();
-      const ref = doc(db, `users/${user.uid}/hasCoupons`, coupon.id);
+      const ref = doc(db, `users/${userInfo.uid}/hasCoupons`, coupon.id);
       await setDoc(ref, {
         expire: coupon.expireDate,
         used: true,
         usedDate: new Date(),
       });
       setIsCouponUsed(true);
+      setCoupons(coupons.map((preCoupon) => (
+        preCoupon.id === coupon.id ? { ...preCoupon, used: true } : preCoupon
+      )));
     } catch (error) {
       Alert.alert('クーポンの利用に失敗しました');
     }
@@ -84,6 +87,14 @@ CouponItem.propTypes = {
     id: string,
     used: bool,
   }).isRequired,
+  coupons: arrayOf(shape({
+    name: string,
+    content: string,
+    expireDate: instanceOf(Date),
+    id: string,
+    used: bool,
+  })).isRequired,
+  setCoupons: func.isRequired,
 };
 
 const styles = StyleSheet.create({

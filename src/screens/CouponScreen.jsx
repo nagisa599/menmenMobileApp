@@ -3,22 +3,22 @@ import {
   View, Text, StyleSheet, ScrollView, Alert,
 } from 'react-native';
 import {
-  getFirestore, getDocs, collection, query, where, getDoc, doc,
+  getDocs, collection, query, getDoc, doc,
 } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import db from '../../firebaseConfig';
 // import { userInfoContext } from '../../App';
 import userInfoContext from '../utils/UserInfoContext';
 import CouponItem from '../components/CouponItem';
 import FilterItem from '../components/FilterItem';
 
 export default function CouponScreen() {
-  const { setUserInfo } = useContext(userInfoContext);
-  const [coupons, setcoupons] = useState([]);
+  const { userInfo, setUserInfo } = useContext(userInfoContext);
+  const [coupons, setCoupons] = useState([]);
+  const [filterCoupons, setFilterCoupon] = useState([]);
   const [filter, setFilter] = useState('0');
-  const auth = getAuth();
-  const checkUser = auth.currentUser;
+  // ログインしているかのチェック（最初のアクセスのみ発火)
   useEffect(() => {
-    if (checkUser) {
+    if (userInfo) {
       fetchData();
     } else {
       Alert.alert(
@@ -34,75 +34,75 @@ export default function CouponScreen() {
         ],
       );
     }
-  }, [filter]); // 第二引数に空の配列を渡して、コンポーネントがマウントされた時だけ実行されるように設定
+  }, []);
 
+  // filter変更時に発火するイベント
+  useEffect(() => {
+    couponFilter();
+  }, [filter]);
+
+  // Userに基づいたクーポンの取得
   const fetchData = async () => {
-    const mycoupons = [];
     try {
-      const db = getFirestore();
-      const ref = couponFilter();
+      const myCoupons = [];
+      const ref = query(collection(db, `users/${userInfo.uid}/hasCoupons`));
       const querySnapshot = await getDocs(ref);
-      await Promise.all(querySnapshot.docs.map(async (doc2) => { // 全ての非同期初期が終わったら
-        const couponid = doc2.id;
-        const ref2 = doc(db, 'coupons', couponid);
+      await Promise.all(querySnapshot.docs.map(async (docCoupon) => { // 全ての非同期初期が終わったら
+        const couponId = docCoupon.id;
+        const ref2 = doc(db, 'coupons', couponId);
         const docSnapshot = await getDoc(ref2);
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
-          mycoupons.push({
-            id: doc2.id,
+          myCoupons.push({
+            id: couponId,
             name: data.name,
             content: data.content,
-            used: doc2.data().used,
-            expireDate: doc2.data().expire.toDate(),
+            used: docCoupon.data().used,
+            expireDate: docCoupon.data().expire.toDate(),
           });
+        } else {
+          Alert.alert('ただいまご利用できるクーポンはありません');
         }
       }));
-      setcoupons(mycoupons);
+      setCoupons(myCoupons);
+      const firstSetCoupons = myCoupons.filter((coupon) => coupon.used === false);
+      setFilterCoupon(firstSetCoupons);
     } catch (error) {
       Alert.alert('データの読み込みに失敗しました');
     }
   };
-
+  // couponを条件によって絞るメソッド
   const couponFilter = () => {
-    const user = auth.currentUser;
-    const db = getFirestore();
     const today = new Date();
-    let ref;
+    let functionFilterCoupons;
     /* eslint-disable */
     switch (filter) {
       case '0':
-        ref = query(
-          collection(db, `users/${user.uid}/hasCoupons`),
-          where('expire', '>', today),
-          where('used', '==', false)
-        );
+        functionFilterCoupons = coupons.filter((coupon) => {
+          return coupon.expireDate > today && coupon.used == false;
+        });;
+        setFilterCoupon(functionFilterCoupons);
         break;
       case '1':
-        ref = query(
-          collection(db, `users/${user.uid}/hasCoupons`),
-          where('expire', '>', today),
-          where('expire', '<', new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())),
-          where('used', '==', false)
-        );
+        functionFilterCoupons = coupons.filter((coupon) => {
+          return coupon.expireDate > today && coupon.used == false && coupon.expire > new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()); 
+        });
+        setFilterCoupon(functionFilterCoupons);
         break;
       case '2':
-        ref = query(
-          collection(db, `users/${user.uid}/hasCoupons`),
-          where('expire', '>', today),
-          where('expire', '<', new Date(today.getFullYear(), today.getMonth() + 3, today.getDate())),
-          where('used', '==', false)
-        );
+        functionFilterCoupons = coupons.filter((coupon) => {
+          return coupon.expireDate > today && coupon.used == false && coupon.expire > new Date(today.getFullYear(), today.getMonth() + 3, today.getDate())
+        });
+        setFilterCoupon(functionFilterCoupons);
         break;
       case '3':
-        ref = query(
-          collection(db, `users/${user.uid}/hasCoupons`),
-          where('used', '==', true)
-        );
+        functionFilterCoupons = coupons.filter((coupon) => {
+          return coupon.used == true
+        });
+        setFilterCoupon(functionFilterCoupons);
         break;
       
     };
-    return ref;
-    
   };
   /* eslint-enable */
   return (
@@ -114,8 +114,13 @@ export default function CouponScreen() {
         <FilterItem setFilter={setFilter} />
       </View>
       <ScrollView contentContainerStyle={styles.itemContainer}>
-        {coupons.map((coupon) => (
-          <CouponItem coupon={coupon} key={coupon.name} />
+        {filterCoupons.map((coupon) => (
+          <CouponItem
+            coupon={coupon}
+            key={coupon.name}
+            setCoupons={setCoupons}
+            coupons={coupons}
+          />
         ))}
       </ScrollView>
     </View>
