@@ -3,28 +3,17 @@ import {
   View, StyleSheet, Text, ScrollView, Alert,
 } from 'react-native';
 import {
-  getFirestore, getDocs, collection, query, orderBy,
+  getDocs, collection, query, orderBy,
 } from 'firebase/firestore';
+import db from '../../firebaseConfig';
 import Tab from '../components/Tab';
 import RankingList from '../components/RankingList';
 
 export default function RankingScreen(props) {
   const [ranking, setRanking] = useState([]);
   const { navigation } = props;
-  // const checkLocalRanking = async () => {
-  //   try {
-  //     const rankingJSON = await AsyncStorage.getItem("@ranking");
-  //     const rankingData = rankingJSON ? JSON.parse(rankingJSON) : null;
-  //     setRanking(rankingData);
-  //     console.log(rankingData);
-  //   } catch (e) {
-  //     alert(e.message);
-  //   }
-  // };
-
   const fetchRanking = async () => {
     try {
-      const db = getFirestore();
       const ref = query(collection(db, 'ranking'), orderBy('times', 'desc'));
       const querySnapshot = await getDocs(ref);
       const databaseRanking = [];
@@ -41,16 +30,8 @@ export default function RankingScreen(props) {
       Alert.alert('データの読み込みに失敗しました');
     }
   };
-  // const saveRankingToAsyncStorage = async (rankings) => {
-  //   try {
-  //     await AsyncStorage.setItem('@ranking', JSON.stringify(rankings));
-  //   } catch (error) {
-  //     console.error("Error saving user to AsyncStorage:", error);
-  //   }
-  // };
   useEffect(() => {
     fetchRanking();
-  // saveRankingToAsyncStorage(ranking)
   }, []);
 
   return (
