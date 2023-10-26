@@ -11,7 +11,7 @@ import { func, shape } from 'prop-types';
 
 export default function ComingCheckScreen(props) {
   const { navigation, route } = props;
-  const { activateStamp, setVisited } = route.params;
+  const { setVisited } = route.params;
   // アプリはカメラを使う許可が認められるかどうか
   const [hasPermission, setHasPermission] = useState(null);
   // アプリはQRコードをスキャンしたかどうか
@@ -76,7 +76,7 @@ export default function ComingCheckScreen(props) {
   const handleBarCodeScanned = ({ data }) => {
     if (todayToken === data) {
       EatCountCheck();
-      activateStamp(getJSTDate());
+      // activateStamp(getJSTDate());
       navigation.goBack();
       // Alert.alert('記録しました!');
     } else {
@@ -123,7 +123,7 @@ export default function ComingCheckScreen(props) {
 ComingCheckScreen.propTypes = {
   route: shape({
     params: shape({
-      activateStamp: func,
+      // activateStamp: func,
       setVisited: func,
     }),
   }).isRequired,

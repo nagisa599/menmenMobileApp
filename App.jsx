@@ -10,6 +10,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SignUpStack from './src/navigators/SignUpNavigator';
 import GoogleSingUppStack from './src/navigators/GoogleSingUpNavigation';
+// eslint-disable-next-line no-unused-vars
 import db from './firebaseConfig';
 import AnimatedSplashScreen from './src/screens/AnimatedSplashScreen';
 import userInfoContext from './src/utils/UserInfoContext';
@@ -22,6 +23,7 @@ export default function App() {
   const auth = getAuth();
   const [userInfo, setUserInfo] = useState();
   const value = useMemo(() => ({ userInfo, setUserInfo }), [userInfo]);
+  // eslint-disable-next-line no-unused-vars
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: IOS_CLIENT_ID,
     androidClientId: ANDROID_CLIENT_ID,

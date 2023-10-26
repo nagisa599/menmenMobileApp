@@ -1,28 +1,15 @@
-import { useNavigation } from '@react-navigation/native';
-import {
-  arrayOf, bool, func, string,
-} from 'prop-types';
+import { arrayOf, string } from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, Dimensions,
 } from 'react-native';
 
 export default function StampCard(props) {
-  const { visited, setVisited, userVisited } = props;
-  const navigation = useNavigation();
+  const { userVisited } = props;
   const totalStamps = 10;
   const maxPages = userVisited.length === 0 ? 1 : Math.ceil(userVisited.length / totalStamps);
   const [stamps, setStamps] = useState(Array(totalStamps * maxPages).fill(null));
   const [currentPage, setCurrentPage] = useState(0); // 現在のページ番号
-
-  const activateStamp = (date) => {
-    const index = stamps.findIndex((stamp) => !stamp);
-    if (index !== -1) {
-      const newStamps = [...stamps];
-      newStamps[index] = date;
-      setStamps(newStamps);
-    }
-  };
 
   useEffect(() => {
     const requiredStampsSize = Math.max(userVisited.length, totalStamps);
@@ -72,20 +59,11 @@ export default function StampCard(props) {
           </View>
         ))}
       </View>
-      <TouchableOpacity
-        onPress={() => { navigation.navigate('ComingCheck', { activateStamp, setVisited }); }}
-        style={[styles.button, visited ? styles.buttonDisabled : {}]}
-        disabled={visited}
-      >
-        <Text style={styles.buttonText}>来店記録をとる</Text>
-      </TouchableOpacity>
     </View>
   );
 }
 
 StampCard.propTypes = {
-  visited: bool.isRequired,
-  setVisited: func.isRequired,
   userVisited: arrayOf(
     string,
   ),
