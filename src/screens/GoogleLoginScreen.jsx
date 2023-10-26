@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Image, StyleSheet, TextInput, ScrollView, Alert,
+  View, Image, StyleSheet, TextInput, ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { func } from 'prop-types';
