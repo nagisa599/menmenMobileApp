@@ -14,7 +14,6 @@ export default function CouponScreen() {
   const { userInfo, setUserInfo } = useContext(userInfoContext);
   const [coupons, setCoupons] = useState([]);
   const [filterCoupons, setFilterCoupon] = useState([]);
-  const [filter, setFilter] = useState('0');
   // ログインしているかのチェック（最初のアクセスのみ発火)
   useEffect(() => {
     if (userInfo) {
@@ -34,11 +33,6 @@ export default function CouponScreen() {
       );
     }
   }, []);
-
-  // filter変更時に発火するイベント
-  useEffect(() => {
-    couponFilter();
-  }, [filter]);
 
   // Userに基づいたクーポンの取得
   const fetchData = async () => {
@@ -69,39 +63,6 @@ export default function CouponScreen() {
     } catch (error) {
       Alert.alert('データの読み込みに失敗しました');
     }
-  };
-  // couponを条件によって絞るメソッド
-  const couponFilter = () => {
-    const today = new Date();
-    let functionFilterCoupons;
-    /* eslint-disable */
-    switch (filter) {
-      case '0':
-        functionFilterCoupons = coupons.filter((coupon) => {
-          return coupon.expireDate > today && coupon.used == false;
-        });;
-        setFilterCoupon(functionFilterCoupons);
-        break;
-      case '1':
-        functionFilterCoupons = coupons.filter((coupon) => {
-          return coupon.expireDate > today && coupon.used == false && coupon.expire > new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()); 
-        });
-        setFilterCoupon(functionFilterCoupons);
-        break;
-      case '2':
-        functionFilterCoupons = coupons.filter((coupon) => {
-          return coupon.expireDate > today && coupon.used == false && coupon.expire > new Date(today.getFullYear(), today.getMonth() + 3, today.getDate())
-        });
-        setFilterCoupon(functionFilterCoupons);
-        break;
-      case '3':
-        functionFilterCoupons = coupons.filter((coupon) => {
-          return coupon.used == true
-        });
-        setFilterCoupon(functionFilterCoupons);
-        break;
-      
-    };
   };
   /* eslint-enable */
   return (
