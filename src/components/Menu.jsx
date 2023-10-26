@@ -44,13 +44,17 @@ export default function Menu(props) {
   };
 
   return (
-    <FlatList
-      data={displayMenus}
-      renderItem={renderItem}
-      keyExtractor={(menu) => menu.id}
-      numColumns={2} // 2列で表示
-      contentContainerStyle={styles.container}
-    />
+    <View style={styles.container}>
+      <View style={styles.explain}>
+        <Text>ピンク色が本日食べられるメニューです！</Text>
+      </View>
+      <FlatList
+        data={displayMenus}
+        renderItem={renderItem}
+        keyExtractor={(menu) => menu.id}
+        numColumns={2} // 2列で表示
+      />
+    </View>
   );
 }
 
@@ -67,7 +71,7 @@ Menu.propTypes = {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    flex: 1,
   },
   menuBox: {
     margin: 10,
@@ -108,5 +112,9 @@ const styles = StyleSheet.create({
   item: {
     fontSize: 12,
     color: 'black',
+  },
+  explain: {
+    alignItems: 'center',
+    paddingVertical: 15,
   },
 });

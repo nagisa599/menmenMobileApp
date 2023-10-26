@@ -1,24 +1,99 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import {
+  View, StyleSheet, Dimensions,
+} from 'react-native';
 import {
   getFirestore, collection, query, where, orderBy, getDocs,
 } from 'firebase/firestore';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import * as FileSystem from 'expo-file-system';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { TabView, TabBar } from 'react-native-tab-view';
+import {
+  shape, string, arrayOf, oneOfType, number, bool,
+} from 'prop-types';
 import Menu from '../components/Menu';
-import SmallTab from '../components/SmallTab';
+// import SmallTab from '../components/SmallTab';
 import LoadingScreen from './LoadingScreen';
 
 const ramen = require('../../assets/ramen.jpg');
 const halframen = require('../../assets/halframen.jpg');
+
+function SceneComponent({
+  route, regularmenus, limitemenus, toppingMenus,
+}) {
+  switch (route.key) {
+    case 'menu':
+      return <Menu menus={regularmenus} />;
+    case 'limit':
+      return <Menu menus={limitemenus} />;
+    case 'topping':
+      return <Menu menus={toppingMenus} />;
+    default:
+      return null;
+  }
+}
+SceneComponent.propTypes = {
+  route: shape({
+    key: string.isRequired,
+    title: string,
+  }).isRequired,
+  regularmenus: arrayOf(
+    shape({
+      id: string.isRequired,
+      imageURL: oneOfType([string, number]).isRequired,
+      name: string.isRequired,
+      price: number.isRequired,
+      student: bool.isRequired,
+      favorite: number.isRequired,
+      today: bool.isRequired,
+    }),
+  ).isRequired,
+  limitemenus: arrayOf(
+    shape({
+      id: string.isRequired,
+      imageURL: oneOfType([string, number]).isRequired,
+      name: string.isRequired,
+      price: number.isRequired,
+      student: bool.isRequired,
+      favorite: number.isRequired,
+      today: bool.isRequired,
+    }),
+  ).isRequired,
+  toppingMenus: arrayOf(
+    shape({
+      id: string.isRequired,
+      imageURL: oneOfType([string, number]).isRequired,
+      name: string.isRequired,
+      price: number.isRequired,
+      student: bool.isRequired,
+      favorite: number.isRequired,
+      today: bool.isRequired,
+    }),
+  ).isRequired,
+};
 
 export default function MenuScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [regularmenus, setRegularMenu] = useState([]);
   const [limitemenus, setLimitmenus] = useState([]);
   const [toppingMenus, setToppingmenus] = useState([]);
-  const [currentTab, setCurrentTab] = useState('menu');
+  const [index, setIndex] = useState(0);
+
+  const [routes] = useState([
+    { key: 'menu', title: 'レギュラー' },
+    { key: 'limit', title: '期間限定' },
+    { key: 'topping', title: 'トッピング' },
+  ]);
+
+  const renderScene = ({ route }) => (
+    <SceneComponent
+      route={route}
+      regularmenus={regularmenus}
+      limitemenus={limitemenus}
+      toppingMenus={toppingMenus}
+    />
+  );
 
   const storage = getStorage();
   const db = getFirestore();
@@ -128,21 +203,20 @@ export default function MenuScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.shadowContainer}>
-        <View style={styles.newTabContainer}>
-          <SmallTab label="レギュラー" onPress={() => setCurrentTab('menu')} active={currentTab === 'menu'} />
-          <SmallTab label="期間限定" onPress={() => setCurrentTab('limit')} active={currentTab === 'limit'} />
-          <SmallTab label="トッピング" onPress={() => setCurrentTab('topping')} active={currentTab === 'topping'} />
-        </View>
-        <View style={styles.explain}>
-          <Text>ピンク色は今日食べられるメニューです！</Text>
-        </View>
-      </View>
-      <View style={styles.subContainer}>
-        {currentTab === 'menu' && <Menu menus={regularmenus} />}
-        {currentTab === 'limit' && <Menu menus={limitemenus} />}
-        {currentTab === 'topping' && <Menu menus={toppingMenus} />}
-      </View>
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: Dimensions.get('window').width }}
+        renderTabBar={(props) => (
+          <TabBar
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...props}
+            style={{ backgroundColor: 'gray' }}
+            indicatorStyle={{ backgroundColor: 'tomato', height: 3 }}
+          />
+        )}
+      />
     </View>
   );
 }
