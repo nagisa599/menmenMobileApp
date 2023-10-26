@@ -3,23 +3,12 @@ import {
   View, StyleSheet, Image, ScrollView,
 } from 'react-native';
 import Calender from '../components/Calender';
-import Tab from '../components/Tab';
 
 const time = require('../../assets/time.png');
 
-export default function HomeScreen(props) {
-  const { navigation } = props;
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <View style={styles.tabContainer}>
-        <Tab
-          label="メニュー"
-          onPress={() => {
-            navigation.navigate('MenuScreen');
-          }}
-        />
-        <Tab label="その他" onPress={() => {}} active />
-      </View>
       <ScrollView>
         <Calender />
         <View style={styles.businessHourBox}>

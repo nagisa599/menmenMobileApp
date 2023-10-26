@@ -7,16 +7,13 @@ import {
 import * as FileSystem from 'expo-file-system';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import Menu from '../components/Menu';
-import Tab from '../components/Tab';
 import SmallTab from '../components/SmallTab';
 import LoadingScreen from './LoadingScreen';
 
 const ramen = require('../../assets/ramen.jpg');
 const halframen = require('../../assets/halframen.jpg');
 
-export default function MenuScreen(props) {
-  const { navigation } = props;
-
+export default function MenuScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [regularmenus, setRegularMenu] = useState([]);
   const [limitemenus, setLimitmenus] = useState([]);
@@ -132,11 +129,6 @@ export default function MenuScreen(props) {
   return (
     <View style={styles.container}>
       <View style={styles.shadowContainer}>
-        <View style={styles.tabContainer}>
-          <Tab label="メニュー" onPress={() => {}} active />
-          <Tab label="その他" onPress={() => navigation.navigate('HomeScreen')} />
-        </View>
-
         <View style={styles.newTabContainer}>
           <SmallTab label="レギュラー" onPress={() => setCurrentTab('menu')} active={currentTab === 'menu'} />
           <SmallTab label="期間限定" onPress={() => setCurrentTab('limit')} active={currentTab === 'limit'} />

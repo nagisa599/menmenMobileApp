@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, Alert,
+  View, StyleSheet, ScrollView, Alert,
 } from 'react-native';
 import {
   getDocs, collection, query, getDoc, doc,
@@ -9,7 +9,6 @@ import db from '../../firebaseConfig';
 // import { userInfoContext } from '../../App';
 import userInfoContext from '../utils/UserInfoContext';
 import CouponItem from '../components/CouponItem';
-import FilterItem from '../components/FilterItem';
 
 export default function CouponScreen() {
   const { userInfo, setUserInfo } = useContext(userInfoContext);
@@ -107,12 +106,6 @@ export default function CouponScreen() {
   /* eslint-enable */
   return (
     <View style={styles.container}>
-      <View style={styles.filterContainer}>
-        <View style={styles.subtitle}>
-          <Text style={styles.subtitleText}>クーポン一覧</Text>
-        </View>
-        <FilterItem setFilter={setFilter} />
-      </View>
       <ScrollView contentContainerStyle={styles.itemContainer}>
         {filterCoupons.map((coupon) => (
           <CouponItem
