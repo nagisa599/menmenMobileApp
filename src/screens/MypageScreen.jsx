@@ -12,6 +12,7 @@ import StampCard from '../components/StampCard';
 import Loading from '../components/Loading';
 import Generator from '../components/Generator';
 import { ChangeIDtoName, convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from '../utils/Data';
+import TitleScreen from './TitleScreen';
 
 export default function MypageScreen(props) {
   const { navigation } = props;
@@ -141,6 +142,7 @@ export default function MypageScreen(props) {
         <Generator />
         <View style={styles.titleContainer}>
           <Text style={styles.title}>称号</Text>
+          <TitleScreen />
         </View>
       </ScrollView>
     </View>
