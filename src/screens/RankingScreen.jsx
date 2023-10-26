@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, StyleSheet, Text, ScrollView, Alert,
+  View, StyleSheet, ScrollView, Alert,
 } from 'react-native';
 import {
   getDocs, collection, query, orderBy,
 } from 'firebase/firestore';
 import db from '../../firebaseConfig';
-import Tab from '../components/Tab';
 import RankingList from '../components/RankingList';
 
-export default function RankingScreen(props) {
+export default function RankingScreen() {
   const [ranking, setRanking] = useState([]);
-  const { navigation } = props;
   const fetchRanking = async () => {
     try {
       const ref = query(collection(db, 'ranking'), orderBy('times', 'desc'));
@@ -36,20 +34,6 @@ export default function RankingScreen(props) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.shadowContainer}>
-        <View style={styles.tabContainer}>
-          <Tab label="ランキング" onPress={() => {}} active />
-          <Tab
-            label="称号"
-            onPress={() => {
-              navigation.navigate('TitleScreen');
-            }}
-          />
-        </View>
-        <View style={styles.subTitle}>
-          <Text style={styles.text}>直近3ヶ月の来店回数</Text>
-        </View>
-      </View>
       <ScrollView style={styles.listContainer}>
         {ranking.map((rankingComponent, index) => (
           <View key={rankingComponent.name}>

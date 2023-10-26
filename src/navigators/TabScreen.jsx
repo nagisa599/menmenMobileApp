@@ -1,29 +1,31 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import commonHeaderOptions from '../styles/NavigationHeaderStyles';
 import MenuStack from './MenuNavigator';
 import RankingStack from './RankingNavigator';
-
 import FriendListStack from './FriendNavigator';
-
-import FriendScreen from '../screens/FriendScreen';
 import CouponScreen from '../screens/CouponScreen';
-
-import MypageStack from './MypageNavigator';
 import getTabBarIcon from '../components/FooterTab';
+import HomeStack from './HomeNavigator';
 
 const Tab = createBottomTabNavigator();
 
 export default function MainTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="メニュー"
+      initialRouteName="ホーム"
       screenOptions={{
-        ...commonHeaderOptions,
+        headerShown: false,
         tabBarInactiveTintColor: 'black',
         tabBarActiveTintColor: 'tomato',
       }}
     >
+      <Tab.Screen
+        name="ホーム"
+        component={HomeStack}
+        options={{
+          tabBarIcon: getTabBarIcon({ name: 'ホーム' }),
+        }}
+      />
       <Tab.Screen
         name="メニュー"
         component={MenuStack}
@@ -50,13 +52,6 @@ export default function MainTabs() {
         component={FriendListStack}
         options={{
           tabBarIcon: getTabBarIcon({ name: 'フレンド' }),
-        }}
-      />
-      <Tab.Screen
-        name="マイページ"
-        component={MypageStack}
-        options={{
-          tabBarIcon: getTabBarIcon({ name: 'マイページ' }),
         }}
       />
     </Tab.Navigator>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { bool, string, number } from 'prop-types';
 
 export default function getTabBarIcon(route) {
@@ -8,15 +8,16 @@ export default function getTabBarIcon(route) {
 
     if (route.name === 'メニュー') {
       iconName = focused ? 'home' : 'home-outline';
-    } else if (route.name === 'クーポン') {
+      return <MaterialIcons name="menu-book" size={size} color={color} />;
+    } if (route.name === 'クーポン') {
       iconName = focused ? 'ticket' : 'ticket-outline';
       return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
-    } else if (route.name === 'ランキング') {
+    } if (route.name === 'ランキング') {
       iconName = focused ? 'trophy' : 'trophy-outline';
     } else if (route.name === 'フレンド') {
       iconName = focused ? 'people' : 'people-outline';
-    } else if (route.name === 'マイページ') {
-      iconName = focused ? 'person' : 'person-outline';
+    } else if (route.name === 'ホーム') {
+      iconName = focused ? 'home' : 'home-outline';
     }
     return <Ionicons name={iconName} size={size} color={color} />;
   }

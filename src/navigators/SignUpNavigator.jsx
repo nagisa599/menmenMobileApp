@@ -2,7 +2,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 
 import { func, shape } from 'prop-types';
-import commonHeaderOptions from '../styles/NavigationHeaderStyles';
 import SignUpScreen from '../screens/SignUpScreen';
 
 const Stack = createNativeStackNavigator();
@@ -10,7 +9,7 @@ const Stack = createNativeStackNavigator();
 export default function SignUpStack(props) {
   const { userInfo, setUserInfo } = props;
   return (
-    <Stack.Navigator initialRouteName="SignUp" screenOptions={commonHeaderOptions}>
+    <Stack.Navigator initialRouteName="SignUp">
       <Stack.Screen name="SignUp">
         {() => (
           <SignUpScreen
