@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { bool, func } from 'prop-types';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
@@ -110,6 +110,7 @@ export default function MainStackNavigator({ isSplashVisible, setSplashVisible }
         name="Men Men"
         component={MainTabs}
         options={{
+          headerTitleAlign: 'center',
           // eslint-disable-next-line react/no-unstable-nested-components
           headerLeft: () => <MyheaderLeft navigation={navigation} />,
           // eslint-disable-next-line react/no-unstable-nested-components
@@ -122,7 +123,7 @@ export default function MainStackNavigator({ isSplashVisible, setSplashVisible }
           ),
           headerTitleStyle: {
             fontSize: 24,
-            fontFamily: 'Arial',
+            fontFamily: Platform.OS === 'ios' ? 'Arial' : 'Roboto',
           },
         }}
       />
