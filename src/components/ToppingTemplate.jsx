@@ -14,7 +14,7 @@ export default function ToppingTemplate(props) {
           {options.map((option) => (
             <View>
               <View style={styles.circleOption}>
-                <Text style={styles.circleText}>{option.name}</Text>
+                <Text style={styles.circleText} numberOfLines={2}>{option.name}</Text>
               </View>
               {option.explain && (
                 <View style={styles.explainContainer}>
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   border: {
-    borderWidth: 5,
+    borderWidth: 3,
     borderRadius: 15,
   },
   titleContainer: {

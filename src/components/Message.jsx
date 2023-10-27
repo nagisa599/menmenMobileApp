@@ -6,7 +6,7 @@ export default function Message() {
   return (
     <View>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>&lt;---  注文方法  ---></Text>
+        <Text style={styles.title}>&lt;---  注文方法  ---&gt;</Text>
       </View>
       <ToppingTemplate
         toppingName="ニンニク"
@@ -26,7 +26,7 @@ export default function Message() {
             { name: '少なめ', explain: '150g' },
             { name: '普通', explain: '300g' },
             { name: 'ヤサイ', explain: '450g' },
-            { name: 'ヤサイマシマシ', explain: '600g' },
+            { name: 'ヤサイ\nマシマシ', explain: '600g' },
           ]
         }
       />
@@ -36,7 +36,7 @@ export default function Message() {
           [
             { name: '普通' },
             { name: 'アブラ' },
-            { name: 'アブラマシマシ' },
+            { name: 'アブラ\nマシマシ' },
           ]
         }
       />
@@ -59,6 +59,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 30,
+    fontSize: 20,
   },
 });
