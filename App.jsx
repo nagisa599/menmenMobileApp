@@ -49,8 +49,10 @@ export default function App() {
     };
 
     if (response?.type === 'success') {
-      const { idToken } = response.params;
-      const credential = GoogleAuthProvider.credential(idToken);
+      /* eslint-disable */
+      const { id_token } = response.params;
+      /* eslint-enable */
+      const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential)
         .then((authResult) => {
           const { user } = authResult;
