@@ -1,21 +1,39 @@
 import React from 'react';
 import {
-  View, StyleSheet, Image, ScrollView,
+  View,
+  StyleSheet,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Text,
 } from 'react-native';
-import Calender from '../components/Calender';
+import { useNavigation } from '@react-navigation/native';
+import Message from '../components/Message';
 
-const time = require('../../assets/time.png');
+// Assets
+const timeIcon = require('../../assets/time.png');
+
+// Constants
+const imageWidth = 350;
+const aspectRatio = 692 / 1014;
+const imageHeight = imageWidth * aspectRatio;
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
-      <ScrollView>
-        <Calender />
+      <ScrollView contentContainerStyle={styles.content}>
+        <TouchableOpacity
+          style={styles.questionContainer}
+          onPress={() => navigation.navigate('Question')}
+        >
+          <Text style={styles.questionText}>臨時アンケート回答</Text>
+        </TouchableOpacity>
         <View style={styles.businessHourBox}>
-          <View style={styles.businessHour}>
-            <Image source={time} style={styles.imageStyle} />
-          </View>
+          <Image source={timeIcon} style={styles.imageStyle} resizeMode="contain" />
         </View>
+        <Message />
       </ScrollView>
     </View>
   );
@@ -24,40 +42,36 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F5F5F5', // 背景色を少し明るくする
   },
-  tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  content: {
+    paddingHorizontal: 40,
     paddingVertical: 30,
   },
-  circle: {
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  lastTextContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingRight: 30,
-  },
-  lastText: {
-    fontSize: 30,
-  },
   businessHourBox: {
-    width: '75%',
-    height: 276,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    marginVertical: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  businessHour: {
-    paddingVertical: 80,
-    width: '100%',
+    width: imageWidth,
+    height: imageHeight,
+    marginBottom: 30, // 余白を増やす
   },
   imageStyle: {
     width: '100%',
-    height: '140%',
+    height: '100%',
     resizeMode: 'contain',
+  },
+  questionContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
+    borderRadius: 30,
+    backgroundColor: '#4A90E2', // ボタンの背景色変更
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    marginBottom: 20,
+  },
+  questionText: {
+    fontSize: 18,
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
