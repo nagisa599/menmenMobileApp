@@ -22,13 +22,13 @@ export default function CouponItem(props) {
   // coupon使用メソッド。（クーポンをタップすると発火する。）
   const useCoupon = async () => {
     try {
+      setIsCouponUsed(true);
       const ref = doc(db, `users/${userInfo.uid}/hasCoupons`, coupon.id);
       await setDoc(ref, {
         expire: coupon.expireDate,
         used: true,
         usedDate: new Date(),
       });
-      setIsCouponUsed(true);
       setCoupons(coupons.map((preCoupon) => (
         preCoupon.id === coupon.id ? { ...preCoupon, used: true } : preCoupon
       )));

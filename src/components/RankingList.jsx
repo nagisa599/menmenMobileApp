@@ -1,20 +1,37 @@
 import React from 'react';
 import {
-  StyleSheet, TouchableOpacity, Text, View,
+  StyleSheet, TouchableOpacity, Text, View, Image,
 } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { number, string } from 'prop-types';
+import Icon from './icon';
+
+const profileImage = require('../../assets/ramen.jpg');
 
 export default function RankingList({ rank, times, name }) {
+  let iconColor = '#555'; // デフォルトのアイコンの色
+
+  // ランキングに応じてアイコンの色を設定
+  if (rank === 1) {
+    iconColor = 'gold'; // 1位の場合は金色
+  } else if (rank === 2) {
+    iconColor = 'silver'; // 2位の場合は銀色
+  } else if (rank === 3) {
+    iconColor = '#cd7f32'; // 3位の場合は銅色（ブロンズ）
+  }
   return (
-    <TouchableOpacity style={[styles.container, rank === 1 ? styles.firstPlaceContainer : {}]}>
-      {rank === 1 && <FontAwesome5 name="crown" size={24} color="gold" style={styles.icon} />}
-      <Text style={[styles.rank, rank === 1 ? styles.firstPlaceRank : {}]}>{`${rank} .`}</Text>
+    <TouchableOpacity style={[styles.container]}>
+      <View style={styles.icon}>
+        <Icon name="ramen_icon" size={60} color={iconColor} />
+      </View>
+      <Text style={[styles.rank]}>{`${rank}`}</Text>
+      <Image source={profileImage} style={styles.profileImage} />
       <View style={styles.info}>
-        <FontAwesome5 name="user-alt" size={18} color="gray" />
         <Text style={styles.user}>{name}</Text>
-        <FontAwesome5 name="clock" size={18} color="#a0522d" />
-        <Text style={styles.times}>{`${times} 回!`}</Text>
+        <View style={styles.timesContainer}>
+          <FontAwesome5 name="clock" size={18} color="#a0522d" />
+          <Text style={styles.times}>{`${times} 回!`}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -45,13 +62,17 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  firstPlaceContainer: {
-    borderColor: 'gold',
-    backgroundColor: 'rgba(255, 223, 186, 0.9)',
+  profileImage: {
+    height: 60,
+    width: 60,
+    borderRadius: 10,
   },
   rank: {
+    position: 'absolute',
+    top: 40,
+    left: 25,
     marginLeft: 15,
-    fontSize: 18,
+    fontSize: 25,
     fontWeight: '500',
     color: '#555',
     flex: 1,
@@ -60,13 +81,13 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   icon: {
-    marginRight: 10,
+    paddingLeft: 20,
+    paddingHorizontal: 20,
   },
   info: {
-    flexDirection: 'row',
-    alignItems: 'center',
     flex: 6,
-    marginRight: 15,
+    marginRight: 0,
+    paddingLeft: 30,
   },
   user: {
     fontWeight: '500',
@@ -74,6 +95,9 @@ const styles = StyleSheet.create({
     color: '#4a4a4a',
     marginLeft: 5,
     marginRight: 10,
+  },
+  timesContainer: {
+    flexDirection: 'row',
   },
   times: {
     fontSize: 18,
