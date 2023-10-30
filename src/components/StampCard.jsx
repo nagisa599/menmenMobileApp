@@ -1,8 +1,9 @@
 import { arrayOf, string } from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, TouchableOpacity, StyleSheet, Dimensions,
+  View, Text, TouchableOpacity, StyleSheet, Dimensions, ImageBackground,
 } from 'react-native';
+import imageStampCard from '../../assets/stampcard.png';
 
 export default function StampCard(props) {
   const { userVisited } = props;
@@ -43,23 +44,23 @@ export default function StampCard(props) {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={imageStampCard} style={styles.container}>
       <View style={styles.pagination}>
         <TouchableOpacity onPress={handlePrevPage}>
-          <Text>前のページ</Text>
+          <Text style={styles.text}>{'<'}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleNextPage}>
-          <Text>次のページ</Text>
+          <Text style={styles.text}>{'>'}</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.stampContainer}>
         {stamps.slice(currentPage * 10, (currentPage + 1) * 10).map((stamp, index) => (
-          <View key={index} style={[styles.stamp, { backgroundColor: stamp ? 'blue' : 'gray' }]}>
+          <View key={index} style={[styles.stamp, { backgroundColor: stamp ? 'blue' : null }]}>
             {stamp && <Text style={styles.dateText}>{stamp}</Text>}
           </View>
         ))}
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
@@ -77,7 +78,7 @@ StampCard.defaultProps = {
 const windowWidth = Dimensions.get('window').width;
 
 // スタンプのサイズや間隔を計算
-const stampSize = (windowWidth - 160) / 5;
+const stampSize = (windowWidth - 142) / 5;
 const stampMargin = 5;
 
 // スタンプのサイズに基づいて、dateTextのフォントサイズを計算
@@ -93,6 +94,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     marginBottom: 16,
+  
   },
   stamp: {
     width: stampSize,
@@ -100,7 +102,11 @@ const styles = StyleSheet.create({
     margin: stampMargin,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5,
+    borderRadius: 50,
+  },
+  text: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   dateText: {
     color: '#fff',
@@ -124,5 +130,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 16,
+  },
+  title: {
+    fontSize: 24,
+    textDecorationLine: 'underline',
   },
 });

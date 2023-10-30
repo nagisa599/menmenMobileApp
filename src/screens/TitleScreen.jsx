@@ -33,17 +33,5 @@ export default function TitleScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 50,
-  },
-  circle: {
-    alignItems: 'center',
-  },
-  lastTextContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingRight: 30,
-  },
-  lastText: {
-    fontSize: 40,
   },
 });
