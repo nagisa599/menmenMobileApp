@@ -5,6 +5,7 @@ import {
 import { FontAwesome5 } from '@expo/vector-icons';
 import { number, string } from 'prop-types';
 import Icon from './icon';
+import CircleTitle from './CircleTitle';
 
 const profileImage = require('../../assets/ramen.jpg');
 
@@ -26,6 +27,9 @@ export default function RankingList({ rank, times, name }) {
       </View>
       <Text style={[styles.rank]}>{`${rank}`}</Text>
       <Image source={profileImage} style={styles.profileImage} />
+      <View style={styles.titleImage}>
+        <CircleTitle title={times} />
+      </View>
       <View style={styles.info}>
         <Text style={styles.user}>{name}</Text>
         <View style={styles.timesContainer}>
@@ -83,6 +87,11 @@ const styles = StyleSheet.create({
   icon: {
     paddingLeft: 20,
     paddingHorizontal: 20,
+  },
+  titleImage: {
+    position: 'absolute',
+    left: 120,
+    top: 30,
   },
   info: {
     flex: 6,

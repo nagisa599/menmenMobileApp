@@ -2,22 +2,11 @@ import React from 'react';
 import {
   View, StyleSheet, Text, Image,
 } from 'react-native';
-import Tab from '../components/Tab';
-
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
 
-export default function InquiryScreen(props) {
-  const { navigation } = props;
+export default function InquiryScreen() {
   return (
     <View style={styles.container}>
-      <View style={styles.tabContainer}>
-        <Tab
-          label="戻る"
-          onPress={() => {
-            navigation.navigate('SettingScreen');
-          }}
-        />
-      </View>
       <View style={styles.header}>
         <Image source={logoImage} style={styles.logo} />
       </View>

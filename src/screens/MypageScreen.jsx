@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, StyleSheet, Image, ScrollView,
+  View, Text, StyleSheet, Image, ScrollView, TouchableOpacity,
 } from 'react-native';
-import { MaterialIcons, AntDesign } from '@expo/vector-icons';
-
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
-import Tab from '../components/Tab';
+
 import myLocalImage from '../../assets/profile.jpg';
 import StampCard from '../components/StampCard';
 import Loading from '../components/Loading';
 import Generator from '../components/Generator';
 import { ChangeIDtoName, convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from '../utils/Data';
-import TitleScreen from './TitleScreen';
+import CircleTitle from '../components/CircleTitle';
 
 export default function MypageScreen(props) {
   const { navigation } = props;
@@ -36,10 +34,9 @@ export default function MypageScreen(props) {
           const userDoc = await getDoc(userInfoDocRef);
           if (userDoc.exists()) {
             const userData = userDoc.data();
-
             const ramenName = await ChangeIDtoName(userData.ramen);
             const toppingName = await ChangeIDtoName(userData.topping);
-
+            console.log(ramenName);
             let lastVisitDate = null;
             let comingData = [];
 
@@ -80,7 +77,6 @@ export default function MypageScreen(props) {
         console.log('ユーザーはログインしていません');
       }
     });
-
     return () => {
       unsubscribe();
     };
@@ -92,18 +88,14 @@ export default function MypageScreen(props) {
   return (
     <View style={styles.container}>
       <Loading isLoading={isLoading} isImageLoaded={isImageLoaded} />
-      <View style={styles.tabContainer}>
-        <Tab label="マイページ" onPress={() => {}} active />
-        <Tab
-          label="設定"
-          onPress={() => {
-            navigation.navigate('SettingScreen');
-          }}
-        />
-      </View>
       <ScrollView style={styles.listContainer}>
-        <View style={styles.maininfo}>
-          <View>
+        <TouchableOpacity
+          style={styles.maininfo}
+          onPress={() => {
+            navigation.navigate('EditUserInfoScreen');
+          }}
+        >
+          <View style={styles.imageContainer}>
             <Image
               source={myLocalImage}
               style={styles.icon}
@@ -112,25 +104,19 @@ export default function MypageScreen(props) {
               }}
             />
           </View>
+          <View style={styles.circleImage}>
+            <CircleTitle />
+          </View>
           <View style={styles.nameContainer}>
             <Text style={styles.username}>{userInfo.userName}</Text>
+            <Text style={styles.subtitle}>{`users/${userInfo.userRamen}/`}</Text>
+            <Text style={styles.subtitle}>好きなトッピング</Text>
           </View>
-        </View>
+          <Text style={styles.changeIcon}>{'>'}</Text>
+        </TouchableOpacity>
+        <View style={styles.separator} />
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>好きなラーメン・トッピング</Text>
-          <View style={styles.favorite}>
-            <View style={styles.ramen}>
-              <MaterialIcons name="ramen-dining" size={22} color="black" />
-              <Text style={styles.item}>{userInfo.userRamen}</Text>
-            </View>
-            <View style={styles.topping}>
-              <AntDesign name="pluscircleo" size={22} color="black" />
-              <Text style={styles.item}>{userInfo.userTopping}</Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>スタンプカード</Text>
+
           <View style={styles.stamp}>
             {!isLoading && (
             <StampCard
@@ -139,11 +125,44 @@ export default function MypageScreen(props) {
             )}
           </View>
         </View>
-        <Generator />
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>称号</Text>
-          <TitleScreen />
+        <View style={styles.separator} />
+        <View>
+          <Text style={styles.otherText}>その他</Text>
+          <TouchableOpacity
+            style={styles.otherinfo}
+            onPress={() => {
+              navigation.navigate('TermsOfUseScreen');
+            }}
+          >
+            <View style={styles.otherContainer}>
+              <Text style={styles.othername}>利用規約</Text>
+            </View>
+            <Text style={styles.changeIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.otherinfo}
+            onPress={() => {
+              navigation.navigate('InquiryScreen');
+            }}
+          >
+            <View style={styles.otherContainer}>
+              <Text style={styles.othername}>お問い合わせ</Text>
+            </View>
+            <Text style={styles.changeIcon}>{'>'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.otherinfo}
+            onPress={() => {
+              navigation.navigate('InquiryScreen');
+            }}
+          >
+            <View style={styles.otherContainer}>
+              <Text style={styles.othername}>ヘルプ</Text>
+            </View>
+            <Text style={styles.changeIcon}>{'>'}</Text>
+          </TouchableOpacity>
         </View>
+        <Generator />
       </ScrollView>
     </View>
   );
@@ -173,40 +192,67 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   listContainer: {
-    paddingTop: 30,
+    paddingTop: 20,
+  },
+  circleImage: {
+    position: 'absolute',
+    top: 40,
+    left: 30,
   },
   maininfo: {
-    paddingVertical: 20,
-    paddingHorizontal: 10,
+    paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 30,
-    marginRight: 20,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 10,
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  otherinfo: {
+    paddingVertical: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  otherText: {
+    paddingTop: 20,
+    paddingLeft: 20,
+    paddingBottom: 5,
+  },
+  imageContainer: {
+    paddingLeft: 10,
+  },
+  changeIcon: {
+    fontSize: 20,
+    paddingRight: 20,
   },
   icon: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 60,
+    height: 60,
+    borderRadius: 10,
   },
   nameContainer: {
     flex: 1,
-    marginLeft: 20,
-    alignItems: 'center',
+    padding: 20,
+  },
+  otherContainer: {
+    flex: 1,
+    padding: 10,
   },
   username: {
-    fontSize: 28,
+    fontSize: 30,
+  },
+  subtitle: {
+    fontSize: 15,
+    color: 'rgba(0, 0, 0, 0.5)', // テキストの色を薄くする (0.5 はアルファ値)
+  },
+  othername: {
+    fontSize: 15,
+    fontWeight: 'bold',
   },
   titleContainer: {
     marginHorizontal: 30,
+    marginTop: 20,
     marginBottom: 20,
-  },
-  title: {
-    fontSize: 24,
-    textDecorationLine: 'underline',
   },
   favorite: {
     paddingTop: 20,
@@ -224,6 +270,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   stamp: {
-    marginTop: 30,
+    marginTop: 10,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: 'gray', // 線の色を選択してください
+    marginHorizontal: 10,
   },
 });

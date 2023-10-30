@@ -2,10 +2,8 @@ import React from 'react';
 import {
   View, StyleSheet, ScrollView, Text,
 } from 'react-native';
-import Tab from '../components/Tab';
 
-export default function TermsOfUseScreen(props) {
-  const { navigation } = props;
+export default function TermsOfUseScreen() {
   const termsText = `
     利用規約の内容をここに記述します。必要な範囲で改行やスタイリングを適用できます。
     例えば、リスト項目として表示する場合や、太字や斜体を使用する場合など、必要に応じてスタイリングを追加できます。
@@ -20,14 +18,6 @@ export default function TermsOfUseScreen(props) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.tabContainer}>
-        <Tab
-          label="戻る"
-          onPress={() => {
-            navigation.navigate('SettingScreen');
-          }}
-        />
-      </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.card}>
           <Text style={styles.termsText}>{termsText}</Text>

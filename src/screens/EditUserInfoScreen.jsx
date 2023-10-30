@@ -11,7 +11,6 @@ import { getAuth } from 'firebase/auth';
 import db from '../../firebaseConfig';
 
 import DropdownSelect from '../components/DropdownSelect';
-import Tab from '../components/Tab';
 import userInfoContext from '../utils/UserInfoContext';
 
 // ramenコレクションの情報に置き換える
@@ -146,14 +145,6 @@ export default function EditUserInfoScreen(props) {
   }, []);
   return (
     <View style={styles.container}>
-      <View style={styles.tabContainer}>
-        <Tab
-          label="戻る"
-          onPress={() => {
-            navigation.navigate('SettingScreen');
-          }}
-        />
-      </View>
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>ユーザ登録変更</Text>

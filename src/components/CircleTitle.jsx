@@ -9,10 +9,10 @@ import logoImage5 from '../../assets/FIVE.png';
 
 export default function CircleTitle({ title }) {
   const getImageAndStyle = () => {
-    if (title > 12) return { image: logoImage5, style: styles.logo5 };
-    if (title > 8) return { image: logoImage4, style: styles.logo4 };
-    if (title > 4) return { image: logoImage3, style: styles.logo3 };
-    if (title > 0) return { image: logoImage2, style: styles.logo2 };
+    if (title > 12) return { image: logoImage5, style: styles.logo1 };
+    if (title > 8) return { image: logoImage4, style: styles.logo1 };
+    if (title > 4) return { image: logoImage3, style: styles.logo1 };
+    if (title > 0) return { image: logoImage2, style: styles.logo1 };
     return { image: logoImage1, style: styles.logo1 };
   };
 
@@ -31,24 +31,8 @@ CircleTitle.propTypes = {
 
 const styles = StyleSheet.create({
   logo1: {
-    width: 250,
-    height: 290,
-  },
-  logo2: {
-    width: 290,
-    height: 290,
-  },
-  logo3: {
-    width: 280,
-    height: 280,
-  },
-  logo4: {
-    width: 260,
-    height: 280,
-  },
-  logo5: {
-    width: 240,
-    height: 280,
+    width: 80,
+    height: 80,
   },
   header: {
     flex: 1,

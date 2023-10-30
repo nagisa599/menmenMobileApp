@@ -2,7 +2,7 @@ import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 export const ChangeIDtoName = async (id) => {
   const db = getFirestore();
-
+  console.log(id);
   const ramenPath = `ramens/${id}/`;
   const ref = doc(db, ramenPath);
 
@@ -10,6 +10,7 @@ export const ChangeIDtoName = async (id) => {
     const ramenDoc = await getDoc(ref);
     if (ramenDoc.exists()) {
       const ramenData = ramenDoc.data();
+      console.log(ramenData);
       return ramenData.name;
     }
   } catch (error) {

@@ -176,8 +176,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10, // 下右の角にborderRadiusを適用
   },
   usedButtonText: {
-    color: 'white',
+    color: 'black',
     fontSize: 16,
+    fontWeight: 'bold',
   },
   separator: {
     borderBottomWidth: 10,
