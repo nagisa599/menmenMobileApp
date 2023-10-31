@@ -12,10 +12,10 @@ export default function Message() {
         toppingName="ニンニク"
         options={
           [
-            { name: '抜き', explain: '0g' },
-            { name: '少し', explain: '大さじ半杯' },
-            { name: 'ニンニク', explain: '大さじ1杯' },
-            { name: 'ニンニクマシマシ', explain: '大さじ2杯' },
+            { id: '1', name: '抜き', explain: '0g' },
+            { id: '2', name: '少し', explain: '大さじ半杯' },
+            { id: '3', name: 'ニンニク', explain: '大さじ1杯' },
+            { id: '4', name: 'ニンニクマシマシ', explain: '大さじ2杯' },
           ]
         }
       />
@@ -23,10 +23,10 @@ export default function Message() {
         toppingName="ヤサイ"
         options={
           [
-            { name: '少なめ', explain: '150g' },
-            { name: '普通', explain: '300g' },
-            { name: 'ヤサイ', explain: '450g' },
-            { name: 'ヤサイ\nマシマシ', explain: '600g' },
+            { id: '1', name: '少なめ', explain: '150g' },
+            { id: '2', name: '普通', explain: '300g' },
+            { id: '3', name: 'ヤサイ', explain: '450g' },
+            { id: '4', name: 'ヤサイ\nマシマシ', explain: '600g' },
           ]
         }
       />
@@ -34,9 +34,9 @@ export default function Message() {
         toppingName="アブラ"
         options={
           [
-            { name: '普通' },
-            { name: 'アブラ' },
-            { name: 'アブラ\nマシマシ' },
+            { id: '1', name: '普通' },
+            { id: '2', name: 'アブラ' },
+            { id: '3', name: 'アブラ\nマシマシ' },
           ]
         }
       />
@@ -44,9 +44,9 @@ export default function Message() {
         toppingName="味の濃さ"
         options={
           [
-            { name: '普通' },
-            { name: 'カラメ' },
-            { name: 'カラカラ' },
+            { id: '1', name: '普通' },
+            { id: '2', name: 'カラメ' },
+            { id: '3', name: 'カラカラ' },
           ]
         }
       />
