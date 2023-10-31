@@ -36,7 +36,6 @@ export default function MypageScreen(props) {
             const userData = userDoc.data();
             const ramenName = await ChangeIDtoName(userData.ramen);
             const toppingName = await ChangeIDtoName(userData.topping);
-            console.log(ramenName);
             let lastVisitDate = null;
             let comingData = [];
 

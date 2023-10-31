@@ -12,7 +12,7 @@ export default function ToppingTemplate(props) {
         </View>
         <View style={styles.optionContainer}>
           {options.map((option) => (
-            <View>
+            <View key={option.id}>
               <View style={styles.circleOption}>
                 <Text style={styles.circleText} numberOfLines={2}>{option.name}</Text>
               </View>

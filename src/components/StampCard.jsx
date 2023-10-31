@@ -3,18 +3,22 @@ import React, { useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, Dimensions, ImageBackground,
 } from 'react-native';
-import imageStampCard from '../../assets/stampcard.png';
+// import imageStampCard from '../../assets/stampcard.png';
 
 export default function StampCard(props) {
   const { userVisited } = props;
   const totalStamps = 10;
+  // 来店回数が0なら1枚表示、それ以外なら来た回数 // 10 + 1枚スタンプカードを作成
   const maxPages = userVisited.length === 0 ? 1 : Math.ceil(userVisited.length / totalStamps);
+  // totalStamp*maxPagesのスタンプ領域をnullで初期化
   const [stamps, setStamps] = useState(Array(totalStamps * maxPages).fill(null));
   const [currentPage, setCurrentPage] = useState(0); // 現在のページ番号
 
   useEffect(() => {
+    // 新しい訪問があった場合に、そのページにスタンプが
     const requiredStampsSize = Math.max(userVisited.length, totalStamps);
     if (stamps.length < requiredStampsSize) {
+      // 現在のスタンプ配列にnullで初期化したものを足している
       setStamps(
         (prevStamps) => [...prevStamps, ...Array(requiredStampsSize - prevStamps.length)
           .fill(null)],
@@ -23,6 +27,7 @@ export default function StampCard(props) {
     // すでにアクティベートされたスタンプを考慮して、新しいスタンプの配列を生成
     const newStamps = [...stamps];
     userVisited.forEach((date) => {
+      // 配列の中で初めてfalsyになるindexを取得
       const index = newStamps.findIndex((stamp) => !stamp);
       if (index !== -1) {
         newStamps[index] = date;
@@ -44,7 +49,8 @@ export default function StampCard(props) {
   };
 
   return (
-    <ImageBackground source={imageStampCard} style={styles.container}>
+    // <ImageBackground source={imageStampCard} style={styles.container}>
+    <ImageBackground style={styles.container}>
       <View style={styles.pagination}>
         <TouchableOpacity onPress={handlePrevPage}>
           <Text style={styles.text}>{'<'}</Text>
@@ -55,8 +61,10 @@ export default function StampCard(props) {
       </View>
       <View style={styles.stampContainer}>
         {stamps.slice(currentPage * 10, (currentPage + 1) * 10).map((stamp, index) => (
-          <View key={index} style={[styles.stamp, { backgroundColor: stamp ? 'blue' : null }]}>
-            {stamp && <Text style={styles.dateText}>{stamp}</Text>}
+          <View key={index} style={[styles.stamp, { backgroundColor: stamp ? 'orange' : 'gray' }]}>
+            {stamp
+              ? <Text style={styles.dateText}>{stamp}</Text>
+              : <Text style={styles.dateNullText}>{currentPage * 10 + (index + 1)}</Text>}
           </View>
         ))}
       </View>
@@ -82,7 +90,7 @@ const stampSize = (windowWidth - 142) / 5;
 const stampMargin = 5;
 
 // スタンプのサイズに基づいて、dateTextのフォントサイズを計算
-const fontSize = stampSize * 0.17; // スタンプのサイズの20%をフォントサイズとして設定
+const fontSize = stampSize * 0.16; // スタンプのサイズの20%をフォントサイズとして設定
 
 const styles = StyleSheet.create({
   container: {
@@ -94,7 +102,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     marginBottom: 16,
-  
   },
   stamp: {
     width: stampSize,
@@ -102,15 +109,18 @@ const styles = StyleSheet.create({
     margin: stampMargin,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 50,
+    borderRadius: stampSize / 2,
   },
   text: {
     fontSize: 20,
     fontWeight: 'bold',
   },
   dateText: {
-    color: '#fff',
+    color: 'black',
     fontSize,
+  },
+  dateNullText: {
+    fontSize: 20,
   },
   button: {
     padding: 12,
