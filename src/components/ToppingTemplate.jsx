@@ -41,7 +41,7 @@ ToppingTemplate.propTypes = {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 20,
+    marginVertical: 10,
   },
   border: {
     borderWidth: 3,

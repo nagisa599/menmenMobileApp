@@ -197,26 +197,24 @@ export default function MenuScreen() {
     fetchDataAndSetLoading();
   }, []);
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-
   return (
     <View style={styles.container}>
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={{ width: Dimensions.get('window').width }}
-        renderTabBar={(props) => (
-          <TabBar
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...props}
-            style={{ backgroundColor: 'gray' }}
-            indicatorStyle={{ backgroundColor: 'tomato', height: 3 }}
-          />
-        )}
-      />
+      {isLoading ? <LoadingScreen /> : (
+        <TabView
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{ width: Dimensions.get('window').width }}
+          renderTabBar={(props) => (
+            <TabBar
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...props}
+              style={{ backgroundColor: 'gray' }}
+              indicatorStyle={{ backgroundColor: 'tomato', height: 3 }}
+            />
+          )}
+        />
+      )}
     </View>
   );
 }

@@ -30,9 +30,11 @@ export default function HomeScreen() {
         >
           <Text style={styles.questionText}>臨時アンケート回答</Text>
         </TouchableOpacity>
+        <View style={styles.separator} />
         <View style={styles.businessHourBox}>
           <Image source={timeIcon} style={styles.imageStyle} resizeMode="contain" />
         </View>
+        <View style={styles.separator} />
         <Message />
       </ScrollView>
     </View>
@@ -51,7 +53,7 @@ const styles = StyleSheet.create({
   businessHourBox: {
     width: imageWidth,
     height: imageHeight,
-    marginBottom: 30, // 余白を増やす
+    marginVertical: 30, // 余白を増やす
   },
   imageStyle: {
     width: '100%',
@@ -73,5 +75,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
     fontWeight: 'bold',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: 'gray', // 線の色を選択してください
+    marginHorizontal: 10,
   },
 });

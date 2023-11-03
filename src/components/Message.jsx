@@ -4,9 +4,11 @@ import ToppingTemplate from './ToppingTemplate';
 
 export default function Message() {
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>&lt;---  注文方法  ---&gt;</Text>
+        <View style={styles.titlewrapper}>
+          <Text style={styles.title}>ニンニク入れますか？と聞かれたら</Text>
+        </View>
       </View>
       <ToppingTemplate
         toppingName="ニンニク"
@@ -55,10 +57,22 @@ export default function Message() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginVertical: 20,
+    flex: 1,
+  },
   titleContainer: {
     alignItems: 'center',
   },
+  titlewrapper: {
+    backgroundColor: '#FFAD90',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginBottom: 10,
+    borderRadius: 30,
+  },
   title: {
     fontSize: 20,
+    fontWeight: 'bold',
   },
 });
