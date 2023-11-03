@@ -156,6 +156,9 @@ export default function SignUpScreen(props) {
                     editable={false}
                   />
                 </View>
+                <View>
+                  <Text style={styles.item}>プロフィール画像</Text>
+                </View>
                 {/* <View style={styles.itemContainer}>
                   <Text style={styles.item}>電話番号</Text>
                   <TextInput

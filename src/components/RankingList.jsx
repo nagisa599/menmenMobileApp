@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 15,
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#F5F5F5',
     borderRadius: 15,
     marginBottom: 15,
     marginHorizontal: 15,
@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: '500',
     color: '#555',
-    flex: 1,
   },
   firstPlaceRank: {
     color: 'red',
