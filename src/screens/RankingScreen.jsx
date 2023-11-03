@@ -7,9 +7,12 @@ import {
 } from 'firebase/firestore';
 import db from '../../firebaseConfig';
 import RankingList from '../components/RankingList';
+import LoadingScreen from './LoadingScreen';
 
 export default function RankingScreen() {
   const [ranking, setRanking] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+
   const fetchRanking = async () => {
     try {
       const ref = query(collection(db, 'ranking'), orderBy('times', 'desc'));
@@ -29,22 +32,30 @@ export default function RankingScreen() {
     }
   };
   useEffect(() => {
-    fetchRanking();
+    const loadRankingData = async () => {
+      setLoading(true);
+      await fetchRanking();
+      setLoading(false);
+    };
+
+    loadRankingData();
   }, []);
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.listContainer}>
-        {ranking.map((rankingComponent, index) => (
-          <View key={rankingComponent.name}>
-            <RankingList
-              rank={index + 1}
-              times={rankingComponent.times}
-              name={rankingComponent.name}
-            />
-          </View>
-        ))}
-      </ScrollView>
+      {isLoading ? <LoadingScreen /> : (
+        <ScrollView style={styles.listContainer}>
+          {ranking.map((rankingComponent, index) => (
+            <View key={rankingComponent.name}>
+              <RankingList
+                rank={index + 1}
+                times={rankingComponent.times}
+                name={rankingComponent.name}
+              />
+            </View>
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 }

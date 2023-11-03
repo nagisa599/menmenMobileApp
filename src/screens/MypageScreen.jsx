@@ -8,16 +8,15 @@ import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import * as FileSystem from 'expo-file-system';
 
-// import myLocalImage from '../../assets/profile.jpg';
 import StampCard from '../components/StampCard';
-import Loading from '../components/Loading';
+import LoadingScreen from './LoadingScreen';
 import Generator from '../components/Generator';
 import { ChangeIDtoName, convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from '../utils/Data';
 import CircleTitle from '../components/CircleTitle';
 
 export default function MypageScreen(props) {
   const { navigation } = props;
-  const [isImageLoaded, setImageLoaded] = useState(false);
+  // const [isImageLoaded, setImageLoaded] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [isLoading, setLoading] = useState(false);
   const [visited, setVisited] = useState(true);
@@ -114,87 +113,91 @@ export default function MypageScreen(props) {
 
   return (
     <View style={styles.container}>
-      <Loading isLoading={isLoading} isImageLoaded={isImageLoaded} />
-      <ScrollView style={styles.listContainer}>
-        <TouchableOpacity
-          style={styles.maininfo}
-          onPress={() => {
-            navigation.navigate('EditUserInfoScreen');
-          }}
-        >
-          <View style={styles.imageContainer}>
-            <Image
-              source={{ uri: userInfo.imageUrl }}
-              style={styles.icon}
-              onLoad={() => {
-                setImageLoaded(true);
+      {isLoading ? <LoadingScreen /> : (
+        <ScrollView style={styles.listContainer}>
+          <TouchableOpacity
+            style={styles.maininfo}
+            onPress={() => {
+              navigation.navigate('EditUserInfoScreen');
+            }}
+          >
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: userInfo.imageUrl }}
+                style={styles.icon}
+                // onLoad={() => {
+                //   setImageLoaded(true);
+                // }}
+              />
+            </View>
+            <View style={styles.circleImage}>
+              <CircleTitle />
+            </View>
+            <View style={styles.nameContainer}>
+              <Text style={styles.username}>{userInfo.userName}</Text>
+              <Text style={styles.subtitle}>
+                好きなラーメン　:
+                {' '}
+                <Text style={styles.highlightedText}>{userInfo.userRamen}</Text>
+              </Text>
+              <Text style={styles.subtitle}>
+                好きなトッピング:
+                {' '}
+                <Text style={styles.highlightedText}>{userInfo.userTopping}</Text>
+              </Text>
+            </View>
+            <Text style={styles.changeIcon}>{'>'}</Text>
+          </TouchableOpacity>
+          <View style={styles.separator} />
+          <View style={styles.titleContainer}>
+            <View style={styles.stamp}>
+              {!isLoading && (
+              <StampCard
+                userVisited={userInfo.visited}
+              />
+              )}
+            </View>
+          </View>
+          <View style={styles.separator} />
+          <View>
+            <Text style={styles.otherText}>その他</Text>
+            <TouchableOpacity
+              style={styles.otherinfo}
+              onPress={() => {
+                navigation.navigate('TermsOfUseScreen');
               }}
-            />
+            >
+              <View style={styles.otherContainer}>
+                <Text style={styles.othername}>利用規約</Text>
+              </View>
+              <Text style={styles.changeIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.otherinfo}
+              onPress={() => {
+                navigation.navigate('InquiryScreen');
+              }}
+            >
+              <View style={styles.otherContainer}>
+                <Text style={styles.othername}>お問い合わせ</Text>
+              </View>
+              <Text style={styles.changeIcon}>{'>'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.otherinfo}
+              onPress={() => {
+                navigation.navigate('InquiryScreen');
+              }}
+            >
+              <View style={styles.otherContainer}>
+                <Text style={styles.othername}>ヘルプ</Text>
+              </View>
+              <Text style={styles.changeIcon}>{'>'}</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.circleImage}>
-            <CircleTitle />
-          </View>
-          <View style={styles.nameContainer}>
-            <Text style={styles.username}>{userInfo.userName}</Text>
-            <Text style={styles.subtitle}>
-              {`好きなラーメン　: ${userInfo.userRamen}`}
-            </Text>
-            <Text style={styles.subtitle}>
-              {`好きなトッピング: ${userInfo.userTopping}`}
-            </Text>
-          </View>
-          <Text style={styles.changeIcon}>{'>'}</Text>
-        </TouchableOpacity>
-        <View style={styles.separator} />
-        <View style={styles.titleContainer}>
-
-          <View style={styles.stamp}>
-            {!isLoading && (
-            <StampCard
-              userVisited={userInfo.visited}
-            />
-            )}
-          </View>
-        </View>
-        <View style={styles.separator} />
-        <View>
-          <Text style={styles.otherText}>その他</Text>
-          <TouchableOpacity
-            style={styles.otherinfo}
-            onPress={() => {
-              navigation.navigate('TermsOfUseScreen');
-            }}
-          >
-            <View style={styles.otherContainer}>
-              <Text style={styles.othername}>利用規約</Text>
-            </View>
-            <Text style={styles.changeIcon} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.otherinfo}
-            onPress={() => {
-              navigation.navigate('InquiryScreen');
-            }}
-          >
-            <View style={styles.otherContainer}>
-              <Text style={styles.othername}>お問い合わせ</Text>
-            </View>
-            <Text style={styles.changeIcon}>{'>'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.otherinfo}
-            onPress={() => {
-              navigation.navigate('InquiryScreen');
-            }}
-          >
-            <View style={styles.otherContainer}>
-              <Text style={styles.othername}>ヘルプ</Text>
-            </View>
-            <Text style={styles.changeIcon}>{'>'}</Text>
-          </TouchableOpacity>
-        </View>
-        <Generator />
-      </ScrollView>
+          <Generator />
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -307,5 +310,9 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: 'gray', // 線の色を選択してください
     marginHorizontal: 10,
+  },
+  highlightedText: {
+    color: 'black',
+    fontWeight: 'bold',
   },
 });
