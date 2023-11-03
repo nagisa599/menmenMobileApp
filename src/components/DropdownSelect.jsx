@@ -3,7 +3,7 @@ import {
   View, Text, Modal, TouchableOpacity, FlatList, StyleSheet,
 } from 'react-native';
 import {
-  arrayOf, string, shape, func, number,
+  arrayOf, string, shape, func,
 } from 'prop-types';
 
 export default function DropdownSelect(props) {
@@ -56,10 +56,14 @@ export default function DropdownSelect(props) {
 DropdownSelect.propTypes = {
   contentItems: arrayOf(shape({
     label: string,
-    value: number,
+    value: string,
   })).isRequired,
   setChange: func.isRequired,
-  previous: number.isRequired,
+  previous: string,
+};
+
+DropdownSelect.defaultProps = {
+  previous: null,
 };
 
 const styles = StyleSheet.create({

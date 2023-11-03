@@ -109,7 +109,7 @@ export default function MypageScreen(props) {
           <View style={styles.nameContainer}>
             <Text style={styles.username}>{userInfo.userName}</Text>
             <Text style={styles.subtitle}>{`users/${userInfo.userRamen}/`}</Text>
-            <Text style={styles.subtitle}>好きなトッピング</Text>
+            <Text style={styles.subtitle}>好きなトッピング:</Text>
           </View>
           <Text style={styles.changeIcon}>{'>'}</Text>
         </TouchableOpacity>
