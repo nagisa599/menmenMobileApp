@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, Image, ScrollView, TouchableOpacity,
@@ -108,8 +109,12 @@ export default function MypageScreen(props) {
           </View>
           <View style={styles.nameContainer}>
             <Text style={styles.username}>{userInfo.userName}</Text>
-            <Text style={styles.subtitle}>{`users/${userInfo.userRamen}/`}</Text>
-            <Text style={styles.subtitle}>好きなトッピング:</Text>
+            <Text style={styles.subtitle}>
+              {`好きなラーメン　: ${userInfo.userRamen}`}
+            </Text>
+            <Text style={styles.subtitle}>
+              {`好きなトッピング: ${userInfo.userTopping}`}
+            </Text>
           </View>
           <Text style={styles.changeIcon}>{'>'}</Text>
         </TouchableOpacity>
