@@ -15,6 +15,8 @@ import {
   getStorage, ref, uploadBytes, getDownloadURL,
 } from 'firebase/storage';
 
+// eslint-disable-next-line import/no-unresolved
+import { DEFAULT_IMAGE_URL } from '@env';
 import db from '../../firebaseConfig';
 import BirthdayInput from '../components/BirthdayInput';
 import DropdownSelect from '../components/DropdownSelect';
@@ -113,14 +115,19 @@ export default function SignUpScreen(props) {
       return blob;
     };
 
-    const imageBlob = await uriToBlob(image);
-
-    const storageRef = ref(storage, `users/${userUid}`);
+    let imageUrl = DEFAULT_IMAGE_URL;
+    if (image) {
+      const imageBlob = await uriToBlob(image);
+      const storageRef = ref(storage, `users/${userUid}`);
+      try {
+        await uploadBytes(storageRef, imageBlob);
+        imageUrl = await getDownloadURL(storageRef);
+      } catch (error) {
+        console.log('Error uploading image:', error);
+      }
+    }
 
     try {
-      await uploadBytes(storageRef, imageBlob);
-      const imageUrl = await getDownloadURL(storageRef);
-
       await setDoc(userDoc, {
         email: userInfo.email,
         name,

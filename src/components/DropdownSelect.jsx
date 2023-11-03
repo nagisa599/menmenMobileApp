@@ -22,7 +22,6 @@ export default function DropdownSelect(props) {
       <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.dropdownButton}>
         <Text>{selectedValue ? contentItems.find((item) => item.value === selectedValue).label : '未選択'}</Text>
       </TouchableOpacity>
-
       <Modal
         animationType="fade"
         transparent

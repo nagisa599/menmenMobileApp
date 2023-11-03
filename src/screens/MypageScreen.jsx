@@ -8,7 +8,6 @@ import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import * as FileSystem from 'expo-file-system';
 
-// import myLocalImage from '../../assets/profile.jpg';
 import StampCard from '../components/StampCard';
 import LoadingScreen from './LoadingScreen';
 import Generator from '../components/Generator';
