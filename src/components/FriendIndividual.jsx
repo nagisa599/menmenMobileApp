@@ -14,7 +14,7 @@ import {
   </View>
   <View style={styles.basicinfo}>
     <Text style={styles.ranking}>ランキング: 10位</Text>
-    <Text style={styles.degree}>称号　　　: ラーメン王</Text>
+    <Text style={styles.degree}>称号　　: ラーメン王</Text>
     <Text style={styles.favorite}>お気に入り: 塩ラーメン</Text>
   </View>
 </View>
