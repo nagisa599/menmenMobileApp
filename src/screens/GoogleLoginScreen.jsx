@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Image, StyleSheet, TextInput, ScrollView,
+  View, Image, StyleSheet, TextInput, ScrollView, Text,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { func } from 'prop-types';
@@ -9,7 +9,7 @@ import GoogleLoginButton from '../components/GoogleLoginButton';
 import AppleLoginButton from '../components/AppleLoginButton';
 import NotLoginButton from '../components/NotLoginButton';
 import KeyboardSafeView from '../components/KeyBoradAvoidingView';
-
+import validatePassword from '../utils/Validation';
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
 import Button from '../components/Button';
 
@@ -17,6 +17,8 @@ export default function GoogleLoginScreen(props) {
   const { promptAsync, setUserInfo } = props;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordErr, setPasswordErr] = useState('');
+  const [emailErr, setEmailErr] = useState('');
   const auth = getAuth();
   const saveUserToAsyncStorage = async (user) => {
     try {
@@ -27,15 +29,19 @@ export default function GoogleLoginScreen(props) {
   };
 
   function handlePress() {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const { user } = userCredential;
-        saveUserToAsyncStorage(user);
-        setUserInfo(user);
-      })
-      .catch((error) => {
-        console.log(error.code, error.message);
-      });
+    if (!validatePassword(password)) {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const { user } = userCredential;
+          saveUserToAsyncStorage(user);
+          setUserInfo(user);
+        })
+        .catch(() => {
+          setEmailErr('正しいメールアドレスを入力してください');
+        });
+    } else {
+      setPasswordErr(validatePassword(password));
+    }
   }
   function notLogin() {
     const user = {
@@ -58,6 +64,10 @@ export default function GoogleLoginScreen(props) {
         <View style={styles.marginBottom}>
           <NotLoginButton onPress={() => notLogin()} />
         </View>
+        <View style={styles.errContainer}>
+          <Text>※パスワードは8文字以上かつ数字、大文字、数字を1文字以上でお願いいたします。</Text>
+          <Text style={styles.errText}>{emailErr}</Text>
+        </View>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -68,6 +78,9 @@ export default function GoogleLoginScreen(props) {
             placeholder="メールアドレス"
             textContentType="emailAddress"
           />
+          <View style={styles.errContainer}>
+            <Text style={styles.errText}>{passwordErr}</Text>
+          </View>
           <TextInput
             style={styles.input}
             value={password}
@@ -133,6 +146,12 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     width: 350,
     paddingVertical: 10,
+  },
+  errText: {
+    color: 'red',
+  },
+  errContainer: {
+    width: '80%',
   },
 });
 
