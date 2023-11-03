@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity,
   Alert, TouchableWithoutFeedback, Keyboard,
@@ -6,32 +6,16 @@ import {
 import { func, shape } from 'prop-types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc, getDoc, getDocs, setDoc,
+} from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 import db from '../../firebaseConfig';
 import BirthdayInput from '../components/BirthdayInput';
 import DropdownSelect from '../components/DropdownSelect';
-
-// ramenコレクションの情報に置き換える
-const ramenItem = [
-  { label: 'ラーメン', value: 1 },
-  { label: 'まぜそば', value: 2 },
-  { label: '汁なし', value: 3 },
-  { label: 'カレー', value: 4 },
-  { label: 'つけ麺', value: 5 },
-  { label: 'モクヨージャンク', value: 6 },
-];
-
-// ramenコレクションの情報に置き換える
-const toppingItem = [
-  { label: 'チーズ', value: 50 },
-  { label: '明太子', value: 51 },
-  { label: 'のり', value: 52 },
-  { label: 'ねぎ', value: 53 },
-  { label: 'うずら', value: 54 },
-  { label: '七味', value: 55 },
-];
+import LoadingScreen from './LoadingScreen';
 
 export default function SignUpScreen(props) {
   const { userInfo, setUserInfo } = props;
@@ -41,6 +25,40 @@ export default function SignUpScreen(props) {
   const [topping, setTopping] = useState(0);
   const [createdAt, setCreatedAt] = useState(new Date());
   const [isUnique, setIsUnique] = useState(true);
+  const [ramenItems, setRamenItems] = useState([]);
+  const [toppingItems, setToppingItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const ramenItem = [];
+      const toppingItem = [];
+
+      const querySnapshot = await getDocs(collection(db, 'ramens'));
+
+      querySnapshot.docs.forEach((menudoc) => {
+        const data = menudoc.data();
+
+        const item = {
+          label: data.name,
+          value: menudoc.id,
+        };
+
+        if (data.topping) {
+          toppingItem.push(item);
+        } else {
+          ramenItem.push(item);
+        }
+      });
+      setRamenItems(ramenItem);
+      setToppingItems(toppingItem);
+
+      setIsLoading(false);// データのフェッチが完了した後にisLoadingをfalseに設定
+    };
+
+    setIsLoading(true);
+    fetchData();
+  }, []);
 
   const isUsernameUnique = async (username) => {
     const userRef = doc(db, `username/${username}`);
@@ -115,86 +133,98 @@ export default function SignUpScreen(props) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>新規ユーザー登録</Text>
-        <Text>
-          <Text style={styles.star}>＊</Text>
-          は必須項目です
-        </Text>
-      </View>
-      <ScrollView style={{ paddingHorizontal: 30 }}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View>
-            <View style={styles.itemContainer}>
-              <Text style={styles.item}>メールアドレス</Text>
-              <TextInput
-                value={userInfo.email}
-                style={styles.mail}
-                autoCapitalize="none"
-                editable={false}
-              />
-            </View>
-            {/* <View style={styles.itemContainer}>
-              <Text style={styles.item}>電話番号</Text>
-              <TextInput
-                value={phoneNumber}
-                style={styles.input}
-                onChangeText={(text) => {
-                  setPhoneNumber(text);
-                }}
-                autoCapitalize="none"
-                placeholder="電話番号"
-                textContentType="telephoneNumber"
-              />
-            </View> */}
-            <View style={styles.itemContainer}>
-              <Text style={styles.item}>
-                ユーザー名
-                <Text style={styles.star}>＊</Text>
-              </Text>
-              {!isUnique && <Text style={styles.star}>このユーザー名はすでに使われています</Text>}
-              <TextInput
-                value={name}
-                style={styles.input}
-                onChangeText={(text) => {
-                  checkUsername(text);
-                  setName(text);
-                }}
-                autoCapitalize="none"
-                placeholder="ユーザー名"
-                textContentType="username"
-              />
-            </View>
-            <View style={styles.itemContainer}>
-              <Text style={styles.item}>
-                誕生日
-                <Text style={styles.star}>＊</Text>
-              </Text>
-              <BirthdayInput onDateChange={setBirthDay} />
-            </View>
-            <View style={styles.itemContainer}>
-              <Text style={styles.item}>お気に入りラーメン</Text>
-              <View style={styles.dropdownContainer}>
-                <DropdownSelect contentItems={ramenItem} setChange={setRamen} />
-              </View>
-            </View>
-            <View style={styles.itemContainer}>
-              <Text style={styles.item}>お気に入りトッピング</Text>
-              <View style={styles.dropdownContainer}>
-                <DropdownSelect contentItems={toppingItem} setChange={setTopping} />
-              </View>
-            </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.registerButton}
-                onPress={() => handleRegister(userInfo)}
-              >
-                <Text style={styles.buttonText}>登録</Text>
-              </TouchableOpacity>
-            </View>
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>新規ユーザー登録</Text>
+            <Text>
+              <Text style={styles.star}>＊</Text>
+              は必須項目です
+            </Text>
           </View>
-        </TouchableWithoutFeedback>
-      </ScrollView>
+          <ScrollView style={{ paddingHorizontal: 30 }}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View>
+                <View style={styles.itemContainer}>
+                  <Text style={styles.item}>メールアドレス</Text>
+                  <TextInput
+                    value={userInfo.email}
+                    style={styles.mail}
+                    autoCapitalize="none"
+                    editable={false}
+                  />
+                </View>
+                {/* <View style={styles.itemContainer}>
+                  <Text style={styles.item}>電話番号</Text>
+                  <TextInput
+                    value={phoneNumber}
+                    style={styles.input}
+                    onChangeText={(text) => {
+                      setPhoneNumber(text);
+                    }}
+                    autoCapitalize="none"
+                    placeholder="電話番号"
+                    textContentType="telephoneNumber"
+                  />
+                </View> */}
+                <View style={styles.itemContainer}>
+                  <Text style={styles.item}>
+                    ユーザー名
+                    <Text style={styles.star}>＊</Text>
+                  </Text>
+                  {!isUnique && <Text style={styles.star}>このユーザー名はすでに使われています</Text>}
+                  <TextInput
+                    value={name}
+                    style={styles.input}
+                    onChangeText={(text) => {
+                      checkUsername(text);
+                      setName(text);
+                    }}
+                    autoCapitalize="none"
+                    placeholder="ユーザー名"
+                    textContentType="username"
+                  />
+                </View>
+                <View style={styles.itemContainer}>
+                  <Text style={styles.item}>
+                    誕生日
+                    <Text style={styles.star}>＊</Text>
+                  </Text>
+                  <BirthdayInput onDateChange={setBirthDay} />
+                </View>
+                <View style={styles.itemContainer}>
+                  <Text style={styles.item}>お気に入りラーメン</Text>
+                  <View style={styles.dropdownContainer}>
+                    <DropdownSelect
+                      contentItems={ramenItems}
+                      setChange={setRamen}
+                    />
+                  </View>
+                </View>
+                <View style={styles.itemContainer}>
+                  <Text style={styles.item}>お気に入りトッピング</Text>
+                  <View style={styles.dropdownContainer}>
+                    <DropdownSelect
+                      contentItems={toppingItems}
+                      setChange={setTopping}
+                    />
+                  </View>
+                </View>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={styles.registerButton}
+                    onPress={() => handleRegister(userInfo)}
+                  >
+                    <Text style={styles.buttonText}>登録</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </ScrollView>
+        </>
+      )}
     </View>
   );
 }

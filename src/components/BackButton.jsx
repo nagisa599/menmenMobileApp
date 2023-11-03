@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center', // 自分自身を並べる。左側に
     width: '45%',
     alignItems: 'center',
-    marginLeft: 10
+    marginLeft: 10,
   },
   buttonLabel: {
     fontSize: 28,
