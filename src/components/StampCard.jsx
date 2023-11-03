@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, Dimensions, ImageBackground,
 } from 'react-native';
-// import imageStampCard from '../../assets/stampcard.png';
+import imageStampCard from '../../assets/stampcard2.png';
 
 export default function StampCard(props) {
   const { userVisited } = props;
@@ -49,8 +49,7 @@ export default function StampCard(props) {
   };
 
   return (
-    // <ImageBackground source={imageStampCard} style={styles.container}>
-    <ImageBackground style={styles.container}>
+    <ImageBackground source={imageStampCard} style={styles.container}>
       <View style={styles.pagination}>
         <TouchableOpacity onPress={handlePrevPage}>
           <Text style={styles.text}>{'<'}</Text>
