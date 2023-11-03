@@ -5,8 +5,10 @@ import {
 } from 'react-native';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import * as FileSystem from 'expo-file-system';
 
-import myLocalImage from '../../assets/profile.jpg';
+// import myLocalImage from '../../assets/profile.jpg';
 import StampCard from '../components/StampCard';
 import Loading from '../components/Loading';
 import Generator from '../components/Generator';
@@ -19,6 +21,25 @@ export default function MypageScreen(props) {
   const [userInfo, setUserInfo] = useState({});
   const [isLoading, setLoading] = useState(false);
   const [visited, setVisited] = useState(true);
+
+  const storage = getStorage();
+
+  async function downloadImage(imageURL) {
+    const imageRef = ref(storage, imageURL);
+    const url = await getDownloadURL(imageRef);
+
+    const filename = url.split('/').pop();
+    const downloadDest = `${FileSystem.documentDirectory}${filename}`;
+
+    const downloadResult = await FileSystem.downloadAsync(url, downloadDest);
+
+    if (downloadResult.status !== 200) {
+      console.error('Error downloading the image:', downloadResult);
+      return null;
+    }
+
+    return downloadResult.uri;
+  }
 
   useEffect(() => {
     const auth = getAuth();
@@ -35,6 +56,11 @@ export default function MypageScreen(props) {
           const userDoc = await getDoc(userInfoDocRef);
           if (userDoc.exists()) {
             const userData = userDoc.data();
+            if (userData.imageUrl) {
+              const downloadImageUrl = await downloadImage(userData.imageUrl);
+              userData.imageUrl = downloadImageUrl;
+            }
+
             const ramenName = await ChangeIDtoName(userData.ramen);
             const toppingName = await ChangeIDtoName(userData.topping);
             let lastVisitDate = null;
@@ -65,6 +91,7 @@ export default function MypageScreen(props) {
               userRamen: ramenName,
               userTopping: toppingName,
               visited: formattedDates,
+              imageUrl: userData.imageUrl,
             });
           } else {
             console.log('ユーザー情報がない');
@@ -97,7 +124,7 @@ export default function MypageScreen(props) {
         >
           <View style={styles.imageContainer}>
             <Image
-              source={myLocalImage}
+              source={{ uri: userInfo.imageUrl }}
               style={styles.icon}
               onLoad={() => {
                 setImageLoaded(true);

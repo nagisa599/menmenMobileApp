@@ -11,11 +11,15 @@ import {
   doc, getDoc, getDocs, setDoc,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import {
+  getStorage, ref, uploadBytes, getDownloadURL,
+} from 'firebase/storage';
 
 import db from '../../firebaseConfig';
 import BirthdayInput from '../components/BirthdayInput';
 import DropdownSelect from '../components/DropdownSelect';
 import LoadingScreen from './LoadingScreen';
+import ProfileImageUpload from '../components/ProfileImageUpload';
 
 export default function SignUpScreen(props) {
   const { userInfo, setUserInfo } = props;
@@ -28,6 +32,8 @@ export default function SignUpScreen(props) {
   const [ramenItems, setRamenItems] = useState([]);
   const [toppingItems, setToppingItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,8 +78,10 @@ export default function SignUpScreen(props) {
   };
 
   const handleRegister = async (userData) => {
+    setIsRegistering(true);
     // eslint-disable-next-line no-unused-vars
     const auth = getAuth();
+    const storage = getStorage();
 
     if (!userData) {
       Alert.alert('ユーザーデータが存在しません');
@@ -99,7 +107,20 @@ export default function SignUpScreen(props) {
       return;
     }
 
+    const uriToBlob = async (uri) => {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      return blob;
+    };
+
+    const imageBlob = await uriToBlob(image);
+
+    const storageRef = ref(storage, `users/${userUid}`);
+
     try {
+      await uploadBytes(storageRef, imageBlob);
+      const imageUrl = await getDownloadURL(storageRef);
+
       await setDoc(userDoc, {
         email: userInfo.email,
         name,
@@ -109,6 +130,7 @@ export default function SignUpScreen(props) {
         createdAt,
         times: [],
         visited: false,
+        imageUrl,
       });
 
       await setDoc(doc(db, `username/${name}`), {
@@ -129,11 +151,12 @@ export default function SignUpScreen(props) {
     } catch (error) {
       Alert.alert(error.message);
     }
+    setIsRegistering(false);
   };
 
   return (
     <View style={styles.container}>
-      {isLoading ? (
+      {isLoading || isRegistering ? (
         <LoadingScreen />
       ) : (
         <>
@@ -156,8 +179,9 @@ export default function SignUpScreen(props) {
                     editable={false}
                   />
                 </View>
-                <View>
+                <View styel={styles.itemContainer}>
                   <Text style={styles.item}>プロフィール画像</Text>
+                  <ProfileImageUpload image={image} setImage={setImage} />
                 </View>
                 {/* <View style={styles.itemContainer}>
                   <Text style={styles.item}>電話番号</Text>

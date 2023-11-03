@@ -1,49 +1,42 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  View, Text, Image, TouchableOpacity, Platform,
+  Button, Image, View, Alert,
 } from 'react-native';
-import * as ImagePicker from 'react-native-image-picker';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as ImagePicker from 'expo-image-picker';
+import { func, string } from 'prop-types';
 
-function ProfileImageUpload() {
-  const [profileImage, setProfileImage] = useState();
+export default function ProfileImageUpload(props) {
+  const { image, setImage } = props;
 
-  const handleChoosePhoto = () => {
-    const options = {
-      noData: true,
-      mediaType: 'photo',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
 
-    ImagePicker.launchImageLibrary(options, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        const source = { uri: response.uri };
-        setProfileImage(source);
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
       }
-    });
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('画像の選択に失敗しました。');
+    }
   };
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      {profileImage && (
-        <Image
-          source={{ uri: profileImage.uri }}
-          style={{ width: 200, height: 200, borderRadius: 100 }}
-        />
-      )}
-      <TouchableOpacity onPress={handleChoosePhoto}>
-        <Text>Select a Photo</Text>
-      </TouchableOpacity>
+      <Button title="画像を選択してください" onPress={pickImage} />
+      {image
+        && <Image source={{ uri: image }} style={{ width: 200, height: 200, marginBottom: 15 }} />}
     </View>
   );
 }
 
-export default ProfileImageUpload;
+ProfileImageUpload.propTypes = {
+  image: string.isRequired,
+  setImage: func.isRequired,
+};
