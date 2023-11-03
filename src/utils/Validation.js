@@ -2,7 +2,6 @@ export default function validatePassword(password) {
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasDigits = /\d/.test(password);
-  const hasSpecialChar = /[!@#$%^&*]/.test(password);
 
   if (password.length < 8) {
     return 'パスワードは8文字以上でお願いします';
@@ -15,9 +14,6 @@ export default function validatePassword(password) {
   }
   if (!hasDigits) {
     return 'パスワードには数字も入れてください';
-  }
-  if (!hasSpecialChar) {
-    return 'パスワードには記号も入れてください';
   }
 
   return null; // パスワードがすべての要件を満たしている場合
