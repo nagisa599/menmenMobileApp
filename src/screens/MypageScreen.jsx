@@ -1,5 +1,5 @@
 /* eslint-disable no-irregular-whitespace */
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, Image, ScrollView, TouchableOpacity,
 } from 'react-native';
@@ -13,11 +13,13 @@ import LoadingScreen from './LoadingScreen';
 import Generator from '../components/Generator';
 import { ChangeIDtoName, convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from '../utils/Data';
 import CircleTitle from '../components/CircleTitle';
+import userInfoContext from '../utils/UserInfoContext';
 
 export default function MypageScreen(props) {
   const { navigation } = props;
+  const { userInfo, setUserInfo } = useContext(userInfoContext);
   // const [isImageLoaded, setImageLoaded] = useState(false);
-  const [userInfo, setUserInfo] = useState({});
+  // const [userInfo, setUserInfo] = useState({});
   const [isLoading, setLoading] = useState(false);
   const [visited, setVisited] = useState(true);
 

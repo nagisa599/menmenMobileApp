@@ -138,6 +138,7 @@ export default function SignUpScreen(props) {
         times: [],
         visited: false,
         imageUrl,
+        title: 0,
       });
 
       await setDoc(doc(db, `username/${name}`), {
