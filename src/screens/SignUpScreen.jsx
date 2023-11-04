@@ -129,11 +129,14 @@ export default function SignUpScreen() {
 
     try {
       await setDoc(userDoc, {
+        email: userInfo.email,
+        uid: userInfo.uid,
         name,
         birthday,
         ramen,
         topping,
         createdAt,
+        updatedAt: createdAt,
         times: [],
         visited: false,
         imageUrl,
@@ -147,6 +150,7 @@ export default function SignUpScreen() {
         ramen,
         topping,
         createdAt,
+        updatedAt: createdAt,
         times: [],
         visited: false,
         imageUrl,

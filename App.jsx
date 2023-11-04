@@ -17,7 +17,7 @@ import AnimatedSplashScreen from './src/screens/AnimatedSplashScreen';
 import userInfoContext from './src/utils/UserInfoContext';
 import MainStackNavigator from './src/navigators/MainStackNavigator';
 import LoadingScreen from './src/screens/LoadingScreen';
-import { ChangeIDtoName } from './src/utils/Data';
+import { convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from './src/utils/Data';
 
 WebBrowser.maybeCompleteAuthSession();
 export default function App() {
@@ -64,45 +64,34 @@ export default function App() {
               userData.imageUrl = downloadImageUrl;
             }
 
-            const ramenName = await ChangeIDtoName(userData.ramen);
-            const toppingName = await ChangeIDtoName(userData.topping);
-            // let lastVisitDate = null;
-            // let comingData = [];
-
-            // if (userData.times && userData.times.length > 0) {
-            // lastVisitDate = userData.times[userData.times.length - 1];
-            // lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
-            // lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
-            //   comingData = userData.times;
-            // }
-
-            // const today = formatDateToYYYYMMDD(new Date());
-
-            // if (lastVisitDate === today) {
-            //   setVisited(true);
-            // } else {
-            //   setVisited(false);
-            // }
-
-            // const formattedDates = comingData.map((data) => {
-            //   const date = convertFirestoreTimestampToDate(data);
-            //   return formatDateToYYYYMMDD(date);
-            // });
+            let lastVisitDate = null;
+            let comingData = [];
+            if (userData.times && userData.times.length > 0) {
+              lastVisitDate = userData.times[userData.times.length - 1];
+              lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
+              lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
+              comingData = userData.times;
+            }
+            const today = formatDateToYYYYMMDD(new Date());
+            const formattedDates = comingData.map((data) => {
+              const date = convertFirestoreTimestampToDate(data);
+              return formatDateToYYYYMMDD(date);
+            });
 
             setUserInfo({
               ...userInfo,
               uid: auth.currentUser.uid,
               email: userData.email,
               name: userData.name,
-              ramen: ramenName,
-              topping: toppingName,
-              visited: userData.visited,
+              ramen: userData.ramen,
+              topping: userData.topping,
+              visited: lastVisitDate === today,
               imageUrl: userData.imageUrl,
               title: userData.title,
               birthday: userData.birthday,
               createdAt: userData.createdAt,
               updatedAt: userData.updatedAt,
-              times: userData.times,
+              times: formattedDates,
             });
           } else {
             console.log('ユーザー情報ない');
@@ -120,6 +109,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    console.log(userInfo);
   }, [userInfo]);
 
   useEffect(() => {

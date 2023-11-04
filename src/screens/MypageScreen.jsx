@@ -1,209 +1,117 @@
 /* eslint-disable no-irregular-whitespace */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, Image, ScrollView, TouchableOpacity,
 } from 'react-native';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import * as FileSystem from 'expo-file-system';
 
 import StampCard from '../components/StampCard';
-import LoadingScreen from './LoadingScreen';
 import Generator from '../components/Generator';
-import { ChangeIDtoName, convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from '../utils/Data';
 import CircleTitle from '../components/CircleTitle';
 import userInfoContext from '../utils/UserInfoContext';
+import { ChangeIDtoName } from '../utils/Data';
+import LoadingScreen from './LoadingScreen';
 
 export default function MypageScreen(props) {
   const { navigation } = props;
-  const { userInfo, setUserInfo } = useContext(userInfoContext);
-  // const [isImageLoaded, setImageLoaded] = useState(false);
-  // const [userInfo, setUserInfo] = useState({});
-  const [isLoading, setLoading] = useState(false);
-  const [visited, setVisited] = useState(true);
+  const { userInfo } = useContext(userInfoContext);
+  const [ramenName, setRamenName] = useState('');
+  const [toppingName, setToppingName] = useState('');
+  const [isLoading, setLoading] = useState(true);
 
-  const storage = getStorage();
+  useEffect(() => {
+    (async () => {
+      const ramen = await ChangeIDtoName(userInfo.ramen);
+      const topping = await ChangeIDtoName(userInfo.topping);
+      setRamenName(ramen);
+      setToppingName(topping);
+      setLoading(false);
+    })();
+  }, [userInfo.ramen, userInfo.topping]);
 
-  async function downloadImage(imageURL) {
-    const imageRef = ref(storage, imageURL);
-    const url = await getDownloadURL(imageRef);
-
-    const filename = url.split('/').pop();
-    const downloadDest = `${FileSystem.documentDirectory}${filename}`;
-
-    const downloadResult = await FileSystem.downloadAsync(url, downloadDest);
-
-    if (downloadResult.status !== 200) {
-      console.error('Error downloading the image:', downloadResult);
-      return null;
-    }
-
-    return downloadResult.uri;
+  if (isLoading) {
+    return <LoadingScreen />;
   }
-
-  useEffect(() => {
-    const auth = getAuth();
-    const db = getFirestore();
-
-    // マイページ開く際にFirebaseの認証状態が完全に復元されてないとエラーが起きるためonAuthStateChangedで監視する
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const currentUserUid = user.uid;
-        const userPath = `users/${currentUserUid}/`;
-        const userInfoDocRef = doc(db, userPath);
-        setLoading(true);
-        try {
-          const userDoc = await getDoc(userInfoDocRef);
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            if (userData.imageUrl) {
-              const downloadImageUrl = await downloadImage(userData.imageUrl);
-              userData.imageUrl = downloadImageUrl;
-            }
-
-            const ramenName = await ChangeIDtoName(userData.ramen);
-            const toppingName = await ChangeIDtoName(userData.topping);
-            let lastVisitDate = null;
-            let comingData = [];
-
-            if (userData.times && userData.times.length > 0) {
-              lastVisitDate = userData.times[userData.times.length - 1];
-              lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
-              lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
-              comingData = userData.times;
-            }
-
-            const today = formatDateToYYYYMMDD(new Date());
-
-            if (lastVisitDate === today) {
-              setVisited(true);
-            } else {
-              setVisited(false);
-            }
-
-            const formattedDates = comingData.map((data) => {
-              const date = convertFirestoreTimestampToDate(data);
-              return formatDateToYYYYMMDD(date);
-            });
-
-            setUserInfo({
-              userName: userData.name,
-              userRamen: ramenName,
-              userTopping: toppingName,
-              visited: formattedDates,
-              imageUrl: userData.imageUrl,
-              title: userData.times.length,
-            });
-          } else {
-            console.log('ユーザー情報がない');
-          }
-          setLoading(false);
-        } catch (e) {
-          setLoading(false);
-        }
-      } else {
-        console.log('ユーザーはログインしていません');
-      }
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-  }, [visited]);
 
   return (
     <View style={styles.container}>
-      {/* {isLoading || isImageLoaded ? <LoadingScreen /> : ( */}
-      {isLoading ? <LoadingScreen /> : (
-        <ScrollView style={styles.listContainer}>
+      <ScrollView style={styles.listContainer}>
+        <TouchableOpacity
+          style={styles.maininfo}
+          onPress={() => {
+            navigation.navigate('EditUserInfoScreen');
+          }}
+        >
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: userInfo.imageUrl }}
+              style={styles.icon}
+            />
+          </View>
+          <View style={styles.circleImage}>
+            {userInfo.title != null && (
+              <CircleTitle title={userInfo.title} />
+            )}
+          </View>
+          <View style={styles.nameContainer}>
+            <Text style={styles.username}>{userInfo.name}</Text>
+            <Text style={styles.subtitle}>
+              好きなラーメン　:
+              {' '}
+              <Text style={styles.highlightedText}>{ramenName}</Text>
+            </Text>
+            <Text style={styles.subtitle}>
+              好きなトッピング:
+              {' '}
+              <Text style={styles.highlightedText}>{toppingName}</Text>
+            </Text>
+          </View>
+          <Text style={styles.changeIcon}>{'>'}</Text>
+        </TouchableOpacity>
+        <View style={styles.separator} />
+        <View style={styles.titleContainer}>
+          <View style={styles.stamp}>
+            <StampCard />
+          </View>
+        </View>
+        <View style={styles.separator} />
+        <View>
+          <Text style={styles.otherText}>その他</Text>
           <TouchableOpacity
-            style={styles.maininfo}
+            style={styles.otherinfo}
             onPress={() => {
-              navigation.navigate('EditUserInfoScreen');
+              navigation.navigate('TermsOfUseScreen');
             }}
           >
-            <View style={styles.imageContainer}>
-              <Image
-                source={{ uri: userInfo.imageUrl }}
-                style={styles.icon}
-                // onLoad={() => {
-                //   setImageLoaded(true);
-                // }}
-              />
+            <View style={styles.otherContainer}>
+              <Text style={styles.othername}>利用規約</Text>
             </View>
-            <View style={styles.circleImage}>
-              {userInfo.title != null && (
-                <CircleTitle title={userInfo.title} />
-              )}
-            </View>
-            <View style={styles.nameContainer}>
-              <Text style={styles.username}>{userInfo.userName}</Text>
-              <Text style={styles.subtitle}>
-                好きなラーメン　:
-                {' '}
-                <Text style={styles.highlightedText}>{userInfo.userRamen}</Text>
-              </Text>
-              <Text style={styles.subtitle}>
-                好きなトッピング:
-                {' '}
-                <Text style={styles.highlightedText}>{userInfo.userTopping}</Text>
-              </Text>
+            <Text style={styles.changeIcon} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.otherinfo}
+            onPress={() => {
+              navigation.navigate('InquiryScreen');
+            }}
+          >
+            <View style={styles.otherContainer}>
+              <Text style={styles.othername}>お問い合わせ</Text>
             </View>
             <Text style={styles.changeIcon}>{'>'}</Text>
           </TouchableOpacity>
-          <View style={styles.separator} />
-          <View style={styles.titleContainer}>
-            <View style={styles.stamp}>
-              {!isLoading && (
-              <StampCard
-                userVisited={userInfo.visited}
-              />
-              )}
+          <TouchableOpacity
+            style={styles.otherinfo}
+            onPress={() => {
+              navigation.navigate('InquiryScreen');
+            }}
+          >
+            <View style={styles.otherContainer}>
+              <Text style={styles.othername}>ヘルプ</Text>
             </View>
-          </View>
-          <View style={styles.separator} />
-          <View>
-            <Text style={styles.otherText}>その他</Text>
-            <TouchableOpacity
-              style={styles.otherinfo}
-              onPress={() => {
-                navigation.navigate('TermsOfUseScreen');
-              }}
-            >
-              <View style={styles.otherContainer}>
-                <Text style={styles.othername}>利用規約</Text>
-              </View>
-              <Text style={styles.changeIcon} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.otherinfo}
-              onPress={() => {
-                navigation.navigate('InquiryScreen');
-              }}
-            >
-              <View style={styles.otherContainer}>
-                <Text style={styles.othername}>お問い合わせ</Text>
-              </View>
-              <Text style={styles.changeIcon}>{'>'}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.otherinfo}
-              onPress={() => {
-                navigation.navigate('InquiryScreen');
-              }}
-            >
-              <View style={styles.otherContainer}>
-                <Text style={styles.othername}>ヘルプ</Text>
-              </View>
-              <Text style={styles.changeIcon}>{'>'}</Text>
-            </TouchableOpacity>
-          </View>
-          <Generator />
-        </ScrollView>
-      )}
+            <Text style={styles.changeIcon}>{'>'}</Text>
+          </TouchableOpacity>
+        </View>
+        <Generator />
+      </ScrollView>
     </View>
   );
 }
