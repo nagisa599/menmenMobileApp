@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   View, Image, StyleSheet, TextInput, ScrollView, Text,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import { func } from 'prop-types';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import GoogleLoginButton from '../components/GoogleLoginButton';
@@ -20,21 +20,25 @@ export default function GoogleLoginScreen(props) {
   const [passwordErr, setPasswordErr] = useState('');
   const [emailErr, setEmailErr] = useState('');
   const auth = getAuth();
-  const saveUserToAsyncStorage = async (user) => {
-    try {
-      await AsyncStorage.setItem('@user', JSON.stringify(user));
-    } catch (error) {
-      console.error('Error saving user to AsyncStorage:', error);
-    }
-  };
+  // const saveUserToAsyncStorage = async (user) => {
+  //   try {
+  //     await AsyncStorage.setItem('@user', JSON.stringify(user));
+  //   } catch (error) {
+  //     console.error('Error saving user to AsyncStorage:', error);
+  //   }
+  // };
 
   function handlePress() {
     if (!validatePassword(password)) {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const { user } = userCredential;
-          saveUserToAsyncStorage(user);
-          setUserInfo(user);
+          // saveUserToAsyncStorage(user);
+          // setUserInfo(user);
+          setUserInfo({
+            uid: auth.currentUser.uid,
+            email: user.email,
+          });
         })
         .catch(() => {
           setEmailErr('正しいメールアドレスを入力してください');
