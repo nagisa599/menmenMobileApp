@@ -4,45 +4,65 @@ import {
   Alert, TouchableWithoutFeedback, Keyboard,
 } from 'react-native';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  doc, getDoc, setDoc, getDocs, collection,
+} from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import {
+  getStorage, ref, uploadBytes, getDownloadURL,
+} from 'firebase/storage';
 
 import db from '../../firebaseConfig';
 
 import DropdownSelect from '../components/DropdownSelect';
 import userInfoContext from '../utils/UserInfoContext';
-
-// ramenコレクションの情報に置き換える
-const ramenItem = [
-  { label: 'ラーメン', value: 1 },
-  { label: 'まぜそば', value: 2 },
-  { label: '汁なし', value: 3 },
-  { label: 'カレー', value: 4 },
-  { label: 'つけ麺', value: 5 },
-  { label: 'モクヨージャンク', value: 6 },
-];
-
-// ramenコレクションの情報に置き換える
-const toppingItem = [
-  { label: 'チーズ', value: 50 },
-  { label: '明太子', value: 51 },
-  { label: 'のり', value: 52 },
-  { label: 'ねぎ', value: 53 },
-  { label: 'うずら', value: 54 },
-  { label: '七味', value: 55 },
-];
+import LoadingScreen from './LoadingScreen';
+import ProfileImageUpload from '../components/ProfileImageUpload';
 
 export default function EditUserInfoScreen(props) {
   const { navigation } = props;
   const { userInfo, setUserInfo } = useContext(userInfoContext);
-  const [name, setName] = useState('');
-  const [birthday, setBirthDay] = useState('');
-  const [ramen, setRamen] = useState(0);
-  const [topping, setTopping] = useState(0);
-  const [createdAt, setCreatedAt] = useState(new Date());
+  const [name, setName] = useState(userInfo.name);
+  const [ramen, setRamen] = useState(userInfo.ramen);
+  const [topping, setTopping] = useState(userInfo.topping);
+  const [updatedAt, setUpdatedAt] = useState(new Date());
   const [isUnique, setIsUnique] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [ramenItems, setRamenItems] = useState([]);
+  const [toppingItems, setToppingItems] = useState([]);
+  const [image, setImage] = useState(userInfo.imageUrl);
+  const [isRegistering, setIsRegistering] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const ramenItem = [];
+      const toppingItem = [];
+
+      const querySnapshot = await getDocs(collection(db, 'ramens'));
+
+      querySnapshot.docs.forEach((menudoc) => {
+        const data = menudoc.data();
+
+        const item = {
+          label: data.name,
+          value: menudoc.id,
+        };
+
+        if (data.topping) {
+          toppingItem.push(item);
+        } else {
+          ramenItem.push(item);
+        }
+      });
+      setRamenItems(ramenItem);
+      setToppingItems(toppingItem);
+
+      setIsLoading(false);// データのフェッチが完了した後にisLoadingをfalseに設定
+    };
+
+    setIsLoading(true);
+    fetchData();
+  }, []);
 
   const isUsernameUnique = async (username) => {
     const userRef = doc(db, `username/${username}`);
@@ -56,8 +76,10 @@ export default function EditUserInfoScreen(props) {
   };
 
   const handleRegister = async (userData) => {
+    setIsRegistering(true);
     // eslint-disable-next-line no-unused-vars
     const auth = getAuth();
+    const storage = getStorage();
 
     if (!userData) {
       Alert.alert('ユーザーデータが存在しません');
@@ -69,46 +91,64 @@ export default function EditUserInfoScreen(props) {
       return;
     }
 
-    const userUid = userData.uid;
-    const userPath = `users/${userUid}`;
-    const userDoc = doc(db, userPath);
-    setCreatedAt(new Date());
-
     if (!name.trim()) {
       Alert.alert('ユーザー名を入力してください');
       return;
     }
-    if (!birthday.trim()) {
-      Alert.alert('誕生日を入力してください');
-      return;
+
+    const userDoc = doc(db, `users/${userData.uid}`);
+    setUpdatedAt(new Date());
+
+    const uriToBlob = async (uri) => {
+      try {
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        return blob;
+      } catch (e) {
+        console.error('Error converting uri to blob:', e);
+        throw new Error('画像の読み込みに失敗しました');
+      }
+    };
+
+    let { imageUrl } = userInfo;
+    if (image) {
+      try {
+        const imageBlob = await uriToBlob(image);
+        const storageRef = ref(storage, `users/${userData.uid}`);
+        await uploadBytes(storageRef, imageBlob);
+        imageUrl = await getDownloadURL(storageRef);
+      } catch (e) {
+        console.log('Error uploading image:', e);
+        Alert.alert('エラー', '画像のアップロードに失敗');
+        return;
+      }
     }
 
     try {
       await setDoc(userDoc, {
-        email: userInfo.email,
-        name,
-        birthday,
-        ramen,
-        topping,
-        createdAt,
-        times: [],
-        visited: false,
-      });
-
-      await setDoc(doc(db, `username/${name}`), {
-        uid: userUid,
-      });
-
-      const combinedUserData = {
         ...userData,
         name,
-        birthday,
         ramen,
         topping,
-        createdAt,
-      };
-      await AsyncStorage.setItem('@user', JSON.stringify(combinedUserData));
-      setUserInfo(combinedUserData);
+        updatedAt,
+        imageUrl,
+      });
+
+      setUserInfo({
+        ...userData,
+        name,
+        ramen,
+        topping,
+        updatedAt,
+        imageUrl,
+      });
+
+      // 変更前の名前の削除
+
+      await setDoc(doc(db, `username/${name}`), {
+        uid: userData.uid,
+      });
+
       Alert.alert(
         '変更完了',
         '',
@@ -117,6 +157,7 @@ export default function EditUserInfoScreen(props) {
             text: 'OK',
             onPress: () => {
               navigation.navigate('MypageScreen');
+              setIsRegistering(false);
             },
           },
         ],
@@ -125,114 +166,94 @@ export default function EditUserInfoScreen(props) {
       Alert.alert(error.message);
     }
   };
-  const fetchUserData = async () => {
-    try {
-      setIsLoading(true);
-      const ref = doc(db, `users/${userInfo.uid}/`);
-      const docSnap = await getDoc(ref);
-      const userData = docSnap.data();
-      setName(userData.name);
-      setBirthDay(userData.birthday);
-      setRamen(userData.ramen);
-      setTopping(userData.topping);
-      setIsLoading(false);
-    } catch {
-      Alert.alert('ユーザの情報が得られませんでした。');
-    }
-  };
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+
   return (
     <View style={styles.container}>
-      <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>ユーザ登録変更</Text>
-          <Text>
-            <Text style={styles.star}>＊</Text>
-            は必須項目です。
-          </Text>
-        </View>
-        <ScrollView style={{ paddingHorizontal: 30 }}>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View>
-              <View style={styles.itemContainer}>
-                <Text style={styles.item}>メールアドレス</Text>
-                <TextInput
-                  value={userInfo.email}
-                  style={styles.mail}
-                  autoCapitalize="none"
-                  editable={false}
-                />
-              </View>
-              {/* <View style={styles.itemContainer}>
-              <Text style={styles.item}>電話番号</Text>
-              <TextInput
-                value={phoneNumber}
-                style={styles.input}
-                onChangeText={(text) => {
-                  setPhoneNumber(text);
-                }}
-                autoCapitalize="none"
-                placeholder="電話番号"
-                textContentType="telephoneNumber"
-              />
-            </View> */}
-              <View style={styles.itemContainer}>
-                <Text style={styles.item}>
-                  ユーザー名
-                  <Text style={styles.star}>＊</Text>
-                </Text>
-                {!isUnique && <Text style={styles.star}>このユーザー名はすでに使われています</Text>}
-                <TextInput
-                  value={name}
-                  style={styles.input}
-                  onChangeText={(text) => {
-                    checkUsername(text);
-                    setName(text);
-                  }}
-                  autoCapitalize="none"
-                  placeholder="ユーザー名"
-                  textContentType="username"
-                />
-              </View>
-              {!isLoading && (
+      {isLoading || isRegistering ? (
+        <LoadingScreen />
+      ) : (
+        <>
+          <View style={styles.titleContainer}>
+            <Text>
+              <Text style={styles.star}>＊</Text>
+              は必須項目です
+            </Text>
+          </View>
+          <ScrollView style={{ paddingHorizontal: 30 }}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View>
+                <View style={styles.itemContainer}>
+                  <Text style={styles.item}>メールアドレス</Text>
+                  <TextInput
+                    value={userInfo.email}
+                    style={styles.mail}
+                    autoCapitalize="none"
+                    editable={false}
+                  />
+                </View>
+                <View styel={styles.itemContainer}>
+                  <Text style={styles.item}>プロフィール画像</Text>
+                  <ProfileImageUpload image={image} setImage={setImage} />
+                </View>
+                <View style={styles.itemContainer}>
+                  <Text style={styles.item}>
+                    ユーザー名
+                    <Text style={styles.star}>＊</Text>
+                  </Text>
+                  {!isUnique && <Text style={styles.star}>このユーザー名はすでに使われています</Text>}
+                  <TextInput
+                    value={name}
+                    style={styles.input}
+                    onChangeText={(text) => {
+                      checkUsername(text);
+                      setName(text);
+                    }}
+                    autoCapitalize="none"
+                    placeholder="ユーザー名"
+                    textContentType="username"
+                  />
+                </View>
                 <View style={styles.itemContainer}>
                   <Text style={styles.item}>お気に入りラーメン</Text>
                   <View style={styles.dropdownContainer}>
-                    <DropdownSelect
-                      contentItems={ramenItem}
-                      setChange={setRamen}
-                      previous={ramen}
-                    />
+                    {ramenItems && ramenItems.length > 0 ? (
+                      <DropdownSelect
+                        contentItems={ramenItems}
+                        setChange={setRamen}
+                        previous={ramen}
+                      />
+                    ) : (
+                      <Text>ロード中</Text>
+                    )}
                   </View>
                 </View>
-              )}
-              {!isLoading && (
                 <View style={styles.itemContainer}>
                   <Text style={styles.item}>お気に入りトッピング</Text>
                   <View style={styles.dropdownContainer}>
-                    <DropdownSelect
-                      contentItems={toppingItem}
-                      setChange={setTopping}
-                      previous={topping}
-                    />
+                    {toppingItems && toppingItems.length > 0 ? (
+                      <DropdownSelect
+                        contentItems={toppingItems}
+                        setChange={setTopping}
+                        previous={topping}
+                      />
+                    ) : (
+                      <Text>ロード中</Text>
+                    )}
                   </View>
                 </View>
-              )}
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={styles.registerButton}
-                  onPress={() => handleRegister(userInfo)}
-                >
-
-                  <Text style={styles.buttonText}>変更</Text>
-                </TouchableOpacity>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={styles.registerButton}
+                    onPress={() => handleRegister(userInfo)}
+                  >
+                    <Text style={styles.buttonText}>登録</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </ScrollView>
-      </View>
+            </TouchableWithoutFeedback>
+          </ScrollView>
+        </>
+      )}
     </View>
   );
 }

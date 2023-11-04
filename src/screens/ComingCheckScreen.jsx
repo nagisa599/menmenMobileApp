@@ -63,11 +63,13 @@ export default function ComingCheckScreen(props) {
         setDoc(userRef, {
           ...userData,
           times: newTimes,
+          title: userData.title + 1,
           visited: true,
         });
         setUserInfo({
           ...userInfo,
           times: newTimes,
+          title: userData.title + 1,
           visited: true,
         });
       }

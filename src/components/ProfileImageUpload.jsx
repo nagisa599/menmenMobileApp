@@ -29,9 +29,9 @@ export default function ProfileImageUpload(props) {
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button title="画像を選択してください" onPress={pickImage} />
       {image
         && <Image source={{ uri: image }} style={{ width: 200, height: 200, marginBottom: 15 }} />}
+      <Button title="画像を選択してください" onPress={pickImage} />
     </View>
   );
 }
