@@ -116,7 +116,7 @@ export default function EditUserInfoScreen(props) {
           {
             text: 'OK',
             onPress: () => {
-              navigation.navigate('SettingScreen');
+              navigation.navigate('MypageScreen');
             },
           },
         ],

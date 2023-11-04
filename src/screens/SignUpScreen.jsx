@@ -138,6 +138,7 @@ export default function SignUpScreen(props) {
         times: [],
         visited: false,
         imageUrl,
+        title: 0,
       });
 
       await setDoc(doc(db, `username/${name}`), {
@@ -234,6 +235,7 @@ export default function SignUpScreen(props) {
                     <DropdownSelect
                       contentItems={ramenItems}
                       setChange={setRamen}
+                      previous=""
                     />
                   </View>
                 </View>
@@ -243,6 +245,7 @@ export default function SignUpScreen(props) {
                     <DropdownSelect
                       contentItems={toppingItems}
                       setChange={setTopping}
+                      previous=""
                     />
                   </View>
                 </View>

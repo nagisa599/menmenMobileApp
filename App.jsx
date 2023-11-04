@@ -21,7 +21,7 @@ export default function App() {
   const [isSplashVisible, setSplashVisible] = useState(true);
 
   const auth = getAuth();
-  const [userInfo, setUserInfo] = useState();
+  const [userInfo, setUserInfo] = useState(null);
   const value = useMemo(() => ({ userInfo, setUserInfo }), [userInfo]);
   // eslint-disable-next-line no-unused-vars
   const [request, response, promptAsync] = Google.useAuthRequest({

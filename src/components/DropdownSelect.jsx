@@ -62,7 +62,7 @@ DropdownSelect.propTypes = {
 };
 
 DropdownSelect.defaultProps = {
-  previous: null,
+  previous: '',
 };
 
 const styles = StyleSheet.create({
