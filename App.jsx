@@ -5,50 +5,117 @@ import { IOS_CLIENT_ID, ANDROID_CLIENT_ID } from '@env';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import {
-  GoogleAuthProvider, signInWithCredential, getAuth,
+  GoogleAuthProvider, signInWithCredential, getAuth, onAuthStateChanged,
 } from 'firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import * as FileSystem from 'expo-file-system';
 import SignUpStack from './src/navigators/SignUpNavigator';
 import GoogleSingUppStack from './src/navigators/GoogleSingUpNavigation';
-// eslint-disable-next-line no-unused-vars
 import db from './firebaseConfig';
 import AnimatedSplashScreen from './src/screens/AnimatedSplashScreen';
 import userInfoContext from './src/utils/UserInfoContext';
 import MainStackNavigator from './src/navigators/MainStackNavigator';
+import LoadingScreen from './src/screens/LoadingScreen';
+import { convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from './src/utils/Data';
 
 WebBrowser.maybeCompleteAuthSession();
 export default function App() {
   const [isSplashVisible, setSplashVisible] = useState(true);
-
-  const auth = getAuth();
+  const [isLoading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null);
   const value = useMemo(() => ({ userInfo, setUserInfo }), [userInfo]);
+
+  const auth = getAuth();
+  const storage = getStorage();
   // eslint-disable-next-line no-unused-vars
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: IOS_CLIENT_ID,
     androidClientId: ANDROID_CLIENT_ID,
   });
 
-  const checkLocalUser = async () => {
-    try {
-      const userJSON = await AsyncStorage.getItem('@user');
-      const userData = userJSON ? JSON.parse(userJSON) : null;
-      setUserInfo(userData);
-    } catch (e) {
-      alert(e.message);
+  async function downloadImage(imageURL) {
+    const imageRef = ref(storage, imageURL);
+    const url = await getDownloadURL(imageRef);
+
+    const filename = url.split('/').pop();
+    const downloadDest = `${FileSystem.documentDirectory}${filename}`;
+
+    const downloadResult = await FileSystem.downloadAsync(url, downloadDest);
+
+    if (downloadResult.status !== 200) {
+      console.error('Error downloading the image:', downloadResult);
+      return null;
     }
-  };
+
+    return downloadResult.uri;
+  }
 
   useEffect(() => {
-    const saveUserToAsyncStorage = async (user) => {
-      try {
-        await AsyncStorage.setItem('@user', JSON.stringify(user));
-      } catch (error) {
-        console.error('Error saving user to AsyncStorage:', error);
-      }
-    };
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userInfoDocRef = doc(db, `users/${user.uid}`);
+        try {
+          const userDoc = await getDoc(userInfoDocRef);
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            if (userData.imageUrl) {
+              const downloadImageUrl = await downloadImage(userData.imageUrl);
+              userData.imageUrl = downloadImageUrl;
+            }
 
+            let lastVisitDate = null;
+            let comingData = [];
+            if (userData.times && userData.times.length > 0) {
+              lastVisitDate = userData.times[userData.times.length - 1];
+              lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
+              lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
+              comingData = userData.times;
+            }
+            const today = formatDateToYYYYMMDD(new Date());
+            const formattedDates = comingData.map((data) => {
+              const date = convertFirestoreTimestampToDate(data);
+              return formatDateToYYYYMMDD(date);
+            });
+
+            setUserInfo({
+              ...userInfo,
+              uid: auth.currentUser.uid,
+              email: userData.email,
+              name: userData.name,
+              ramen: userData.ramen,
+              topping: userData.topping,
+              visited: lastVisitDate === today,
+              imageUrl: userData.imageUrl,
+              title: userData.title,
+              birthday: userData.birthday,
+              createdAt: userData.createdAt,
+              updatedAt: userData.updatedAt,
+              times: formattedDates,
+            });
+          } else {
+            console.log('ユーザー情報ない');
+          }
+          setLoading(false);
+        } catch (e) {
+          setLoading(false);
+        }
+      } else {
+        console.log('ユーザー未作成');
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    console.log(userInfo);
+  }, [userInfo]);
+
+  useEffect(() => {
+    // Googleアカウントでの認証に成功した場合
     if (response?.type === 'success') {
+      setLoading(true);
       /* eslint-disable */
       const { id_token } = response.params;
       /* eslint-enable */
@@ -56,29 +123,42 @@ export default function App() {
       signInWithCredential(auth, credential)
         .then((authResult) => {
           const { user } = authResult;
-          saveUserToAsyncStorage(user);
-          setUserInfo(user);
+          const userRef = doc(db, `users/${user.uid}`);
+          setDoc(userRef, {
+            email: user.email,
+            uid: user.uid,
+          }, { merge: true })
+            .then(() => {
+              console.log('googleユーザー登録成功');
+            })
+            .catch((error) => {
+              console.error('error googleユーザー登録:', error);
+            });
+          setUserInfo({
+            ...userInfo,
+            email: user.email,
+            uid: auth.currentUser.uid,
+          });
+          setLoading(false);
         })
         .catch((error) => {
           console.error('Error signing in with Google:', error);
+          setLoading(false);
         });
     }
   }, [response]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await checkLocalUser();
-    };
-
-    fetchData();
-  }, []);
-
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
   if (userInfo) {
     if (!userInfo.name) {
       return (
-        <NavigationContainer>
-          <SignUpStack userInfo={userInfo} setUserInfo={setUserInfo} />
-        </NavigationContainer>
+        <userInfoContext.Provider value={value}>
+          <NavigationContainer>
+            <SignUpStack />
+          </NavigationContainer>
+        </userInfoContext.Provider>
       );
     }
     return (
@@ -93,13 +173,15 @@ export default function App() {
     );
   }
   return (
-    <NavigationContainer>
-      {isSplashVisible
-        ? (
-          <AnimatedSplashScreen
-            setSplashVisible={setSplashVisible}
-          />
-        ) : <GoogleSingUppStack promptAsync={promptAsync} setUserInfo={setUserInfo} />}
-    </NavigationContainer>
+    <userInfoContext.Provider value={value}>
+      <NavigationContainer>
+        {isSplashVisible
+          ? (
+            <AnimatedSplashScreen
+              setSplashVisible={setSplashVisible}
+            />
+          ) : <GoogleSingUppStack promptAsync={promptAsync} />}
+      </NavigationContainer>
+    </userInfoContext.Provider>
   );
 }

@@ -1,12 +1,13 @@
-import { arrayOf, string } from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, Dimensions, ImageBackground,
 } from 'react-native';
 import imageStampCard from '../../assets/stampcard2.png';
+import userInfoContext from '../utils/UserInfoContext';
 
-export default function StampCard(props) {
-  const { userVisited } = props;
+export default function StampCard() {
+  const { userInfo } = useContext(userInfoContext);
+  const userVisited = userInfo.times;
   const totalStamps = 10;
   // 来店回数が0なら1枚表示、それ以外なら来た回数 // 10 + 1枚スタンプカードを作成
   const maxPages = userVisited.length === 0 ? 1 : Math.ceil(userVisited.length / totalStamps);
@@ -70,12 +71,6 @@ export default function StampCard(props) {
     </ImageBackground>
   );
 }
-
-StampCard.propTypes = {
-  userVisited: arrayOf(
-    string,
-  ),
-};
 
 StampCard.defaultProps = {
   userVisited: [],

@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity,
   Alert, TouchableWithoutFeedback, Keyboard,
 } from 'react-native';
-import { func, shape } from 'prop-types';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   collection,
   doc, getDoc, getDocs, setDoc,
@@ -17,14 +14,15 @@ import {
 
 // eslint-disable-next-line import/no-unresolved
 import { DEFAULT_IMAGE_URL } from '@env';
+import userInfoContext from '../utils/UserInfoContext';
 import db from '../../firebaseConfig';
 import BirthdayInput from '../components/BirthdayInput';
 import DropdownSelect from '../components/DropdownSelect';
 import LoadingScreen from './LoadingScreen';
 import ProfileImageUpload from '../components/ProfileImageUpload';
 
-export default function SignUpScreen(props) {
-  const { userInfo, setUserInfo } = props;
+export default function SignUpScreen() {
+  const { userInfo, setUserInfo } = useContext(userInfoContext);
   const [name, setName] = useState('');
   const [birthday, setBirthDay] = useState('');
   const [ramen, setRamen] = useState(0);
@@ -37,6 +35,7 @@ export default function SignUpScreen(props) {
   const [image, setImage] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
 
+  // お気に入りラーメンやトッピングのリスト作成のためのuseEffect
   useEffect(() => {
     const fetchData = async () => {
       const ramenItem = [];
@@ -68,17 +67,20 @@ export default function SignUpScreen(props) {
     fetchData();
   }, []);
 
+  // ユーザー名が固有かどうかFirebaseに確認
   const isUsernameUnique = async (username) => {
     const userRef = doc(db, `username/${username}`);
     const userSnap = await getDoc(userRef);
     return !userSnap.exists();
   };
 
+  // ユーザー名が固有かどうかチェックし、stateを更新
   const checkUsername = async (username) => {
     const unique = await isUsernameUnique(username);
     setIsUnique(unique);
   };
 
+  // 登録関数
   const handleRegister = async (userData) => {
     setIsRegistering(true);
     // eslint-disable-next-line no-unused-vars
@@ -95,11 +97,6 @@ export default function SignUpScreen(props) {
       return;
     }
 
-    const userUid = userData.uid;
-    const userPath = `users/${userUid}`;
-    const userDoc = doc(db, userPath);
-    setCreatedAt(new Date());
-
     if (!name.trim()) {
       Alert.alert('ユーザー名を入力してください');
       return;
@@ -108,6 +105,9 @@ export default function SignUpScreen(props) {
       Alert.alert('誕生日を入力してください');
       return;
     }
+
+    const userDoc = doc(db, `users/${userData.uid}`);
+    setCreatedAt(new Date());
 
     const uriToBlob = async (uri) => {
       const response = await fetch(uri);
@@ -118,7 +118,7 @@ export default function SignUpScreen(props) {
     let imageUrl = DEFAULT_IMAGE_URL;
     if (image) {
       const imageBlob = await uriToBlob(image);
-      const storageRef = ref(storage, `users/${userUid}`);
+      const storageRef = ref(storage, `users/${userData.uid}`);
       try {
         await uploadBytes(storageRef, imageBlob);
         imageUrl = await getDownloadURL(storageRef);
@@ -130,11 +130,27 @@ export default function SignUpScreen(props) {
     try {
       await setDoc(userDoc, {
         email: userInfo.email,
+        uid: userInfo.uid,
         name,
         birthday,
         ramen,
         topping,
         createdAt,
+        updatedAt: createdAt,
+        times: [],
+        visited: false,
+        imageUrl,
+        title: 0,
+      });
+
+      setUserInfo({
+        ...userInfo,
+        name,
+        birthday,
+        ramen,
+        topping,
+        createdAt,
+        updatedAt: createdAt,
         times: [],
         visited: false,
         imageUrl,
@@ -142,20 +158,8 @@ export default function SignUpScreen(props) {
       });
 
       await setDoc(doc(db, `username/${name}`), {
-        uid: userUid,
+        uid: userData.uid,
       });
-
-      const combinedUserData = {
-        ...userData,
-        name,
-        birthday,
-        ramen,
-        topping,
-        createdAt,
-      };
-
-      await AsyncStorage.setItem('@user', JSON.stringify(combinedUserData));
-      setUserInfo(combinedUserData);
     } catch (error) {
       Alert.alert(error.message);
     }
@@ -265,15 +269,6 @@ export default function SignUpScreen(props) {
     </View>
   );
 }
-
-SignUpScreen.propTypes = {
-  userInfo: shape(),
-  setUserInfo: func.isRequired,
-};
-
-SignUpScreen.defaultProps = {
-  userInfo: null,
-};
 
 const styles = StyleSheet.create({
   container: {

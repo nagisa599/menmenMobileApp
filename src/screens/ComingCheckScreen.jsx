@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Text, View, StyleSheet, Alert,
 } from 'react-native';
@@ -7,11 +7,13 @@ import {
   getDoc, getFirestore, doc, setDoc,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import { func, shape } from 'prop-types';
+import userInfoContext from '../utils/UserInfoContext';
+// import { func, shape } from 'prop-types';
 
 export default function ComingCheckScreen(props) {
-  const { navigation, route } = props;
-  const { setVisited } = route.params;
+  const { navigation } = props;
+  const { userInfo, setUserInfo } = useContext(userInfoContext);
+  // const { setVisited } = route.params;
   // アプリはカメラを使う許可が認められるかどうか
   const [hasPermission, setHasPermission] = useState(null);
   // アプリはQRコードをスキャンしたかどうか
@@ -63,7 +65,11 @@ export default function ComingCheckScreen(props) {
           times: newTimes,
           visited: true,
         });
-        setVisited(true);
+        setUserInfo({
+          ...userInfo,
+          times: newTimes,
+          visited: true,
+        });
       }
     } catch (e) {
       Alert.alert('Firebaseの更新に失敗');
@@ -120,14 +126,14 @@ export default function ComingCheckScreen(props) {
   );
 }
 
-ComingCheckScreen.propTypes = {
-  route: shape({
-    params: shape({
-      // activateStamp: func,
-      setVisited: func,
-    }),
-  }).isRequired,
-};
+// ComingCheckScreen.propTypes = {
+//   route: shape({
+//     params: shape({
+//       // activateStamp: func,
+//       setVisited: func,
+//     }),
+//   }).isRequired,
+// };
 
 const styles = StyleSheet.create({
   container: {
