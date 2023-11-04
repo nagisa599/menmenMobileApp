@@ -91,6 +91,7 @@ export default function MypageScreen(props) {
               userTopping: toppingName,
               visited: formattedDates,
               imageUrl: userData.imageUrl,
+              title: userData.times.length,
             });
           } else {
             console.log('ユーザー情報がない');
@@ -113,6 +114,7 @@ export default function MypageScreen(props) {
 
   return (
     <View style={styles.container}>
+      {/* {isLoading || isImageLoaded ? <LoadingScreen /> : ( */}
       {isLoading ? <LoadingScreen /> : (
         <ScrollView style={styles.listContainer}>
           <TouchableOpacity
@@ -131,7 +133,9 @@ export default function MypageScreen(props) {
               />
             </View>
             <View style={styles.circleImage}>
-              <CircleTitle />
+              {userInfo.title != null && (
+                <CircleTitle title={userInfo.title} />
+              )}
             </View>
             <View style={styles.nameContainer}>
               <Text style={styles.username}>{userInfo.userName}</Text>

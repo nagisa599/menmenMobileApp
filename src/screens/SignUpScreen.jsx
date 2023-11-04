@@ -234,6 +234,7 @@ export default function SignUpScreen(props) {
                     <DropdownSelect
                       contentItems={ramenItems}
                       setChange={setRamen}
+                      previous=""
                     />
                   </View>
                 </View>
@@ -243,6 +244,7 @@ export default function SignUpScreen(props) {
                     <DropdownSelect
                       contentItems={toppingItems}
                       setChange={setTopping}
+                      previous=""
                     />
                   </View>
                 </View>
