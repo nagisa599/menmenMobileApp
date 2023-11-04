@@ -3,9 +3,6 @@ import {
   View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity,
   Alert, TouchableWithoutFeedback, Keyboard,
 } from 'react-native';
-// import { func, shape } from 'prop-types';
-// eslint-disable-next-line import/no-extraneous-dependencies
-// import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   collection,
   doc, getDoc, getDocs, setDoc,
@@ -25,7 +22,6 @@ import LoadingScreen from './LoadingScreen';
 import ProfileImageUpload from '../components/ProfileImageUpload';
 
 export default function SignUpScreen() {
-  // const { userInfo, setUserInfo } = props;
   const { userInfo, setUserInfo } = useContext(userInfoContext);
   const [name, setName] = useState('');
   const [birthday, setBirthDay] = useState('');
@@ -145,6 +141,7 @@ export default function SignUpScreen() {
       });
 
       setUserInfo({
+        ...userInfo,
         name,
         birthday,
         ramen,
@@ -159,18 +156,6 @@ export default function SignUpScreen() {
       await setDoc(doc(db, `username/${name}`), {
         uid: userData.uid,
       });
-
-      // const combinedUserData = {
-      //   ...userData,
-      //   name,
-      //   birthday,
-      //   ramen,
-      //   topping,
-      //   createdAt,
-      // };
-
-      // await AsyncStorage.setItem('@user', JSON.stringify(combinedUserData));
-      // setUserInfo(combinedUserData);
     } catch (error) {
       Alert.alert(error.message);
     }
@@ -280,15 +265,6 @@ export default function SignUpScreen() {
     </View>
   );
 }
-
-// SignUpScreen.propTypes = {
-//   userInfo: shape(),
-//   setUserInfo: func.isRequired,
-// };
-
-// SignUpScreen.defaultProps = {
-//   userInfo: null,
-// };
 
 const styles = StyleSheet.create({
   container: {

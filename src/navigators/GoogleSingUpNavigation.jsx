@@ -7,11 +7,11 @@ import GoogleLoginScreen from '../screens/GoogleLoginScreen';
 const Stack = createNativeStackNavigator();
 
 export default function GoogleSingUppStack(props) {
-  const { promptAsync, setUserInfo } = props;
+  const { promptAsync } = props;
   return (
     <Stack.Navigator initialRouteName="GoogleSignUp">
-      <Stack.Screen name="GoogleSignUp">
-        {() => <GoogleLoginScreen promptAsync={promptAsync} setUserInfo={setUserInfo} />}
+      <Stack.Screen name="GoogleSignUp" options={{ headerShown: false }}>
+        {() => <GoogleLoginScreen promptAsync={promptAsync} />}
       </Stack.Screen>
     </Stack.Navigator>
   );
@@ -19,5 +19,4 @@ export default function GoogleSingUppStack(props) {
 
 GoogleSingUppStack.propTypes = {
   promptAsync: func.isRequired,
-  setUserInfo: func.isRequired,
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View, Image, StyleSheet, TextInput, ScrollView, Text,
 } from 'react-native';
@@ -12,29 +12,23 @@ import KeyboardSafeView from '../components/KeyBoradAvoidingView';
 import validatePassword from '../utils/Validation';
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
 import Button from '../components/Button';
+import userInfoContext from '../utils/UserInfoContext';
 
 export default function GoogleLoginScreen(props) {
-  const { promptAsync, setUserInfo } = props;
+  const { promptAsync } = props;
+  const { setUserInfo } = useContext(userInfoContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordErr, setPasswordErr] = useState('');
   const [emailErr, setEmailErr] = useState('');
   const auth = getAuth();
-  // const saveUserToAsyncStorage = async (user) => {
-  //   try {
-  //     await AsyncStorage.setItem('@user', JSON.stringify(user));
-  //   } catch (error) {
-  //     console.error('Error saving user to AsyncStorage:', error);
-  //   }
-  // };
 
+  // メールアドレスとパスワードでアカウント作成した場合
   function handlePress() {
     if (!validatePassword(password)) {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const { user } = userCredential;
-          // saveUserToAsyncStorage(user);
-          // setUserInfo(user);
           setUserInfo({
             uid: auth.currentUser.uid,
             email: user.email,
@@ -161,5 +155,4 @@ const styles = StyleSheet.create({
 
 GoogleLoginScreen.propTypes = {
   promptAsync: func.isRequired,
-  setUserInfo: func.isRequired,
 };

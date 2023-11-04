@@ -7,20 +7,17 @@ import * as WebBrowser from 'expo-web-browser';
 import {
   GoogleAuthProvider, signInWithCredential, getAuth, onAuthStateChanged,
 } from 'firebase/auth';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { getFirestore } from 'firebase/firestore';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import * as FileSystem from 'expo-file-system';
 import SignUpStack from './src/navigators/SignUpNavigator';
 import GoogleSingUppStack from './src/navigators/GoogleSingUpNavigation';
-// eslint-disable-next-line no-unused-vars
 import db from './firebaseConfig';
 import AnimatedSplashScreen from './src/screens/AnimatedSplashScreen';
 import userInfoContext from './src/utils/UserInfoContext';
 import MainStackNavigator from './src/navigators/MainStackNavigator';
 import LoadingScreen from './src/screens/LoadingScreen';
-import { ChangeIDtoName, convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from './src/utils/Data';
+import { ChangeIDtoName } from './src/utils/Data';
 
 WebBrowser.maybeCompleteAuthSession();
 export default function App() {
@@ -28,7 +25,6 @@ export default function App() {
   const [isLoading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null);
   const value = useMemo(() => ({ userInfo, setUserInfo }), [userInfo]);
-  // const [visited, setVisited] =
 
   const auth = getAuth();
   const storage = getStorage();
@@ -94,6 +90,7 @@ export default function App() {
             // });
 
             setUserInfo({
+              ...userInfo,
               uid: auth.currentUser.uid,
               email: userData.email,
               name: userData.name,
@@ -123,63 +120,52 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    console.log('userinfo:', userInfo);
   }, [userInfo]);
+
+  useEffect(() => {
+    // Googleアカウントでの認証に成功した場合
+    if (response?.type === 'success') {
+      setLoading(true);
+      /* eslint-disable */
+      const { id_token } = response.params;
+      /* eslint-enable */
+      const credential = GoogleAuthProvider.credential(id_token);
+      signInWithCredential(auth, credential)
+        .then((authResult) => {
+          const { user } = authResult;
+          const userRef = doc(db, `users/${user.uid}`);
+          setDoc(userRef, {
+            email: user.email,
+            uid: user.uid,
+          }, { merge: true })
+            .then(() => {
+              console.log('googleユーザー登録成功');
+            })
+            .catch((error) => {
+              console.error('error googleユーザー登録:', error);
+            });
+          setUserInfo({
+            ...userInfo,
+            email: user.email,
+            uid: auth.currentUser.uid,
+          });
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error signing in with Google:', error);
+          setLoading(false);
+        });
+    }
+  }, [response]);
 
   if (isLoading) {
     return <LoadingScreen />;
   }
-
-  // const checkLocalUser = async () => {
-  //   try {
-  //     const userJSON = await AsyncStorage.getItem('@user');
-  //     const userData = userJSON ? JSON.parse(userJSON) : null;
-  //     setUserInfo(userData);
-  //   } catch (e) {
-  //     alert(e.message);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const saveUserToAsyncStorage = async (user) => {
-  //     try {
-  //       await AsyncStorage.setItem('@user', JSON.stringify(user));
-  //     } catch (error) {
-  //       console.error('Error saving user to AsyncStorage:', error);
-  //     }
-  //   };
-
-  //   if (response?.type === 'success') {
-  //     /* eslint-disable */
-  //     const { id_token } = response.params;
-  //     /* eslint-enable */
-  //     const credential = GoogleAuthProvider.credential(id_token);
-  //     signInWithCredential(auth, credential)
-  //       .then((authResult) => {
-  //         const { user } = authResult;
-  //         saveUserToAsyncStorage(user);
-  //         setUserInfo(user);
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error signing in with Google:', error);
-  //       });
-  //   }
-  // }, [response]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     await checkLocalUser();
-  //   };
-
-  //   fetchData();
-  // }, []);
-
   if (userInfo) {
     if (!userInfo.name) {
       return (
         <userInfoContext.Provider value={value}>
           <NavigationContainer>
-            {/* <SignUpStack userInfo={userInfo} setUserInfo={setUserInfo} /> */}
             <SignUpStack />
           </NavigationContainer>
         </userInfoContext.Provider>
@@ -197,13 +183,15 @@ export default function App() {
     );
   }
   return (
-    <NavigationContainer>
-      {isSplashVisible
-        ? (
-          <AnimatedSplashScreen
-            setSplashVisible={setSplashVisible}
-          />
-        ) : <GoogleSingUppStack promptAsync={promptAsync} setUserInfo={setUserInfo} />}
-    </NavigationContainer>
+    <userInfoContext.Provider value={value}>
+      <NavigationContainer>
+        {isSplashVisible
+          ? (
+            <AnimatedSplashScreen
+              setSplashVisible={setSplashVisible}
+            />
+          ) : <GoogleSingUppStack promptAsync={promptAsync} />}
+      </NavigationContainer>
+    </userInfoContext.Provider>
   );
 }
