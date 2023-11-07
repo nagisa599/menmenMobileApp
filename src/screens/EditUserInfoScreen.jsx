@@ -100,9 +100,18 @@ export default function EditUserInfoScreen(props) {
     setUpdatedAt(new Date());
 
     const uriToBlob = async (uri) => {
+      if (!uri) {
+        throw new Error('URIが無効です');
+      }
       try {
         const response = await fetch(uri);
+        if (!response.ok) {
+          throw new Error('画像の取得に失敗');
+        }
         const blob = await response.blob();
+        if (!(blob instanceof Blob)) {
+          throw new Error('有効なBlobオブジェクトが取得できませんでした');
+        }
         return blob;
       } catch (e) {
         console.error('Error converting uri to blob:', e);

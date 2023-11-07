@@ -27,11 +27,13 @@ export default function StampCard() {
     }
     // すでにアクティベートされたスタンプを考慮して、新しいスタンプの配列を生成
     const newStamps = [...stamps];
-    userVisited.forEach((date) => {
+    userVisited.forEach((timestamp) => {
       // 配列の中で初めてfalsyになるindexを取得
       const index = newStamps.findIndex((stamp) => !stamp);
       if (index !== -1) {
-        newStamps[index] = date;
+        const date = timestamp.toDate();
+        const dateString = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+        newStamps[index] = dateString;
       }
     });
     setStamps(newStamps);
