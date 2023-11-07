@@ -44,7 +44,7 @@ export default function RankingScreen() {
   return (
     <View style={styles.container}>
       {isLoading ? <LoadingScreen /> : (
-        <ScrollView style={styles.listContainer}>
+        <ScrollView>
           {ranking.map((rankingComponent, index) => (
             <View key={rankingComponent.name}>
               <RankingList
@@ -62,6 +62,7 @@ export default function RankingScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 15,
     flex: 1,
   },
   shadowContainer: {
@@ -80,9 +81,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingVertical: 30,
   },
-  listContainer: {
-    paddingTop: 30,
-  },
+  // listContainer: {
+  //   paddingVertical: 30,
+  //   backgroundColor: 'blue',
+  // },
   subTitle: {
     alignItems: 'center',
     paddingBottom: 20,
