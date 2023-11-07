@@ -65,18 +65,12 @@ export default function App() {
             }
 
             let lastVisitDate = null;
-            let comingData = [];
             if (userData.times && userData.times.length > 0) {
               lastVisitDate = userData.times[userData.times.length - 1];
               lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
               lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
-              comingData = userData.times;
             }
             const today = formatDateToYYYYMMDD(new Date());
-            const formattedDates = comingData.map((data) => {
-              const date = convertFirestoreTimestampToDate(data);
-              return formatDateToYYYYMMDD(date);
-            });
 
             setUserInfo({
               ...userInfo,
@@ -91,7 +85,7 @@ export default function App() {
               birthday: userData.birthday,
               createdAt: userData.createdAt,
               updatedAt: userData.updatedAt,
-              times: formattedDates,
+              times: userData.times,
             });
           } else {
             console.log('ユーザー情報ない');
@@ -109,7 +103,6 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    console.log(userInfo);
   }, [userInfo]);
 
   useEffect(() => {
