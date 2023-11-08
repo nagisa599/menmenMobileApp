@@ -108,12 +108,12 @@ const styles = StyleSheet.create({
   logoContainer: {
     marginBottom: 40,
     paddingTop: 0,
-
   },
   logo: {
     width: 225, // ロゴ画像の幅を半分にする（元のサイズの半分）
     height: 225, // ロゴ画像の高さを半分にする（元のサイズの半分）
     borderRadius: 112.5, // 幅と高さの半分に設定することで円形になります
+    marginTop: 80,
   },
   button: {
     padding: 30,

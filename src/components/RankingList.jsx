@@ -25,7 +25,7 @@ export default function RankingList({ rank, times, name }) {
       <View style={styles.icon}>
         <Icon name="ramen_icon" size={60} color={iconColor} />
       </View>
-      <Text style={[styles.rank]}>{`${rank}`}</Text>
+      <Text style={[styles.rank, rank === 10 ? styles.rank10 : null]}>{`${rank}`}</Text>
       <Image source={profileImage} style={styles.profileImage} />
       <View style={styles.titleImage}>
         <CircleTitle title={times} />
@@ -112,5 +112,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#a0522d',
     marginLeft: 5,
+  },
+  rank10: {
+    position: 'absolute',
+    top: 45,
+    left: 20,
+    marginLeft: 15,
+    fontSize: 25,
+    fontWeight: '500',
+    color: '#555',
   },
 });

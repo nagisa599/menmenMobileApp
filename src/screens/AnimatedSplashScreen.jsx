@@ -31,9 +31,9 @@ function AnimatedSplashScreen(props) {
 
   return (
     <TouchableOpacity style={styles.container} onPress={handleTouch}>
-      <Animated.Text
+      <Animated.View
         style={[
-          styles.text,
+          styles.container,
           {
             opacity: animation,
             transform: [
@@ -47,17 +47,15 @@ function AnimatedSplashScreen(props) {
           },
         ]}
       >
-        <View style={styles.container}>
-          <Image source={logo} style={styles.logo} />
-          <Text style={styles.header}>ラーメン二郎の心構え</Text>
-          <View style={styles.ruleContainer}>
-            <Text style={styles.rule}>1. 絶対残さず食べるべし</Text>
-            <Text style={styles.rule}>2. コールは、大きく言うべし</Text>
-            <Text style={styles.rule}>3. 水は自分で組むべし</Text>
-            <Text style={styles.rule}>4. 静かに食べるべし</Text>
-          </View>
+        <Image source={logo} style={styles.logo} />
+        <Text style={styles.header}>ラーメン二郎の心構え</Text>
+        <View style={styles.ruleContainer}>
+          <Text style={styles.rule}>1. 絶対残さず食べるべし</Text>
+          <Text style={styles.rule}>2. コールは、大きく言うべし</Text>
+          <Text style={styles.rule}>3. 水は自分で組むべし</Text>
+          <Text style={styles.rule}>4. 静かに食べるべし</Text>
         </View>
-      </Animated.Text>
+      </Animated.View>
     </TouchableOpacity>
   );
 }
