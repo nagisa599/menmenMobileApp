@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, StyleSheet, Dimensions,
+  View, StyleSheet, Dimensions, Alert,
 } from 'react-native';
 import {
   getFirestore, collection, query, where, orderBy, getDocs,
@@ -12,12 +12,9 @@ import { TabView, TabBar } from 'react-native-tab-view';
 import {
   shape, string, arrayOf, oneOfType, number, bool,
 } from 'prop-types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Menu from '../components/Menu';
-// import SmallTab from '../components/SmallTab';
 import LoadingScreen from './LoadingScreen';
-
-const ramen = require('../../assets/ramen.jpg');
-const halframen = require('../../assets/halframen.jpg');
 
 function SceneComponent({
   route, regularmenus, limitemenus, toppingMenus,
@@ -115,35 +112,6 @@ export default function MenuScreen() {
     return downloadResult.uri;
   }
 
-  const fetchData = async () => {
-    try {
-      // Regular menus
-      const dummy = [
-        {
-          id: '1',
-          imageURL: ramen,
-          name: 'ラーメン',
-          price: 980,
-          student: true,
-          favorite: 4,
-          today: true,
-        },
-        {
-          id: '2',
-          imageURL: halframen,
-          name: '半ラーメン',
-          price: 880,
-          student: true,
-          favorite: 3,
-          today: true,
-        },
-      ];
-      setRegularMenu(dummy);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const fetchLimitMenu = async () => {
     const limitRef = query(collection(db, 'ramens'), where('limit', '==', true), orderBy('today', 'desc'));
     const limitSnapshot = await getDocs(limitRef);
@@ -187,14 +155,97 @@ export default function MenuScreen() {
     setToppingmenus(toppingMenu);
   };
 
+  const fetchMenuAndUpdateCache = async () => {
+    // 最後の更新日時を取得
+    const lastUpdate = await AsyncStorage.getItem('last_update_menu');
+    // const lastUpdate = new Date(2010, 0, 1);
+    const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : new Date(2010, 0, 1);
+
+    // Firebaseから新しいメニューのみを取得
+    const menuRef = query(collection(db, 'ramens'), where('updatedAt', '>', lastUpdateDate));
+    const snapshot = await getDocs(menuRef);
+
+    const newMenusPromises = snapshot.docs.map(async (doc) => {
+      const data = doc.data();
+      // 画像URLからローカルイメージURLをダウンロード
+      const localImageURL = await downloadImage(data.imageURL);
+      // ローカルイメージURLを含むオブジェクトを返す
+      return {
+        id: doc.id,
+        imageURL: localImageURL,
+        name: data.name,
+        price: data.price,
+        student: data.student,
+        favorite: data.favorite,
+        today: data.today,
+        topping: data.topping,
+        limit: data.limit,
+      };
+    });
+
+    const newMenus = await Promise.all(newMenusPromises);
+
+    const cachedMenusString = await AsyncStorage.getItem('cached_menus');
+    const cachedMenus = cachedMenusString ? JSON.parse(cachedMenusString) : [];
+
+    // idをキーとしてメニューをマップに格納する
+    const cachedMenusMap = new Map(cachedMenus.map((menu) => [menu.id, menu]));
+
+    // 新しいメニューでキャッシュを更新し、既存のメニューは新しい情報で上書きします
+    newMenus.forEach((menu) => {
+      cachedMenusMap.set(menu.id, menu);
+    });
+
+    // マップから配列に変換します
+    const updatedMenusArray = Array.from(cachedMenusMap.values());
+
+    // todayがtrueのものを先頭に、falseのものは後にするためのソート関数
+    const sortByToday = (a, b) => (b.today === true) - (a.today === true);
+
+    // 分類されたメニュー配列を更新し、todayがtrueのものを先頭にします
+    const limitMenu = updatedMenusArray
+      .filter((menu) => menu.limit === true)
+      .sort(sortByToday);
+    const toppingMenu = updatedMenusArray
+      .filter((menu) => menu.topping === true)
+      .sort(sortByToday);
+    const regularMenu = updatedMenusArray
+      .filter((menu) => !menu.limit && !menu.topping)
+      .sort(sortByToday);
+
+    // ステートとAsyncStorageを更新します
+    setRegularMenu(regularMenu);
+    setLimitmenus(limitMenu);
+    setToppingmenus(toppingMenu);
+    await AsyncStorage.setItem('cached_menus', JSON.stringify(updatedMenusArray));
+
+    // 更新日時を設定します
+    await AsyncStorage.setItem('last_update_menu', new Date().toISOString());
+  };
+
   useEffect(() => {
-    const fetchDataAndSetLoading = async () => {
-      await fetchData();
-      await fetchLimitMenu();
-      await fetchToppingMenu();
-      setIsLoading(false);
+    // const fetchDataAndSetLoading = async () => {
+    //   try {
+    //     await Promise.all([fetchData(), fetchLimitMenu(), fetchToppingMenu()]);
+    //     await Promise.all([fetchData()]);
+    //     setIsLoading(false);
+    //   } catch (e) {
+    //     setIsLoading(false);
+    //     Alert.alert('通信に失敗しました。\n再起動してください。');
+    //   }
+    // };
+    // fetchDataAndSetLoading();
+    const initializeData = async () => {
+      try {
+        await fetchMenuAndUpdateCache();
+        setIsLoading(false);
+      } catch (e) {
+        setIsLoading(false);
+        Alert.alert('通信に失敗');
+      }
     };
-    fetchDataAndSetLoading();
+
+    initializeData();
   }, []);
 
   return (
