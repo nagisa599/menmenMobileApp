@@ -4,16 +4,14 @@ import {
 } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import {
-  getDoc, getFirestore, doc, setDoc,
+  getDoc, getFirestore, doc, setDoc, Timestamp,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import userInfoContext from '../utils/UserInfoContext';
-// import { func, shape } from 'prop-types';
 
 export default function ComingCheckScreen(props) {
   const { navigation } = props;
-  const { userInfo, setUserInfo } = useContext(userInfoContext);
-  // const { setVisited } = route.params;
+  const { setUserInfo } = useContext(userInfoContext);
   // アプリはカメラを使う許可が認められるかどうか
   const [hasPermission, setHasPermission] = useState(null);
   // アプリはQRコードをスキャンしたかどうか
@@ -58,7 +56,7 @@ export default function ComingCheckScreen(props) {
       const userDoc = await getDoc(userRef);
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        const currentTimestamp = new Date();
+        const currentTimestamp = Timestamp.fromDate(new Date());
         const newTimes = [...userData.times, currentTimestamp];
         setDoc(userRef, {
           ...userData,
@@ -67,7 +65,7 @@ export default function ComingCheckScreen(props) {
           visited: true,
         });
         setUserInfo({
-          ...userInfo,
+          ...userData,
           times: newTimes,
           title: userData.title + 1,
           visited: true,
@@ -81,9 +79,9 @@ export default function ComingCheckScreen(props) {
 
   // QRコードがスキャンされると、読み取ったリンクを開く
   // リンクを開く事がでない場合にはメッセージを表示する
-  const handleBarCodeScanned = ({ data }) => {
+  const handleBarCodeScanned = async ({ data }) => {
     if (todayToken === data) {
-      EatCountCheck();
+      await EatCountCheck();
       // activateStamp(getJSTDate());
       navigation.goBack();
       // Alert.alert('記録しました!');
@@ -127,15 +125,6 @@ export default function ComingCheckScreen(props) {
     </View>
   );
 }
-
-// ComingCheckScreen.propTypes = {
-//   route: shape({
-//     params: shape({
-//       // activateStamp: func,
-//       setVisited: func,
-//     }),
-//   }).isRequired,
-// };
 
 const styles = StyleSheet.create({
   container: {

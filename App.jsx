@@ -11,7 +11,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import * as FileSystem from 'expo-file-system';
 import SignUpStack from './src/navigators/SignUpNavigator';
-import GoogleSingUppStack from './src/navigators/GoogleSingUpNavigation';
+import GoogleSignUpStack from './src/navigators/GoogleSignUpNavigation';
 import db from './firebaseConfig';
 import AnimatedSplashScreen from './src/screens/AnimatedSplashScreen';
 import userInfoContext from './src/utils/UserInfoContext';
@@ -173,7 +173,7 @@ export default function App() {
             <AnimatedSplashScreen
               setSplashVisible={setSplashVisible}
             />
-          ) : <GoogleSingUppStack promptAsync={promptAsync} />}
+          ) : <GoogleSignUpStack promptAsync={promptAsync} />}
       </NavigationContainer>
     </userInfoContext.Provider>
   );

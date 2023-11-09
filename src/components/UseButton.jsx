@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignSelf: 'center', // 自分自身を並べる。左側に
     marginLeft: 60,
-    marginTop: 5
+    marginTop: 5,
   },
   buttonLabel: {
     fontSize: 28,

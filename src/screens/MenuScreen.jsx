@@ -261,7 +261,7 @@ export default function MenuScreen() {
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...props}
               style={{ backgroundColor: 'gray' }}
-              indicatorStyle={{ backgroundColor: 'tomato', height: 3 }}
+              indicatorStyle={{ backgroundColor: 'orange', height: 3 }}
             />
           )}
         />
