@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   circleText: {
     fontWeight: 'bold',
-    color: 'black',
+    color: 'white',
     textAlign: 'center',
   },
   explainContainer: {

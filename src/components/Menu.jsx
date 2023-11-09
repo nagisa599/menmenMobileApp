@@ -28,9 +28,9 @@ export default function Menu(props) {
       );
     }
     return (
-      <View style={[styles.menuBox, item.today ? { backgroundColor: 'lightcoral' } : { backgroundColor: '#C0C0C0' }]}>
+      <View style={[styles.menuBox, item.today ? { backgroundColor: 'orange' } : { backgroundColor: '#C0C0C0' }]}>
         <Image
-          source={typeof item.imageURL === 'number' ? item.imageURL : { uri: `file://${item.imageURL}` }}
+          source={{ uri: `file://${item.imageURL}` }}
           style={styles.menuPicture}
         />
         <View style={styles.info}>
@@ -46,7 +46,7 @@ export default function Menu(props) {
   return (
     <View style={styles.container}>
       <View style={styles.explain}>
-        <Text>ピンク色が本日食べられるメニューです！</Text>
+        <Text>オレンジ色が本日提供するメニューです！</Text>
       </View>
       <FlatList
         data={displayMenus}

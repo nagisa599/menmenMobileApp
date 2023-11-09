@@ -9,11 +9,11 @@ import MypageScreen from '../screens/MypageScreen';
 import ComingCheckScreen from '../screens/ComingCheckScreen';
 import Generator from '../components/Generator';
 import MainTabs from './TabScreen';
-import SettingScreen from '../screens/SettingScreen';
 import InquiryScreen from '../screens/InqueryScreen';
 import TermsOfUseScreen from '../screens/TermsOfUseScreen';
 import EditUserInfoScreen from '../screens/EditUserInfoScreen';
 import userInfoContext from '../utils/UserInfoContext';
+import Message from '../components/Message';
 
 const Stack = createNativeStackNavigator();
 
@@ -78,10 +78,10 @@ export default function MainStackNavigator({ isSplashVisible, setSplashVisible }
       <Stack.Screen name="MypageScreen" component={MypageScreen} options={{ headerTitle: 'マイページ' }} />
       <Stack.Screen name="ComingCheck" component={ComingCheckScreen} options={{ headerTitle: 'QRコード読み取り' }} />
       <Stack.Screen name="Generator" component={Generator} options={{ headerTitle: 'QRコード生成' }} />
-      <Stack.Screen name="SettingScreen" component={SettingScreen} options={{ headerShown: false }} />
       <Stack.Screen name="InquiryScreen" component={InquiryScreen} options={{ headerTitle: 'お問い合わせ' }} />
       <Stack.Screen name="TermsOfUseScreen" component={TermsOfUseScreen} options={{ headerTitle: '利用規約' }} />
-      <Stack.Screen name="EditUserInfoScreen" component={EditUserInfoScreen} options={{ headerTitle: '編集' }} />
+      <Stack.Screen name="EditUserInfoScreen" component={EditUserInfoScreen} options={{ headerTitle: 'プロフィール編集' }} />
+      <Stack.Screen name="Message" component={Message} />
     </Stack.Navigator>
   );
 }
