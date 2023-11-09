@@ -81,7 +81,7 @@ export default function MainStackNavigator({ isSplashVisible, setSplashVisible }
       <Stack.Screen name="InquiryScreen" component={InquiryScreen} options={{ headerTitle: 'お問い合わせ' }} />
       <Stack.Screen name="TermsOfUseScreen" component={TermsOfUseScreen} options={{ headerTitle: '利用規約' }} />
       <Stack.Screen name="EditUserInfoScreen" component={EditUserInfoScreen} options={{ headerTitle: 'プロフィール編集' }} />
-      <Stack.Screen name="Message" component={Message} />
+      <Stack.Screen name="Message" component={Message} options={{ headerTitle: 'コールについて' }} />
     </Stack.Navigator>
   );
 }

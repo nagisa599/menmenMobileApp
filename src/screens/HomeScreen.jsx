@@ -7,6 +7,7 @@ import {
   Text,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Entypo } from '@expo/vector-icons';
 import Calendar from '../components/Calendar';
 
 export default function HomeScreen() {
@@ -16,7 +17,8 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>・アンケートのお願い</Text>
+          <Entypo name="check" size={48} color="#000" />
+          <Text style={styles.title}>アンケートのお願い</Text>
         </View>
         <View style={styles.explain}>
           <Text>新メニューやアプリについて簡単な</Text>
@@ -30,13 +32,17 @@ export default function HomeScreen() {
           <Text style={styles.linkText}>アンケートに回答する</Text>
         </TouchableOpacity>
         <View style={styles.separator} />
-        <Text style={styles.title}>・営業日 / 営業時間</Text>
+        <View style={styles.titleContainer}>
+          <Entypo name="check" size={48} color="#000" />
+          <Text style={styles.title}>営業日 / 営業時間</Text>
+        </View>
         <View style={styles.calendarContainer}>
           <Calendar />
         </View>
         <View style={styles.separator} />
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>・提供直前のコール</Text>
+          <Entypo name="check" size={48} color="#000" />
+          <Text style={styles.title}>提供直前のコール</Text>
         </View>
         <TouchableOpacity
           style={styles.linkContainer}
@@ -92,6 +98,8 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   title: {
     fontSize: 25,
