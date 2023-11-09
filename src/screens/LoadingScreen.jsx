@@ -6,8 +6,8 @@ import {
 function LoadingScreen() {
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color="#0000ff" />
-      <Text style={styles.loadingText}>少々お待ちください...</Text>
+      <ActivityIndicator size="large" color="#orange" />
+      <Text style={styles.loadingText}>データ取得中...</Text>
     </View>
   );
 }
