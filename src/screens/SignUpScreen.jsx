@@ -25,8 +25,8 @@ export default function SignUpScreen() {
   const { userInfo, setUserInfo } = useContext(userInfoContext);
   const [name, setName] = useState('');
   const [birthday, setBirthDay] = useState('');
-  const [ramen, setRamen] = useState(0);
-  const [topping, setTopping] = useState(0);
+  const [ramen, setRamen] = useState('');
+  const [topping, setTopping] = useState('');
   const [createdAt, setCreatedAt] = useState(new Date());
   const [isUnique, setIsUnique] = useState(true);
   const [ramenItems, setRamenItems] = useState([]);
