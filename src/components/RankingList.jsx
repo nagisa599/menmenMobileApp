@@ -1,15 +1,16 @@
 import React from 'react';
 import {
-  StyleSheet, TouchableOpacity, Text, View, Image,
+  StyleSheet, Text, View, Image,
 } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { number, string } from 'prop-types';
 import Icon from './icon';
 import CircleTitle from './CircleTitle';
 
-const profileImage = require('../../assets/ramen.jpg');
-
-export default function RankingList({ rank, times, name }) {
+export default function RankingList(props) {
+  const {
+    rank, imageUrl, times, name, title,
+  } = props;
   let iconColor = '#555'; // デフォルトのアイコンの色
 
   // ランキングに応じてアイコンの色を設定
@@ -21,14 +22,14 @@ export default function RankingList({ rank, times, name }) {
     iconColor = '#cd7f32'; // 3位の場合は銅色（ブロンズ）
   }
   return (
-    <TouchableOpacity style={[styles.container]}>
+    <View style={[styles.container]}>
       <View style={styles.icon}>
         <Icon name="ramen_icon" size={60} color={iconColor} />
       </View>
       <Text style={[styles.rank, rank === 10 ? styles.rank10 : null]}>{`${rank}`}</Text>
-      <Image source={profileImage} style={styles.profileImage} />
+      <Image source={{ uri: imageUrl }} style={styles.profileImage} />
       <View style={styles.titleImage}>
-        <CircleTitle title={times} />
+        <CircleTitle title={title} />
       </View>
       <View style={styles.info}>
         <Text style={styles.user}>{name}</Text>
@@ -37,18 +38,18 @@ export default function RankingList({ rank, times, name }) {
           <Text style={styles.times}>{`${times} 回!`}</Text>
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 }
+
 RankingList.propTypes = {
-  rank: number,
+  rank: number.isRequired,
   times: number.isRequired,
   name: string.isRequired,
+  imageUrl: string.isRequired,
+  title: number.isRequired,
 };
 
-RankingList.defaultProps = {
-  rank: null,
-};
 const styles = StyleSheet.create({
   container: {
     borderWidth: 2,
