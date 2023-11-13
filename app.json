@@ -31,11 +31,19 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.nagisa33.app"
+      "package": "com.nagisa33.app",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "test"
+    "scheme": "test",
+    "extra": {
+      "eas": {
+        "projectId": "fda118ac-a55c-46e6-b210-deb161d4dc96"
+      }
+    }
   }
 }

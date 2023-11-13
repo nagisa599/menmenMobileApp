@@ -19,7 +19,7 @@ export default function CouponScreen() {
   const [couponFlag, setCouponFlag] = useState(true);
   // ログインしているかのチェック（最初のアクセスのみ発火)
   useEffect(() => {
-    if (!userInfo.name === 'notLogin') {
+    if (userInfo.name !== 'notLogin') {
       fetchData();
     } else {
       // Alert.alert(
@@ -44,6 +44,7 @@ export default function CouponScreen() {
       const myCoupons = [];
       const ref = query(collection(db, `users/${userInfo.uid}/hasCoupons`), where('used', '==', false));
       const querySnapshot = await getDocs(ref);
+      console.log(querySnapshot);
       if (!querySnapshot.empty) {
         await Promise.all(querySnapshot.docs.map(async (docCoupon) => { // 全ての非同期初期が終わったら
           const couponId = docCoupon.id;
@@ -88,7 +89,7 @@ export default function CouponScreen() {
         </ScrollView>
       ) : ( // couponFlagがfalseの場合
         <View style={styles.noCouponContainer}>
-          <MaterialCommunityIcons name="ticket" size={150} />
+          <MaterialCommunityIcons name="ticket" size={150} color="orange" />
           <View style={styles.noTextContainer}>
             <Text style={styles.noCouponText}>
               ただいま配信されているクーポンがないか、クーポン情報が正しく取得できませんでした。最新のクーポンを取得したい場合は、アプリの再起動をお願いします。

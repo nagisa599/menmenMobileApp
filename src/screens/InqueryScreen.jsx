@@ -30,12 +30,12 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 150,
-    paddingTop: 100,
+    height: 0,
+    paddingTop: 200,
   },
   logo: {
-    width: 200, // ロゴ画像の幅
-    height: 200, // ロゴ画像の高さ
+    width: 300, // ロゴ画像の幅
+    height: 300, // ロゴ画像の高さ
   },
   tabContainer: {
     flexDirection: 'row',
