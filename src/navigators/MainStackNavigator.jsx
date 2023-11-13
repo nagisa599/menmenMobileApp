@@ -49,7 +49,8 @@ function MyheaderRight({ navigation }) {
 
 export default function MainStackNavigator({ isSplashVisible, setSplashVisible }) {
   const navigation = useNavigation();
-
+  const { userInfo } = useContext(userInfoContext);
+  console.log(userInfo.name !== 'notLogin');
   if (isSplashVisible) {
     return <AnimatedSplashScreen setSplashVisible={setSplashVisible} />;
   }
@@ -62,13 +63,19 @@ export default function MainStackNavigator({ isSplashVisible, setSplashVisible }
         options={{
           headerTitleAlign: 'center',
           // eslint-disable-next-line react/no-unstable-nested-components
-          headerLeft: () => <MyheaderLeft navigation={navigation} />,
+          headerLeft: () => {
+            if (userInfo.name !== 'notLogin') {
+              return <MyheaderLeft navigation={navigation} />;
+            }
+            return null; // Return null when userInfo doesn't exist
+          },
           // eslint-disable-next-line react/no-unstable-nested-components
-          headerRight: () => (
-            <MyheaderRight
-              navigation={navigation}
-            />
-          ),
+          headerRight: () => {
+            if (userInfo.name !== 'notLogin') {
+              return <MyheaderRight navigation={navigation} />;
+            }
+            return null; // Return null when userInfo doesn't exist
+          },
           headerTitleStyle: {
             fontSize: 24,
             fontFamily: Platform.OS === 'ios' ? 'Arial' : 'Roboto',

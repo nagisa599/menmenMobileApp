@@ -85,7 +85,7 @@ export default function MypageScreen(props) {
             <View style={styles.otherContainer}>
               <Text style={styles.othername}>利用規約</Text>
             </View>
-            <Text style={styles.changeIcon} />
+            <Text style={styles.changeIcon}>{'>'}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.otherinfo}
