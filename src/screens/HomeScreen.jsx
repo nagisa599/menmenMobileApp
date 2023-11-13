@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Text,
+  Linking,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
@@ -12,7 +13,10 @@ import Calendar from '../components/Calendar';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-
+  const googleFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSenoG8isDeeUCCYO0TPai7u93IlpPKcfriuWky1nCLLPgfzVQ/viewform?usp=sf_link';
+  const openGoogleForm = () => {
+    Linking.openURL(googleFormUrl).catch(err => console.error('URLを開けませんでした', err));
+  };
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -27,7 +31,7 @@ export default function HomeScreen() {
         </View>
         <TouchableOpacity
           style={styles.linkContainer}
-          onPress={() => navigation.navigate('Question')}
+          onPress={openGoogleForm}
         >
           <Text style={styles.linkText}>アンケートに回答する</Text>
         </TouchableOpacity>
