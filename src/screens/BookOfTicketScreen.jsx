@@ -7,8 +7,8 @@ import Tab from '../components/Tab';
 import UseButton from '../components/UseButton';
 import AddButton from '../components/AddButton';
 
-const ramen1url = require('../../assets/ramen1.jpg');
-const ramen2url = require('../../assets/ramen2.jpg');
+// const ramen1url = require('../../assets/ramen1.jpg');
+// const ramen2url = require('../../assets/ramen2.jpg');
 
 export default function BookOfTicketScreen(props) {
   const { navigation } = props;

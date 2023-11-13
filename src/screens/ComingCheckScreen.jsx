@@ -71,6 +71,16 @@ export default function ComingCheckScreen(props) {
           visited: true,
         });
       }
+
+      const newVisitData = {
+        userID: auth.currentUser.uid,
+        visitDate: Timestamp.fromDate(new Date()), // 現在の日時
+      };
+      db.collection('visits').add(newVisitData).then((docRef) => {
+        console.log('新しい来店記録が作成されました。ID: ', docRef.id);
+      }).catch((error) => {
+        console.error('エラー発生: ', error);
+      });
     } catch (e) {
       Alert.alert('Firebaseの更新に失敗');
       return e;

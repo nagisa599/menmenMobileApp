@@ -27,10 +27,11 @@ export default function Menu(props) {
         />
       );
     }
+
     return (
       <View style={[styles.menuBox, item.today ? { backgroundColor: 'orange' } : { backgroundColor: '#C0C0C0' }]}>
         <Image
-          source={{ uri: `file://${item.imageURL}` }}
+          source={{ uri: item.imageURL }}
           style={styles.menuPicture}
         />
         <View style={styles.info}>
