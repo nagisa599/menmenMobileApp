@@ -15,7 +15,7 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const googleFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSenoG8isDeeUCCYO0TPai7u93IlpPKcfriuWky1nCLLPgfzVQ/viewform?usp=sf_link';
   const openGoogleForm = () => {
-    Linking.openURL(googleFormUrl).catch(err => console.error('URLを開けませんでした', err));
+    Linking.openURL(googleFormUrl).catch((err) => console.error('URLを開けませんでした', err));
   };
   return (
     <View style={styles.container}>
