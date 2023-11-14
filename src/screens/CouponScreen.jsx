@@ -44,7 +44,6 @@ export default function CouponScreen() {
       const myCoupons = [];
       const ref = query(collection(db, `users/${userInfo.uid}/hasCoupons`), where('used', '==', false));
       const querySnapshot = await getDocs(ref);
-      console.log(querySnapshot);
       if (!querySnapshot.empty) {
         await Promise.all(querySnapshot.docs.map(async (docCoupon) => { // 全ての非同期初期が終わったら
           const couponId = docCoupon.id;

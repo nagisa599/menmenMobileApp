@@ -188,10 +188,10 @@ export default function MenuScreen() {
     const cachedMenusString = await AsyncStorage.getItem('cached_menus');
     const cachedMenus = cachedMenusString ? JSON.parse(cachedMenusString) : [];
 
-    // idをキーとしてメニューをマップに格納する
+    // idをキーとしてメニューをマップに格納
     const cachedMenusMap = new Map(cachedMenus.map((menu) => [menu.id, menu]));
 
-    // 新しいメニューでキャッシュを更新し、既存のメニューは新しい情報で上書きします
+    // 新しいメニューでキャッシュを更新し、既存のメニューは新しい情報で上書き
     newMenus.forEach((menu) => {
       cachedMenusMap.set(menu.id, menu);
     });
@@ -202,7 +202,7 @@ export default function MenuScreen() {
     // todayがtrueのものを先頭に、falseのものは後にするためのソート関数
     const sortByToday = (a, b) => (b.today === true) - (a.today === true);
 
-    // 分類されたメニュー配列を更新し、todayがtrueのものを先頭にします
+    // 分類されたメニュー配列を更新し、todayがtrueのものを先頭に
     const limitMenu = updatedMenusArray
       .filter((menu) => menu.limit === true)
       .sort(sortByToday);
@@ -213,7 +213,7 @@ export default function MenuScreen() {
       .filter((menu) => !menu.limit && !menu.topping)
       .sort(sortByToday);
 
-    // ステートとAsyncStorageを更新します
+    // ステートとAsyncStorageを更新
     setRegularMenu(regularMenu);
     setLimitmenus(limitMenu);
     setToppingmenus(toppingMenu);
