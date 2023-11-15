@@ -122,7 +122,9 @@ export default function EditUserInfoScreen(props) {
     let { imageUrl } = userInfo;
     if (image) {
       try {
+        console.log('image:', image);
         const imageBlob = await uriToBlob(image);
+        console.log('imageBlob:', imageBlob);
         const storageRef = ref(storage, `users/${userData.uid}`);
         await uploadBytes(storageRef, imageBlob);
         imageUrl = await getDownloadURL(storageRef);
