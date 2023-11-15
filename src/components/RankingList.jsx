@@ -6,6 +6,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { number, string } from 'prop-types';
 import Icon from './icon';
 import CircleTitle from './CircleTitle';
+import getDownloadedImageUri from '../utils/getDownloadImage';
 
 export default function RankingList(props) {
   const {
@@ -21,13 +22,14 @@ export default function RankingList(props) {
   } else if (rank === 3) {
     iconColor = '#cd7f32'; // 3位の場合は銅色（ブロンズ）
   }
+
   return (
     <View style={[styles.container]}>
       <View style={styles.icon}>
         <Icon name="ramen_icon" size={60} color={iconColor} />
       </View>
       <Text style={[styles.rank, rank === 10 ? styles.rank10 : null]}>{`${rank}`}</Text>
-      <Image source={{ uri: imageUrl }} style={styles.profileImage} />
+      <Image source={{ uri: getDownloadedImageUri(imageUrl) }} style={styles.profileImage} />
       <View style={styles.titleImage}>
         <CircleTitle title={title} />
       </View>

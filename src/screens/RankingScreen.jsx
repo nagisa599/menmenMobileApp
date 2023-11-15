@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import RankingList from '../components/RankingList';
 import LoadingScreen from './LoadingScreen';
+import createImagesDirectory from '../utils/createImagesDirectory';
 
 export default function RankingScreen() {
   const [ranking, setRanking] = useState([]);
@@ -21,7 +22,10 @@ export default function RankingScreen() {
     const url = await getDownloadURL(imageRef);
 
     const filename = url.split('/').pop();
-    const downloadDest = `${FileSystem.documentDirectory}${filename}`;
+
+    createImagesDirectory('ranking');
+    const relativePath = `ranking/${filename}`;
+    const downloadDest = `${FileSystem.documentDirectory}${relativePath}`;
 
     const downloadResult = await FileSystem.downloadAsync(url, downloadDest);
 
@@ -30,11 +34,12 @@ export default function RankingScreen() {
       return null;
     }
 
-    return downloadResult.uri;
+    return relativePath;
   }
 
   async function fetchVisitRanking() {
     const lastUpdate = await AsyncStorage.getItem('last_update_ranking');
+    // const lastUpdate = new Date(2010, 0, 1);
     const today = new Date();
 
     const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : null;

@@ -15,8 +15,12 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const googleFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSenoG8isDeeUCCYO0TPai7u93IlpPKcfriuWky1nCLLPgfzVQ/viewform?usp=sf_link';
   const openGoogleForm = () => {
-    Linking.openURL(googleFormUrl).catch(err => console.error('URLを開けませんでした', err));
+    Linking.openURL(googleFormUrl).catch((err) => console.error('URLを開けませんでした', err));
   };
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth() + 1;
+  const displayMonthYear = `${currentYear}年${currentMonth}月`;
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -38,7 +42,7 @@ export default function HomeScreen() {
         <View style={styles.separator} />
         <View style={styles.titleContainer}>
           <Entypo name="check" size={48} color="#000" />
-          <Text style={styles.title}>営業日 / 営業時間</Text>
+          <Text style={styles.title}>{`${displayMonthYear}カレンダー`}</Text>
         </View>
         <View style={styles.calendarContainer}>
           <Calendar />
@@ -62,7 +66,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5', // 背景色を少し明るくする
+    backgroundColor: '#F5F5F5',
   },
   content: {
     paddingHorizontal: 40,
@@ -81,7 +85,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 15,
     borderRadius: 30,
-    // backgroundColor: '#4A90E2', // ボタンの背景色変更
     backgroundColor: 'orange',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
@@ -97,7 +100,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: 'gray', // 線の色を選択してください
+    backgroundColor: 'gray',
     marginVertical: 10,
   },
   titleContainer: {

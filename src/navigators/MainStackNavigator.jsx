@@ -50,7 +50,6 @@ function MyheaderRight({ navigation }) {
 export default function MainStackNavigator({ isSplashVisible, setSplashVisible }) {
   const navigation = useNavigation();
   const { userInfo } = useContext(userInfoContext);
-  console.log(userInfo.name !== 'notLogin');
   if (isSplashVisible) {
     return <AnimatedSplashScreen setSplashVisible={setSplashVisible} />;
   }
