@@ -3,7 +3,7 @@ import {
   View, StyleSheet, Dimensions, Alert,
 } from 'react-native';
 import {
-  getFirestore, collection, query, where, orderBy, getDocs,
+  getFirestore, collection, query, where, getDocs,
 } from 'firebase/firestore';
 import * as FileSystem from 'expo-file-system';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
@@ -15,6 +15,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Menu from '../components/Menu';
 import LoadingScreen from './LoadingScreen';
+import createImagesDirectory from '../utils/createImagesDirectory';
 
 function SceneComponent({
   route, regularmenus, limitemenus, toppingMenus,
@@ -100,7 +101,10 @@ export default function MenuScreen() {
     const url = await getDownloadURL(imageRef);
 
     const filename = url.split('/').pop();
-    const downloadDest = `${FileSystem.documentDirectory}${filename}`;
+
+    await createImagesDirectory('menu');
+    const relativePath = `menu/${filename}`;
+    const downloadDest = `${FileSystem.documentDirectory}${relativePath}`;
 
     const downloadResult = await FileSystem.downloadAsync(url, downloadDest);
 
@@ -109,56 +113,12 @@ export default function MenuScreen() {
       return null;
     }
 
-    return downloadResult.uri;
+    return relativePath;
   }
-
-  const fetchLimitMenu = async () => {
-    const limitRef = query(collection(db, 'ramens'), where('limit', '==', true), orderBy('today', 'desc'));
-    const limitSnapshot = await getDocs(limitRef);
-
-    const limitMenuPromises = limitSnapshot.docs.map(async (doc) => {
-      const data = doc.data();
-      const localImageURL = await downloadImage(data.imageURL);
-      return {
-        id: doc.id,
-        imageURL: localImageURL,
-        name: data.name,
-        price: data.price,
-        student: data.student,
-        favorite: data.favorite,
-        today: data.today,
-      };
-    });
-    const limitMenu = await Promise.all(limitMenuPromises);
-    setLimitmenus(limitMenu);
-  };
-
-  const fetchToppingMenu = async () => {
-    const toppingRef = query(collection(db, 'ramens'), where('topping', '==', true), orderBy('today', 'desc'));
-    const toppingSnapshot = await getDocs(toppingRef);
-
-    const toppingMenuPromises = toppingSnapshot.docs.map(async (doc) => {
-      const data = doc.data();
-      const localImageURL = await downloadImage(data.imageURL);
-      return {
-        id: doc.id,
-        imageURL: localImageURL,
-        name: data.name,
-        price: data.price,
-        student: data.student,
-        favorite: data.favorite,
-        today: data.today,
-      };
-    });
-
-    const toppingMenu = await Promise.all(toppingMenuPromises);
-    setToppingmenus(toppingMenu);
-  };
 
   const fetchMenuAndUpdateCache = async () => {
     // 最後の更新日時を取得
     const lastUpdate = await AsyncStorage.getItem('last_update_menu');
-    // const lastUpdate = new Date(2010, 0, 1);
     const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : new Date(2010, 0, 1);
 
     // Firebaseから新しいメニューのみを取得
@@ -224,17 +184,6 @@ export default function MenuScreen() {
   };
 
   useEffect(() => {
-    // const fetchDataAndSetLoading = async () => {
-    //   try {
-    //     await Promise.all([fetchData(), fetchLimitMenu(), fetchToppingMenu()]);
-    //     await Promise.all([fetchData()]);
-    //     setIsLoading(false);
-    //   } catch (e) {
-    //     setIsLoading(false);
-    //     Alert.alert('通信に失敗しました。\n再起動してください。');
-    //   }
-    // };
-    // fetchDataAndSetLoading();
     const initializeData = async () => {
       try {
         await fetchMenuAndUpdateCache();

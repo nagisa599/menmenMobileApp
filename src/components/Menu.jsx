@@ -5,6 +5,7 @@ import {
 import {
   string, number, arrayOf, shape, bool,
 } from 'prop-types';
+import getDownloadedImageUri from '../utils/getDownloadImage';
 
 export default function Menu(props) {
   const { menus } = props;
@@ -31,7 +32,7 @@ export default function Menu(props) {
     return (
       <View style={[styles.menuBox, item.today ? { backgroundColor: 'orange' } : { backgroundColor: '#C0C0C0' }]}>
         <Image
-          source={{ uri: item.imageURL }}
+          source={{ uri: getDownloadedImageUri(item.imageURL) }}
           style={styles.menuPicture}
         />
         <View style={styles.info}>
