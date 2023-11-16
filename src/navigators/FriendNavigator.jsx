@@ -10,7 +10,7 @@ const Stack = createNativeStackNavigator();
 
 export default function FriendListStack() {
   return (
-    <Stack.Navigator initialRouteName="MenuScreen">
+    <Stack.Navigator initialRouteName="FriendScreen">
       <Stack.Screen name="FriendListScreen" component={FriendListScreen} options={{ headerShown: false }} />
       <Stack.Screen name="FriendDetailScreen" component={FriendDetailScreen} options={{ headerShown: false }} />
       <Stack.Screen name="FriendAddScreen" component={FriendAddScreen} options={{ headerShown: false }} />

@@ -86,6 +86,7 @@ export default function App() {
               createdAt: userData.createdAt,
               updatedAt: userData.updatedAt,
               times: userData.times,
+              friend: userData.friend,
             });
           } else {
             console.log('ユーザー情報ない');
