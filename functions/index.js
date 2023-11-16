@@ -1,3 +1,5 @@
+// firebase deploy --only functionsでデプロイ
+
 /* eslint-disable max-len */
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
@@ -46,6 +48,7 @@ exports.createDailyToken = functions.pubsub.schedule("0 0 * * *") // 毎日0:00�
       const firestore = admin.firestore();
 
       const today = new Date();
+      today.setHours(today.getHours() + 9);
       const dateString = today.toISOString().split("T")[0]; // yyyy-mm-dd 形式の日付
 
       const token = admin.firestore().collection("dummy").doc().id; // ランダムなトークンを生成

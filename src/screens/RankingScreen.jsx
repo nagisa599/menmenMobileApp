@@ -48,7 +48,7 @@ export default function RankingScreen() {
     // const lastUpdate = new Date(2010, 0, 1);
     const today = new Date();
 
-    const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : null;
+    const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : new Date(2010, 0, 1);
     const isSameDay = lastUpdateDate && lastUpdateDate.getDate() === today.getDate()
                       && lastUpdateDate.getMonth() === today.getMonth()
                       && lastUpdateDate.getFullYear() === today.getFullYear();
