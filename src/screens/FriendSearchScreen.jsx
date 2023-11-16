@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, TextInput,
+  View, Text, StyleSheet, TextInput
 } from 'react-native';
 
 import Tab from '../components/Tab';
@@ -22,6 +22,7 @@ export default function BookOfTicketScreen(props) {
       </View>
       <View style={styles.searchcontainer}>
         <Text style={styles.userID}>あなたのユーザID</Text>
+        {/* 名前で検索 */}
         <Text style={styles.userIDnum}>123456789</Text>
         <Text style={styles.friendID}>友達のユーザID</Text>
         <TextInput

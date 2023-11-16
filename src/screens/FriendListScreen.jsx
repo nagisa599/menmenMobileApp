@@ -1,114 +1,96 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, Image, TouchableOpacity,
+  View, Text, StyleSheet, ScrollView, Alert,
 } from 'react-native';
-
+import {
+  getDocs, collection, query, orderBy,
+} from 'firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
+import db from '../../firebaseConfig';
 import Tab from '../components/Tab';
 import AddButton from '../components/AddButton';
+import FriendListItem from '../components/FriendListItem';
 
-const Yamaoka = require('../../assets/山岡士郎.png');
-const Kaihara = require('../../assets/海原雄山.png');
-const Torico = require('../../assets/トリコ.png');
-const Araiwa = require('../../assets/荒岩まこと.png');
+// const Yamaoka = require('../../assets/山岡士郎.png');
+// const Kaihara = require('../../assets/海原雄山.png');
+// const Torico = require('../../assets/トリコ.png');
+// const Araiwa = require('../../assets/荒岩まこと.png');
 
-export default function FriendListScrenn(props) {
-  const { navigation } = props;
+export default function FriendListScrenn() {
+  // const navigation = useNavigation();
+  const [friendlist, setFriendList] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  const fetchFriendList = async () => {
+    try {
+      const ref = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(ref);
+      const databaseFriendList = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        databaseFriendList.push({
+          birthday: data.birthday,
+          createdAt: data.createdAt,
+          email: data.email,
+          name: data.name,
+          ramen: data.ramen,
+          topping: data.topping,
+        });
+      });
+      setFriendList(databaseFriendList);
+    } catch (error) {
+      Alert.alert('データの読み込みに失敗しました');
+    }
+  };
+  useEffect(() => {
+    const loadFriendListData = async () => {
+      setLoading(true);
+      await fetchFriendList();
+      setLoading(false);
+    };
+
+    loadFriendListData();
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
         <Tab label="フレンド" onPress={() => { }} active />
         <Tab
-          label="回数券"
-          onPress={() => {
-            navigation.navigate('BookOfTicketScreen');
-          }}
+          label="回数券" 
+          // onPress={() => {
+          //   navigation.navigate('BookOfTicketScreen');
+          // }}
         />
       </View>
       <View>
         <View style={styles.friendlistheader}>
           <Text style={styles.title}>フレンドリスト</Text>
           <AddButton label={'表示順\n▼最終来店'} />
-          <AddButton
+          {/* <AddButton
             label={'フレンド\n追加'}
             onPress={() => {
               navigation.navigate('FriendSearchScreen');
             }}
-          />
+          /> */}
         </View>
       </View>
-      <ScrollView style={styles.friendlist}>
-        <TouchableOpacity
-          style={styles.individual}
-          onPress={() => {
-            navigation.navigate('FriendDetailScreen');
-          }}
-        >
-          <Image
-            source={Yamaoka}
-            style={styles.image}
-          />
-          <View style={styles.sortinfo}>
-            <Text style={styles.name}>山岡士郎</Text>
-            <Text style={styles.date}>2023/10/13 19:15</Text>
+      <ScrollView>
+        {friendlist.map((friendlistComponent) => (
+          <View key={friendlistComponent.name}>
+            <FriendListItem
+              birthday={friendlistComponent.birthday}
+              createdAt={friendlistComponent.createdAt}
+              email={friendlistComponent.email}
+              name={friendlistComponent.name}
+              ramen={friendlistComponent.ramen}
+              topping={friendlistComponent.topping}
+            />
           </View>
-          <View style={styles.basicinfo}>
-            <Text style={styles.ranking}>ランキング: 2位</Text>
-            <Text style={styles.degree}>称号: ラーメンスター</Text>
-            <Text style={styles.favorite}>お気に入り: ラーメン汁なし</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.individual}>
-          <Image
-            source={Kaihara}
-            style={styles.image}
-          />
-          <View style={styles.sortinfo}>
-            <Text style={styles.name}>海原雄山</Text>
-            <Text style={styles.date}>2023/10/05 20:40</Text>
-          </View>
-          <View style={styles.basicinfo}>
-            <Text style={styles.ranking}>ランキング: 1位</Text>
-            <Text style={styles.degree}>称号: ラーメン王</Text>
-            <Text style={styles.favorite}>お気に入り: まぜそば</Text>
-          </View>
-        </View>
-
-        <View style={styles.individual}>
-          <Image
-            source={Torico}
-            style={styles.image}
-          />
-          <View style={styles.sortinfo}>
-            <Text style={styles.name}>トリコ</Text>
-            <Text style={styles.date}>2023/09/28 18:22</Text>
-          </View>
-          <View style={styles.basicinfo}>
-            <Text style={styles.ranking}>ランキング: 8位</Text>
-            <Text style={styles.degree}>称号: ラーメン通</Text>
-            <Text style={styles.favorite}>お気に入り: 冷やし中華</Text>
-          </View>
-        </View>
-
-        <View style={styles.individual}>
-          <Image
-            source={Araiwa}
-            style={styles.image}
-          />
-          <View style={styles.sortinfo}>
-            <Text style={styles.name}>荒岩まこと</Text>
-            <Text style={styles.date}>2023/09/23 19:42</Text>
-          </View>
-          <View style={styles.basicinfo}>
-            <Text style={styles.ranking}>ランキング: 5位</Text>
-            <Text style={styles.degree}>称号: ラーメン博士</Text>
-            <Text style={styles.favorite}>お気に入り: まぜそば</Text>
-          </View>
-        </View>
-
+        ))}
       </ScrollView>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
