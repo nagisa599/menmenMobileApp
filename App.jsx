@@ -18,6 +18,7 @@ import userInfoContext from './src/utils/UserInfoContext';
 import MainStackNavigator from './src/navigators/MainStackNavigator';
 import LoadingScreen from './src/screens/LoadingScreen';
 import { convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from './src/utils/Data';
+import createImagesDirectory from './src/utils/createImagesDirectory';
 
 WebBrowser.maybeCompleteAuthSession();
 export default function App() {
@@ -38,8 +39,11 @@ export default function App() {
     const imageRef = ref(storage, imageURL);
     const url = await getDownloadURL(imageRef);
 
-    const filename = url.split('/').pop();
-    const downloadDest = `${FileSystem.documentDirectory}${filename}`;
+    // const filename = url.split('/').pop();
+
+    await createImagesDirectory('user');
+    const relativePath = `user/${auth.currentUser.uid}`;
+    const downloadDest = `${FileSystem.documentDirectory}${relativePath}`;
 
     const downloadResult = await FileSystem.downloadAsync(url, downloadDest);
 
@@ -48,7 +52,7 @@ export default function App() {
       return null;
     }
 
-    return downloadResult.uri;
+    return relativePath;
   }
 
   useEffect(() => {

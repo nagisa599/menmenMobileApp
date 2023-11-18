@@ -29,7 +29,7 @@ export default function RankingScreen() {
 
     const filename = url.split('/').pop();
 
-    createImagesDirectory('ranking');
+    await createImagesDirectory('ranking');
     const relativePath = `ranking/${filename}`;
     const downloadDest = `${FileSystem.documentDirectory}${relativePath}`;
 
