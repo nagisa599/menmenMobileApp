@@ -141,6 +141,7 @@ export default function SignUpScreen() {
         visited: false,
         imageUrl,
         title: 0,
+        friends: [],
       });
 
       setUserInfo({
@@ -155,6 +156,7 @@ export default function SignUpScreen() {
         visited: false,
         imageUrl,
         title: 0,
+        friends: [],
       });
 
       await setDoc(doc(db, `username/${name}`), {

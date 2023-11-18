@@ -32,7 +32,7 @@ export default function EditUserInfoScreen(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [ramenItems, setRamenItems] = useState([]);
   const [toppingItems, setToppingItems] = useState([]);
-  const [image, setImage] = useState(userInfo.imageUrl);
+  const [image, setImage] = useState(getDownloadedImageUri(userInfo.imageUrl));
   const [isRegistering, setIsRegistering] = useState(false);
 
   useEffect(() => {
@@ -124,9 +124,7 @@ export default function EditUserInfoScreen(props) {
     let { imageUrl } = userInfo;
     if (image) {
       try {
-        console.log('image:', image);
         const imageBlob = await uriToBlob(image);
-        console.log('imageBlob:', imageBlob);
         const storageRef = ref(storage, `users/${userData.uid}`);
         await uploadBytes(storageRef, imageBlob);
         imageUrl = await getDownloadURL(storageRef);
@@ -136,14 +134,11 @@ export default function EditUserInfoScreen(props) {
         return;
       }
     }
-    console.log('uid:', auth.currentUser.uid);
-    console.log('imageUrl:', imageUrl);
-    // const filename = imageUrl.split('/').pop();
-    console.log('filename:', auth.currentUser.uid);
     await createImagesDirectory('user');
     const relativePath = `user/${auth.currentUser.uid}`;
     const downloadDest = `${FileSystem.documentDirectory}${relativePath}`;
     const downloadResult = await FileSystem.downloadAsync(imageUrl, downloadDest);
+
     if (downloadResult.status !== 200) {
       console.error('Error downloading the image:', downloadResult);
     }
@@ -155,8 +150,7 @@ export default function EditUserInfoScreen(props) {
         ramen,
         topping,
         updatedAt,
-        // imageUrl: relativePath,
-        imageUrl,
+        imageUrl: relativePath,
       });
       const deleteTask = deleteDoc(doc(db, `username/${userInfo.name}`));
       const setUserTask = setDoc(userDoc, {
@@ -179,6 +173,7 @@ export default function EditUserInfoScreen(props) {
           {
             text: 'OK',
             onPress: () => {
+              // navigation.goBack();
               navigation.navigate('MypageScreen');
               setIsRegistering(false);
             },
@@ -216,7 +211,7 @@ export default function EditUserInfoScreen(props) {
                 </View>
                 <View styel={styles.itemContainer}>
                   <Text style={styles.item}>プロフィール画像</Text>
-                  <ProfileImageUpload image={getDownloadedImageUri(image)} setImage={setImage} />
+                  <ProfileImageUpload image={image} setImage={setImage} />
                 </View>
                 <View style={styles.itemContainer}>
                   <Text style={styles.item}>
