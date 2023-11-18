@@ -3,10 +3,10 @@ import {
   StyleSheet, TouchableOpacity, Text, View, Image,
 } from 'react-native';
 // import { useNavigation } from '@react-navigation/native';
-import { string, instanceOf } from 'prop-types';
+import { string, instanceOf, arrayOf } from 'prop-types';
 
 export default function FriendListItem({
-  birthday, createdAt, email, name, ramen, topping,
+  imageUrl, friends, birthday, createdAt, email, name, ramen, topping,
 }) {
   return (
     <TouchableOpacity
@@ -34,6 +34,7 @@ export default function FriendListItem({
 }
 
 FriendListItem.propTypes = {
+  imageUrl: string.isRequired,
   birthday: string.isRequired,
   createdAt: instanceOf(Date).isRequired,
   email: string.isRequired,

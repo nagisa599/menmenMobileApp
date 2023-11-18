@@ -23,7 +23,7 @@ export default function BookOfTicketScreen(props) {
         />
         <Tab label="回数券" onPress={() => { }} active />
       </View>
-      <ScrollView>
+      {/* <ScrollView>
         <View style={styles.friendlistheader}>
           <Text style={styles.title}>チケット内容</Text>
           <AddButton label={'表示順\n▼有効期限'} />
@@ -122,7 +122,7 @@ export default function BookOfTicketScreen(props) {
             <Text style={styles.remarks}>購入</Text>
           </View>
         </ScrollView>
-      </ScrollView>
+      </ScrollView> */}
     </View>
 
   );
