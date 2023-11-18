@@ -5,19 +5,21 @@ import {
 } from 'react-native';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  doc, getDoc, setDoc, getDocs, collection,
+  doc, getDoc, setDoc, getDocs, collection, deleteDoc,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import {
   getStorage, ref, uploadBytes, getDownloadURL,
 } from 'firebase/storage';
 
+import * as FileSystem from 'expo-file-system';
 import db from '../../firebaseConfig';
-
 import DropdownSelect from '../components/DropdownSelect';
 import userInfoContext from '../utils/UserInfoContext';
 import LoadingScreen from './LoadingScreen';
 import ProfileImageUpload from '../components/ProfileImageUpload';
+import createImagesDirectory from '../utils/createImagesDirectory';
+import getDownloadedImageUri from '../utils/getDownloadImage';
 
 export default function EditUserInfoScreen(props) {
   const { navigation } = props;
@@ -122,7 +124,9 @@ export default function EditUserInfoScreen(props) {
     let { imageUrl } = userInfo;
     if (image) {
       try {
+        console.log('image:', image);
         const imageBlob = await uriToBlob(image);
+        console.log('imageBlob:', imageBlob);
         const storageRef = ref(storage, `users/${userData.uid}`);
         await uploadBytes(storageRef, imageBlob);
         imageUrl = await getDownloadURL(storageRef);
@@ -132,31 +136,41 @@ export default function EditUserInfoScreen(props) {
         return;
       }
     }
+    console.log('uid:', auth.currentUser.uid);
+    console.log('imageUrl:', imageUrl);
+    // const filename = imageUrl.split('/').pop();
+    console.log('filename:', auth.currentUser.uid);
+    await createImagesDirectory('user');
+    const relativePath = `user/${auth.currentUser.uid}`;
+    const downloadDest = `${FileSystem.documentDirectory}${relativePath}`;
+    const downloadResult = await FileSystem.downloadAsync(imageUrl, downloadDest);
+    if (downloadResult.status !== 200) {
+      console.error('Error downloading the image:', downloadResult);
+    }
 
     try {
-      await setDoc(userDoc, {
-        ...userData,
-        name,
-        ramen,
-        topping,
-        updatedAt,
-        imageUrl,
-      });
-
       setUserInfo({
         ...userData,
         name,
         ramen,
         topping,
         updatedAt,
+        // imageUrl: relativePath,
         imageUrl,
       });
-
-      // 変更前の名前の削除
-
-      await setDoc(doc(db, `username/${name}`), {
+      const deleteTask = deleteDoc(doc(db, `username/${userInfo.name}`));
+      const setUserTask = setDoc(userDoc, {
+        ...userData,
+        name,
+        ramen,
+        topping,
+        updatedAt,
+        imageUrl,
+      });
+      const setUsernameTask = setDoc(doc(db, `username/${name}`), {
         uid: userData.uid,
       });
+      await Promise.all([deleteTask, setUserTask, setUsernameTask]);
 
       Alert.alert(
         '変更完了',
@@ -202,7 +216,7 @@ export default function EditUserInfoScreen(props) {
                 </View>
                 <View styel={styles.itemContainer}>
                   <Text style={styles.item}>プロフィール画像</Text>
-                  <ProfileImageUpload image={image} setImage={setImage} />
+                  <ProfileImageUpload image={getDownloadedImageUri(image)} setImage={setImage} />
                 </View>
                 <View style={styles.itemContainer}>
                   <Text style={styles.item}>

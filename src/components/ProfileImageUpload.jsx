@@ -17,6 +17,7 @@ export default function ProfileImageUpload(props) {
         aspect: [4, 3],
         quality: 1,
       });
+      console.log('result:', result);
 
       if (!result.canceled) {
         setImage(result.assets[0].uri);

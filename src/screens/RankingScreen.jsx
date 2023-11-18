@@ -15,6 +15,12 @@ export default function RankingScreen() {
   const [ranking, setRanking] = useState([]);
   const [isLoading, setLoading] = useState(true);
 
+  function getMidnightDate() {
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return midnight;
+  }
+
   async function downloadImage(imageURL) {
     const storage = getStorage();
 
@@ -23,7 +29,7 @@ export default function RankingScreen() {
 
     const filename = url.split('/').pop();
 
-    createImagesDirectory('ranking');
+    await createImagesDirectory('ranking');
     const relativePath = `ranking/${filename}`;
     const downloadDest = `${FileSystem.documentDirectory}${relativePath}`;
 
@@ -42,7 +48,7 @@ export default function RankingScreen() {
     // const lastUpdate = new Date(2010, 0, 1);
     const today = new Date();
 
-    const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : null;
+    const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : new Date(2010, 0, 1);
     const isSameDay = lastUpdateDate && lastUpdateDate.getDate() === today.getDate()
                       && lastUpdateDate.getMonth() === today.getMonth()
                       && lastUpdateDate.getFullYear() === today.getFullYear();
@@ -102,6 +108,11 @@ export default function RankingScreen() {
       <View style={styles.explainContainer}>
         <Text style={styles.explain}>3ヶ月来店回数ランキング</Text>
       </View>
+      <View style={styles.updateText}>
+        <Text>
+          {`${getMidnightDate().toLocaleDateString()} 0:00 更新`}
+        </Text>
+      </View>
       {isLoading ? <LoadingScreen /> : (
         <ScrollView>
           {ranking.map((rankingComponent, index) => (
@@ -157,5 +168,9 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
+  },
+  updateText: {
+    alignItems: 'flex-end',
+    paddingHorizontal: 15,
   },
 });

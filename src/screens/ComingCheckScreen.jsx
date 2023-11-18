@@ -7,10 +7,11 @@ import {
   getDoc, getFirestore, doc, setDoc, Timestamp,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 import userInfoContext from '../utils/UserInfoContext';
 
-export default function ComingCheckScreen(props) {
-  const { navigation } = props;
+export default function ComingCheckScreen() {
+  const navigation = useNavigation();
   const { setUserInfo } = useContext(userInfoContext);
   // アプリはカメラを使う許可が認められるかどうか
   const [hasPermission, setHasPermission] = useState(null);
@@ -92,7 +93,6 @@ export default function ComingCheckScreen(props) {
   const handleBarCodeScanned = async ({ data }) => {
     if (todayToken === data) {
       await EatCountCheck();
-      // activateStamp(getJSTDate());
       navigation.goBack();
       // Alert.alert('記録しました!');
     } else {

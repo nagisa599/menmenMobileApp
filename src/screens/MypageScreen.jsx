@@ -10,6 +10,7 @@ import CircleTitle from '../components/CircleTitle';
 import userInfoContext from '../utils/UserInfoContext';
 import { ChangeIDtoName } from '../utils/Data';
 import LoadingScreen from './LoadingScreen';
+import getDownloadedImageUri from '../utils/getDownloadImage';
 
 export default function MypageScreen(props) {
   const { navigation } = props;
@@ -43,7 +44,7 @@ export default function MypageScreen(props) {
         >
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: userInfo.imageUrl }}
+              source={{ uri: getDownloadedImageUri(userInfo.imageUrl) }}
               style={styles.icon}
             />
           </View>
