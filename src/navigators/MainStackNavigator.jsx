@@ -66,14 +66,14 @@ export default function MainStackNavigator({ isSplashVisible, setSplashVisible }
             if (userInfo.name !== 'notLogin') {
               return <MyheaderLeft navigation={navigation} />;
             }
-            return null; // Return null when userInfo doesn't exist
+            return null;
           },
           // eslint-disable-next-line react/no-unstable-nested-components
           headerRight: () => {
             if (userInfo.name !== 'notLogin') {
               return <MyheaderRight navigation={navigation} />;
             }
-            return null; // Return null when userInfo doesn't exist
+            return null;
           },
           headerTitleStyle: {
             fontSize: 24,
