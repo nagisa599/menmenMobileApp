@@ -199,7 +199,7 @@ export default function MenuScreen() {
 
   return (
     <View style={styles.container}>
-      {isLoading ? <LoadingScreen /> : (
+      {isLoading ? <LoadingScreen content={'データ取得中\n(初回は少し長いです)'} /> : (
         <TabView
           navigationState={{ index, routes }}
           renderScene={renderScene}

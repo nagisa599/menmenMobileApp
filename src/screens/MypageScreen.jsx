@@ -32,7 +32,7 @@ export default function MypageScreen(props) {
   }, [userInfo]);
 
   if (isLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen content="データ取得中" />;
   }
 
   return (

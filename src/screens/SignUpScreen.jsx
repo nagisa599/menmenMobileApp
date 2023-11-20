@@ -171,7 +171,7 @@ export default function SignUpScreen() {
   return (
     <View style={styles.container}>
       {isLoading || isRegistering ? (
-        <LoadingScreen />
+        <LoadingScreen content="データ登録中" />
       ) : (
         <>
           <View style={styles.titleContainer}>
@@ -197,19 +197,6 @@ export default function SignUpScreen() {
                   <Text style={styles.item}>プロフィール画像</Text>
                   <ProfileImageUpload image={image} setImage={setImage} />
                 </View>
-                {/* <View style={styles.itemContainer}>
-                  <Text style={styles.item}>電話番号</Text>
-                  <TextInput
-                    value={phoneNumber}
-                    style={styles.input}
-                    onChangeText={(text) => {
-                      setPhoneNumber(text);
-                    }}
-                    autoCapitalize="none"
-                    placeholder="電話番号"
-                    textContentType="telephoneNumber"
-                  />
-                </View> */}
                 <View style={styles.itemContainer}>
                   <Text style={styles.item}>
                     ユーザー名

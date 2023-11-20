@@ -118,7 +118,7 @@ export default function ComingCheckScreen({ navigation }) {
       {/* カメラアにクセスすることが拒否されている合 */}
       {hasPermission === false && <Text>カメラにアクセスできません</Text>}
       {/* カメラアにクセスすることが許可されている場合 */}
-      {isLoading && (<LoadingScreen />)}
+      {isLoading && (<LoadingScreen content="登録中" />)}
       {hasPermission && (
         <BarCodeScanner
           barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}

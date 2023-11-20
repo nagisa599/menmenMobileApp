@@ -87,7 +87,7 @@ export default function Calendar() {
 
   return (
     <View style={styles.container}>
-      {isLoading ? <LoadingScreen /> : (
+      {isLoading ? <LoadingScreen content="データ取得中" /> : (
         <View>
           <Text style={styles.headerText}>営業日 / 営業時間</Text>
           <View style={styles.calendarContainer}>
