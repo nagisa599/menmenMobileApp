@@ -9,7 +9,7 @@ import {
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import {
-  getStorage, ref, uploadBytes, getDownloadURL,
+  getStorage, ref, getDownloadURL, uploadBytesResumable,
 } from 'firebase/storage';
 
 import * as FileSystem from 'expo-file-system';
@@ -126,7 +126,9 @@ export default function EditUserInfoScreen(props) {
       try {
         const imageBlob = await uriToBlob(image);
         const storageRef = ref(storage, `users/${userData.uid}`);
-        await uploadBytes(storageRef, imageBlob);
+
+        await uploadBytesResumable(storageRef, imageBlob);
+
         imageUrl = await getDownloadURL(storageRef);
       } catch (e) {
         console.log('Error uploading image:', e);
@@ -134,6 +136,7 @@ export default function EditUserInfoScreen(props) {
         return;
       }
     }
+
     await createImagesDirectory('user');
     const relativePath = `user/${auth.currentUser.uid}`;
     const downloadDest = `${FileSystem.documentDirectory}${relativePath}`;
@@ -173,8 +176,7 @@ export default function EditUserInfoScreen(props) {
           {
             text: 'OK',
             onPress: () => {
-              // navigation.goBack();
-              navigation.navigate('MypageScreen');
+              navigation.goBack();
               setIsRegistering(false);
             },
           },
