@@ -1,45 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, Alert,
+  View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Modal, Button,
 } from 'react-native';
-import {
-  getDocs, collection, query, orderBy,
-} from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
+import { getAuth } from 'firebase/auth';
 import db from '../../firebaseConfig';
 import Tab from '../components/Tab';
 import AddButton from '../components/AddButton';
 import FriendListItem from '../components/FriendListItem';
 
-// const Yamaoka = require('../../assets/山岡士郎.png');
-// const Kaihara = require('../../assets/海原雄山.png');
-// const Torico = require('../../assets/トリコ.png');
-// const Araiwa = require('../../assets/荒岩まこと.png');
-
 export default function FriendListScrenn() {
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
   const [friendlist, setFriendList] = useState([]);
   const [isLoading, setLoading] = useState(false);
+  const auth = getAuth();
   const fetchFriendList = async () => {
     try {
-      const ref = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(ref);
-      const databaseFriendList = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        databaseFriendList.push({
-          birthday: data.birthday,
-          createdAt: data.createdAt,
-          email: data.email,
-          name: data.name,
-          ramen: data.ramen,
-          topping: data.topping,
-        });
-      });
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+      const userDocSnapshot = await getDoc(userDocRef);
+      const userData = userDocSnapshot.data();
+      const friendsUIDs = userData.friends || [];
+
+      const databaseFriendList = await Promise.all(
+        friendsUIDs.map(async (uid) => {
+          const friendDocRef = doc(db, 'users', uid);
+          const friendDocSnap = await getDoc(friendDocRef);
+          if (friendDocSnap.exists()) {
+            return { uid, ...friendDocSnap.data() };
+          }
+          return null;
+        }),
+      );
       setFriendList(databaseFriendList);
     } catch (error) {
       Alert.alert('データの読み込みに失敗しました');
     }
+  };
+  const [modalVisible, setModalVisible] = useState(false);
+  const handleSort = (sortOption) => {
+    let sortedList = [...friendlist];
+    console.log(typeof (friendlist));
+    switch (sortOption) {
+      case 'sortByCreationDate':
+        console.log(friendlist.createdAt);
+        sortedList.sort((a, b) => a.createdAt - b.createdAt);
+        break;
+      case 'sortByName':
+        sortedList.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'sortByLastVisit':
+        sortedList.sort((a, b) => b.updatedAt - a.updatedAt);
+        break;
+      default:
+        break;
+    }
+    setFriendList(sortedList);
+    setModalVisible(false);
   };
   useEffect(() => {
     const loadFriendListData = async () => {
@@ -55,30 +72,49 @@ export default function FriendListScrenn() {
       <View style={styles.tabContainer}>
         <Tab label="フレンド" onPress={() => { }} active />
         <Tab
-          label="回数券" 
-          // onPress={() => {
-          //   navigation.navigate('BookOfTicketScreen');
-          // }}
+          label="回数券"
+          onPress={() => {
+            navigation.navigate('BookOfTicketScreen');
+          }}
         />
       </View>
       <View>
         <View style={styles.friendlistheader}>
           <Text style={styles.title}>フレンドリスト</Text>
-          <AddButton label={'表示順\n▼最終来店'} />
-          {/* <AddButton
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Text>表示順</Text>
+          </TouchableOpacity>
+          <Modal
+            animationType="slide"
+            transparent
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalView}>
+              <Button title="登録日" onPress={() => handleSort('sortByCreationDate')} />
+              <Button title="名前" onPress={() => handleSort('sortByName')} />
+              <Button title="最終来店" onPress={() => handleSort('sortByLastVisit')} />
+              <Button title="閉じる" onPress={() => setModalVisible(false)} />
+            </View>
+          </Modal>
+          <AddButton
             label={'フレンド\n追加'}
             onPress={() => {
               navigation.navigate('FriendSearchScreen');
             }}
-          /> */}
+          />
         </View>
       </View>
       <ScrollView>
+
         {friendlist.map((friendlistComponent) => (
           <View key={friendlistComponent.name}>
             <FriendListItem
+              imageUrl={friendlistComponent.imageUrl}
+              friends={friendlistComponent.friends}
               birthday={friendlistComponent.birthday}
               createdAt={friendlistComponent.createdAt}
+              updatedAt={friendlistComponent.updatedAt}
               email={friendlistComponent.email}
               name={friendlistComponent.name}
               ramen={friendlistComponent.ramen}
@@ -149,5 +185,12 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 10,
     borderWidth: 2,
+  },
+  modalView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 半透明の背景色
+    padding: 20,
   },
 });

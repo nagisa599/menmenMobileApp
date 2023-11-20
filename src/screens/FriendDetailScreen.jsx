@@ -9,8 +9,9 @@ import BackButton from '../components/BackButton';
 
 const Yamaoka = require('../../assets/山岡士郎.png');
 
-export default function BookOfTicketScreen(props) {
-  const { navigation } = props;
+export default function FriendDetailScreen(props) {
+  const { route, navigation } = props;
+  const { name, updatedAt } = route.params;
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
@@ -27,10 +28,11 @@ export default function BookOfTicketScreen(props) {
           source={Yamaoka}
           style={styles.image}
         />
-        <Text style={styles.profileinfo}>名前 : 山岡士郎</Text>
+        <Text style={styles.profileinfo}>名前：{ name }</Text>
         <Text style={styles.profileinfo}>ランキング : 2位</Text>
         <Text style={styles.profileinfo}>称号 : ラーメンスター</Text>
-        <Text style={styles.profileinfo}>最終来店 : 2023/10/13 19:15</Text>
+        <Text style={styles.profileinfo}>アカウント作成日：</Text>
+        <Text style={styles.profileinfo}>最終来店：</Text>
         <Text style={styles.profileinfo}>総ラーメン : 123杯</Text>
         <Text style={styles.profileinfo}>今週のラーメン : 4杯</Text>
         <Text style={styles.profileinfo}>初来店日 : 2021/08/21</Text>
