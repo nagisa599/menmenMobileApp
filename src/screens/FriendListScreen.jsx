@@ -119,6 +119,7 @@ export default function FriendListScrenn() {
               name={friendlistComponent.name}
               ramen={friendlistComponent.ramen}
               topping={friendlistComponent.topping}
+              title={friendlistComponent.title}
             />
           </View>
         ))}
