@@ -11,7 +11,7 @@ const Yamaoka = require('../../assets/山岡士郎.png');
 
 export default function FriendDetailScreen(props) {
   const { route, navigation } = props;
-  const { name, updatedAt } = route.params;
+  const { name, updatedAt, url } = route.params;
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
@@ -25,7 +25,7 @@ export default function FriendDetailScreen(props) {
       </View>
       <ScrollView style={styles.profile}>
         <Image
-          source={Yamaoka}
+          source={{ uri: url }}
           style={styles.image}
         />
         <Text style={styles.profileinfo}>名前：{ name }</Text>

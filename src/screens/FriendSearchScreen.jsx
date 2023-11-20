@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, TextInput
+  View, Text, StyleSheet, TextInput,
 } from 'react-native';
-
+import { getAuth } from 'firebase/auth';
 import Tab from '../components/Tab';
 import SearchButton from '../components/SearchButton';
 
 export default function BookOfTicketScreen(props) {
   const { navigation } = props;
   const [userId, setUserId] = useState('');
+  // const auth = getAuth();
+  // const username = auth.currentUser.name;
+  // console.log(username);
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
@@ -21,10 +24,10 @@ export default function BookOfTicketScreen(props) {
         />
       </View>
       <View style={styles.searchcontainer}>
-        <Text style={styles.userID}>あなたのユーザID</Text>
+        <Text style={styles.userID}>あなたのユーザーネーム</Text>
         {/* 名前で検索 */}
         <Text style={styles.userIDnum}>123456789</Text>
-        <Text style={styles.friendID}>友達のユーザID</Text>
+        <Text style={styles.friendID}>友達のユーザーネーム</Text>
         <TextInput
           style={styles.inputID}
           value={userId}
