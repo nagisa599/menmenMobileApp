@@ -145,7 +145,7 @@ export default function App() {
   }, [response]);
 
   if (isLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen content="データ取得中" />;
   }
   if (userInfo) {
     if (!userInfo.name) {
