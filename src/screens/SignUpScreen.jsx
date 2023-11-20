@@ -9,7 +9,7 @@ import {
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import {
-  getStorage, ref, uploadBytes, getDownloadURL,
+  getStorage, ref, getDownloadURL, uploadBytesResumable,
 } from 'firebase/storage';
 
 // eslint-disable-next-line import/no-unresolved
@@ -120,7 +120,7 @@ export default function SignUpScreen() {
       const imageBlob = await uriToBlob(image);
       const storageRef = ref(storage, `users/${userData.uid}`);
       try {
-        await uploadBytes(storageRef, imageBlob);
+        await uploadBytesResumable(storageRef, imageBlob);
         imageUrl = await getDownloadURL(storageRef);
       } catch (error) {
         console.log('Error uploading image:', error);

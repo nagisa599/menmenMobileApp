@@ -21,13 +21,15 @@ export default function MypageScreen(props) {
 
   useEffect(() => {
     (async () => {
-      const ramen = await ChangeIDtoName(userInfo.ramen);
-      const topping = await ChangeIDtoName(userInfo.topping);
-      setRamenName(ramen);
-      setToppingName(topping);
+      if (userInfo) {
+        const ramen = await ChangeIDtoName(userInfo.ramen);
+        const topping = await ChangeIDtoName(userInfo.topping);
+        setRamenName(ramen);
+        setToppingName(topping);
+      }
       setLoading(false);
     })();
-  }, [userInfo.ramen, userInfo.topping]);
+  }, [userInfo]);
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -44,7 +46,7 @@ export default function MypageScreen(props) {
         >
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: getDownloadedImageUri(userInfo.imageUrl) }}
+              source={{ uri: `${getDownloadedImageUri(userInfo.imageUrl)}?timestamp=${new Date().getTime()}` }}
               style={styles.icon}
             />
           </View>
