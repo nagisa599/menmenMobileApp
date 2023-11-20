@@ -25,7 +25,7 @@ export default function Calendar() {
     'saturday': '土',
     'sunday': '日',
   };
-  const todayLabel = daysOfWeek[todayDayOfWeek];
+  const todayLabel = daysOfWeek[todayDayOfWeek - 1];
 
   useEffect(() => {
     const db = getFirestore();
