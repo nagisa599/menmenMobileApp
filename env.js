@@ -1,7 +1,7 @@
 import {
   APIKEY, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SENDER_ID, APP_ID, MEASUREMENT_ID,
 // eslint-disable-next-line import/no-unresolved
-} from '@env';
+} from './env.json';
 
 /* eslint-disable-next-line */
 export const firebaseConfig = {

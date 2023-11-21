@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 // eslint-disable-next-line import/no-unresolved
-import { IOS_CLIENT_ID, ANDROID_CLIENT_ID } from '@env';
+import ENV from './env.json'; // eslint-disable-line
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import {
@@ -21,6 +21,7 @@ import { convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from './src/uti
 import createImagesDirectory from './src/utils/createImagesDirectory';
 
 WebBrowser.maybeCompleteAuthSession();
+
 export default function App() {
   const [isSplashVisible, setSplashVisible] = useState(true);
   const [isLoading, setLoading] = useState(true);
@@ -31,10 +32,9 @@ export default function App() {
   const storage = getStorage();
   // eslint-disable-next-line no-unused-vars
   const [request, response, promptAsync] = Google.useAuthRequest({
-    iosClientId: IOS_CLIENT_ID,
-    androidClientId: ANDROID_CLIENT_ID,
+    iosClientId: ENV.IOS_CLIENT_ID,
+    androidClientId: ENV.ANDROID_CLIENT_ID,
   });
-
   async function downloadImage(imageURL) {
     const imageRef = ref(storage, imageURL);
     const url = await getDownloadURL(imageRef);
@@ -111,6 +111,7 @@ export default function App() {
   useEffect(() => {
     // Googleアカウントでの認証に成功した場合
     if (response?.type === 'success') {
+      console.log('Googleアカウントでの認証に成功');
       setLoading(true);
       /* eslint-disable */
       const { id_token } = response.params;
