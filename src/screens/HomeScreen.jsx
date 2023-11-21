@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,20 +7,58 @@ import {
   Text,
   Linking,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  collection, query, where, getFirestore, getDocs, limit, orderBy,
+} from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
 import Calendar from '../components/Calendar';
 
 export default function HomeScreen() {
+  const db = getFirestore();
   const navigation = useNavigation();
-  const googleFormUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSenoG8isDeeUCCYO0TPai7u93IlpPKcfriuWky1nCLLPgfzVQ/viewform?usp=sf_link';
+  const [url, seturl] = useState();
+  const [urlDate, setUrlDate] = useState(new Date());
   const openGoogleForm = () => {
-    Linking.openURL(googleFormUrl).catch((err) => console.error('URLを開けませんでした', err));
+    Linking.openURL(url).catch((err) => console.error('URLを開けませんでした', err));
   };
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth() + 1;
   const displayMonthYear = `${currentYear}年${currentMonth}月`;
+
+  const fetchGoogleFormUrl = async () => {
+    const lastUpdate = await AsyncStorage.getItem('last_update_url');
+    const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : new Date(2010, 0, 1);
+    const googleFormUrl = query(collection(db, 'googleFormUrl'), where('createdAt', '>', lastUpdateDate), orderBy('createdAt', 'desc'), limit(1));
+    const urlDoc = await getDocs(googleFormUrl);
+    const newUrlSnap = urlDoc.docs.map(async (doc) => {
+      const data = doc.data();
+      return {
+        createdAt: data.createdAt.toDate(),
+        url: data.url,
+      };
+    });
+    const newUrl = await Promise.all(newUrlSnap);
+    const cachedUrlString = await AsyncStorage.getItem('cashed_url');
+    const cashedUrlDateString = await AsyncStorage.getItem('cashed_url_date');
+    let cashedUrlDate = cashedUrlDateString ? new Date(cashedUrlDateString) : null;
+    let cashedUrl = cachedUrlString ? JSON.parse(cachedUrlString) : null;
+    if (newUrl.length) {
+      cashedUrl = newUrl[0].url;// eslint-disable-line
+      cashedUrlDate = newUrl[0].createdAt;// eslint-disable-line
+    }
+    seturl(cashedUrl);
+    setUrlDate(cashedUrlDate);
+    await AsyncStorage.setItem('cashed_url', JSON.stringify(cashedUrl));
+    await AsyncStorage.setItem('last_update_url', new Date().toISOString());
+    await AsyncStorage.setItem('cashed_url_date', cashedUrlDate.toISOString());
+  };
+
+  useEffect(() => {
+    fetchGoogleFormUrl();
+  }, []);
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -32,6 +70,7 @@ export default function HomeScreen() {
           <Text>新メニューやアプリについて簡単な</Text>
           <Text>アンケートの回答をお願いしております</Text>
           <Text>ぜひ皆様の意見を聞かせてください！！</Text>
+          <Text style={styles.urlText}>{`⭐️${urlDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}から実施中⭐️`}</Text>
         </View>
         <TouchableOpacity
           style={styles.linkContainer}
@@ -116,5 +155,8 @@ const styles = StyleSheet.create({
     width: '80%',
     marginHorizontal: '10%',
     marginBottom: 20,
+  },
+  urlText: {
+    color: 'red',
   },
 });

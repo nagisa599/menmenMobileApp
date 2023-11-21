@@ -13,7 +13,7 @@ import {
 } from 'firebase/storage';
 
 // eslint-disable-next-line import/no-unresolved
-import { DEFAULT_IMAGE_URL } from '@env';
+import { DEFAULT_IMAGE_URL } from '../../env.json';
 import userInfoContext from '../utils/UserInfoContext';
 import db from '../../firebaseConfig';
 import BirthdayInput from '../components/BirthdayInput';

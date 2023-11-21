@@ -120,7 +120,6 @@ export default function MenuScreen() {
     // 最後の更新日時を取得
     const lastUpdate = await AsyncStorage.getItem('last_update_menu');
     const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : new Date(2010, 0, 1);
-
     // Firebaseから新しいメニューのみを取得
     const menuRef = query(collection(db, 'ramens'), where('updatedAt', '>', lastUpdateDate));
     const snapshot = await getDocs(menuRef);
@@ -142,7 +141,6 @@ export default function MenuScreen() {
         limit: data.limit,
       };
     });
-
     const newMenus = await Promise.all(newMenusPromises);
 
     const cachedMenusString = await AsyncStorage.getItem('cached_menus');

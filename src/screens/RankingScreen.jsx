@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 // eslint-disable-next-line import/no-unresolved
-import { RANKING_URL } from '@env';
+import { RANKING_URL } from '../../env.json'; //eslint-disable-line
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import RankingList from '../components/RankingList';
