@@ -7,8 +7,6 @@ import Tab from '../components/Tab';
 import PassButton from '../components/PassButton';
 import BackButton from '../components/BackButton';
 
-const Yamaoka = require('../../assets/山岡士郎.png');
-
 export default function FriendDetailScreen(props) {
   const { route, navigation } = props;
   const { name, updatedAt, url } = route.params;

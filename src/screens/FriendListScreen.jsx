@@ -39,7 +39,7 @@ export default function FriendListScrenn() {
   };
   const [modalVisible, setModalVisible] = useState(false);
   const handleSort = (sortOption) => {
-    let sortedList = [...friendlist];
+    const sortedList = [...friendlist];
     console.log(typeof (friendlist));
     switch (sortOption) {
       case 'sortByCreationDate':
@@ -101,6 +101,12 @@ export default function FriendListScrenn() {
             label={'フレンド\n追加'}
             onPress={() => {
               navigation.navigate('FriendSearchScreen');
+            }}
+          />
+          <Tab
+            label="回数券"
+            onPress={() => {
+              navigation.navigate('BookOfTicketScreen');
             }}
           />
         </View>

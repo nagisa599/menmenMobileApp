@@ -1,23 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TextInput,
 } from 'react-native';
 import { getAuth } from 'firebase/auth';
+import {
+  collection, query, where, getDocs,
+} from 'firebase/firestore';
 import Tab from '../components/Tab';
 import SearchButton from '../components/SearchButton';
+import db from '../../firebaseConfig';
 
-export default function BookOfTicketScreen(props) {
+export default function FriendSearchScreen(props) {
   const { navigation } = props;
-  const [userId, setUserId] = useState('');
+  // const [userId, setUserId] = useState('');
   // const auth = getAuth();
   // const username = auth.currentUser.name;
   // console.log(username);
+  async function createUserDict() {
+    const userRef = collection(db, 'username');
+    const querySnapshot = await getDocs(userRef);
+    const userDict = {};
+    querySnapshot.forEach((doc) => {
+      userDict[doc.id] = doc.data().uid;
+    });
+    return userDict;
+  }
+  const [userDict, setUserDict] = useState({});
+  useEffect(() => {
+    createUserDict().then((dict) => {
+      setUserDict(dict);
+    });
+  }, []);
+  const [inputUsername, setInputUsername] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  function checkUsername(username) {
+    if (userDict.hasOwnProperty(username)) {
+      navigation.navigate('FriendAddScreen', { name: username, uid: userDict[username] });
+    } else {
+      console.log('no');
+      setErrorMessage('入力されたユーザー名は存在しません。');
+    }
+  }
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
         <Tab label="フレンド" onPress={() => { }} active />
         <Tab
-          label="フレンド"
+          label="回数券"
           onPress={() => {
             navigation.navigate('BookOfTicketScreen');
           }}
@@ -30,16 +59,17 @@ export default function BookOfTicketScreen(props) {
         <Text style={styles.friendID}>友達のユーザーネーム</Text>
         <TextInput
           style={styles.inputID}
-          value={userId}
-          onChangeText={(text) => setUserId(text)}
-          maxLength={9}
+          maxLength={20}
+          value={inputUsername}
+          onChangeText={setInputUsername}
         />
         <SearchButton
           label="検索"
           onPress={() => {
-            navigation.navigate('FriendAddScreen');
+            checkUsername(inputUsername);
           }}
         />
+        {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
       </View>
 
     </View>
