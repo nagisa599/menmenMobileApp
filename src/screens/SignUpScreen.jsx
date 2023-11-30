@@ -89,20 +89,24 @@ export default function SignUpScreen() {
 
     if (!userData) {
       Alert.alert('ユーザーデータが存在しません');
+      setIsRegistering(false);
       return;
     }
 
     if (!isUnique) {
       Alert.alert('ユーザー名がすでに使われています\n 変更してください');
+      setIsRegistering(false);
       return;
     }
 
     if (!name.trim()) {
       Alert.alert('ユーザー名を入力してください');
+      setIsRegistering(false);
       return;
     }
     if (!birthday.trim()) {
       Alert.alert('誕生日を入力してください');
+      setIsRegistering(false);
       return;
     }
 
@@ -160,9 +164,6 @@ export default function SignUpScreen() {
       });
 
       await setDoc(doc(db, `username/${name}`), {
-        uid: userData.uid,
-      });
-      await setDoc(doc(db, `email/${userInfo.email}`), {
         uid: userData.uid,
       });
     } catch (error) {
