@@ -1,16 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
 import {
-  View, Text, StyleSheet, ScrollView, Image,
+  View, Text, StyleSheet, ScrollView, Image, Alert,
 } from 'react-native';
-
+import PropTypes, { string, instanceOf, number } from 'prop-types';
+import db from '../../firebaseConfig';
 import Tab from '../components/Tab';
 import PassButton from '../components/PassButton';
 import BackButton from '../components/BackButton';
-
-const Inoue = require('../../assets/井之頭五郎.png');
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 export default function FriendAddScreen(props) {
-  const { navigation } = props;
+  const { route, navigation } = props;
+  const { name, uid } = route.params;
+  // const [imageUrl, setImageUrl] = useState(null);
+  // const [url, setUrl] = useState('');
+  // useEffect(() => {
+  //   const fetchImageUrl = async () => {
+  //     try {
+  //       const docRef = doc(db, 'users', uid);
+  //       const docSnap = await getDoc(docRef);
+  //       setImageUrl(docSnap.data().imageUrl);
+  //     } catch (error) {
+  //       console.error("Error fetching document: ", error);
+  //     }
+  //   };
+  //   fetchImageUrl();
+  // }, [uid]);
+  // useEffect(() => {
+  //   const storage = getStorage();
+  //   const imageRef = ref(storage, imageUrl);
+  //   getDownloadURL(imageRef)
+  //     .then((downloadUrl) => {
+  //       setUrl(downloadUrl);
+  //     })
+  //     .catch((error) => {
+  //       console.error('画像のダウンロードURLの取得に失敗しました: ', error);
+  //     });
+  // }, [imageUrl]);
+  // console.log(uid);
+  // console.log(imageUrl);
+  // console.log(url);
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
@@ -24,10 +54,10 @@ export default function FriendAddScreen(props) {
       </View>
       <ScrollView style={styles.profile}>
         <Image
-          source={Inoue}
+          // source={{ uri: url }}
           style={styles.image}
         />
-        <Text style={styles.profileinfo}>名前 : 井之頭五郎</Text>
+        <Text style={styles.profileinfo}>名前 : { name }</Text>
         <Text style={styles.profileinfo}>ランキング : 15位</Text>
         <Text style={styles.profileinfo}>称号 : ラーメン好き</Text>
         <Text style={styles.profileinfo}>最終来店 : 2023/10/10 18:55</Text>
@@ -49,6 +79,11 @@ export default function FriendAddScreen(props) {
     </View>
   );
 }
+
+FriendAddScreen.propTypes = {
+  name: string.isRequired,
+  uid: string.isRequired,
+};
 
 const styles = StyleSheet.create({
   container: {
