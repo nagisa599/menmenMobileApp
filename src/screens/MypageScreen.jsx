@@ -22,8 +22,9 @@ export default function MypageScreen(props) {
   useEffect(() => {
     (async () => {
       if (userInfo) {
-        const ramen = await ChangeIDtoName(userInfo.ramen);
-        const topping = await ChangeIDtoName(userInfo.topping);
+        console.log(userInfo.ramen);
+        const ramen = await ChangeIDtoName(userInfo.ramen ? userInfo.ramen : '');
+        const topping = await ChangeIDtoName(userInfo.topping ? userInfo.topping : '');
         setRamenName(ramen);
         setToppingName(topping);
       }

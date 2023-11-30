@@ -1,6 +1,7 @@
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 export const ChangeIDtoName = async (id) => {
+  if (!id) return '未登録';
   const db = getFirestore();
   const ramenPath = `ramens/${id}/`;
   const ref = doc(db, ramenPath);
