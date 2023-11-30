@@ -113,7 +113,7 @@ export default function RankingScreen() {
           {`${getMidnightDate().toLocaleDateString()} 0:00 更新`}
         </Text>
       </View>
-      {isLoading ? <LoadingScreen ccontent={'データ取得中\n(初回は少し長いです)'} /> : (
+      {isLoading ? <LoadingScreen content={'データ取得中\n(初回は少し長いです)'} /> : (
         <ScrollView>
           {ranking.map((rankingComponent, index) => (
             <View key={rankingComponent.name}>

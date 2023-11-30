@@ -162,6 +162,9 @@ export default function SignUpScreen() {
       await setDoc(doc(db, `username/${name}`), {
         uid: userData.uid,
       });
+      await setDoc(doc(db, `email/${userInfo.email}`), {
+        uid: userData.uid,
+      });
     } catch (error) {
       Alert.alert(error.message);
     }

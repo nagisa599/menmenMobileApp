@@ -115,28 +115,49 @@ export default function App() {
       setLoading(true);
       /* eslint-disable */
       const { id_token } = response.params;
+   
       /* eslint-enable */
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential)
-        .then((authResult) => {
+        .then(async (authResult) => {
           const { user } = authResult;
           const userRef = doc(db, `users/${user.uid}`);
-          setDoc(userRef, {
-            email: user.email,
-            uid: user.uid,
-          }, { merge: true })
-            .then(() => {
-              console.log('googleユーザー登録成功');
-            })
-            .catch((error) => {
-              console.error('error googleユーザー登録:', error);
+          const docSnap = await getDoc(userRef);
+          if (docSnap.exists()) {
+            const exitUserData = docSnap.data();
+            console.log(exitUserData);
+            console.log('googleユーザー登録済み');
+            setUserInfo({
+              name: exitUserData.name,
+              birthday: exitUserData.birthday,
+              ramen: exitUserData.ramen,
+              topping: exitUserData.topping,
+              createdAt: exitUserData.createdAt,
+              updatedAt: exitUserData.updatedAt,
+              times: exitUserData.times,
+              visited: exitUserData.visited,
+              imageUrl: exitUserData.imageUrl,
+              title: exitUserData.title,
+              friends: exitUserData.friends,
             });
-          setUserInfo({
-            ...userInfo,
-            email: user.email,
-            uid: auth.currentUser.uid,
-          });
-          setLoading(false);
+          } else {
+            setDoc(userRef, {
+              email: user.email,
+              uid: user.uid,
+            }, { merge: true })
+              .then(() => {
+                console.log('googleユーザー登録成功');
+              })
+              .catch((error) => {
+                console.error('error googleユーザー登録:', error);
+              });
+            setUserInfo({
+              ...userInfo,
+              email: user.email,
+              uid: auth.currentUser.uid,
+            });
+            setLoading(false);
+          }
         })
         .catch((error) => {
           console.error('Error signing in with Google:', error);

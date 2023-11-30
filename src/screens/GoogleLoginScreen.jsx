@@ -4,7 +4,13 @@ import {
 } from 'react-native';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import { func } from 'prop-types';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+
 import GoogleLoginButton from '../components/GoogleLoginButton';
 import AppleLoginButton from '../components/AppleLoginButton';
 import NotLoginButton from '../components/NotLoginButton';
@@ -13,6 +19,7 @@ import validatePassword from '../utils/Validation';
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
 import Button from '../components/Button';
 import userInfoContext from '../utils/UserInfoContext';
+import db from '../../firebaseConfig';
 
 export default function GoogleLoginScreen(props) {
   const { promptAsync } = props;
@@ -21,10 +28,52 @@ export default function GoogleLoginScreen(props) {
   const [password, setPassword] = useState('');
   const [passwordErr, setPasswordErr] = useState('');
   const [emailErr, setEmailErr] = useState('');
+  const [LoginOption, setLoginOption] = useState('');
   const auth = getAuth();
 
   // メールアドレスとパスワードでアカウント作成した場合
-  function handlePress() {
+  async function handlePress() {
+    try {
+      const emailRef = doc(db, `email/${email}`);
+      const userSnap = await getDoc(emailRef);
+      if (userSnap.exists()) {
+        setLoginOption('email-login');
+      } else {
+        setLoginOption('email-signup');
+      }
+    } catch (error) {
+      console.error('エラーが発生しました:', error);
+    }
+  }
+  function loginPress() {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        const { user } = userCredential;
+        const userRef = doc(db, `users/${user.uid}`);
+        const docSnap = await docSnap.getDoc(userRef);
+        if (docSnap.exists()) {
+          const exitUserData = docSnap.data();
+          setUserInfo({
+            name: exitUserData.name,
+            birthday: exitUserData.birthday,
+            ramen: exitUserData.ramen,
+            topping: exitUserData.topping,
+            createdAt: exitUserData.createdAt,
+            updatedAt: exitUserData.updatedAt,
+            times: exitUserData.times,
+            visited: exitUserData.visited,
+            imageUrl: exitUserData.imageUrl,
+            title: exitUserData.title,
+            friends: exitUserData.friends,
+          });
+        }
+      })
+      .catch(() => {
+        setPasswordErr('登録したパスワードを入力してください');
+      });
+  }
+
+  function registerPress() {
     if (!validatePassword(password)) {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
@@ -46,6 +95,73 @@ export default function GoogleLoginScreen(props) {
       name: 'notLogin',
     };
     setUserInfo(user);
+  }
+  if (LoginOption === 'email-login') {
+    return (
+      <ScrollView>
+        <KeyboardSafeView style={styles.container}>
+          <View style={styles.logoContainer}>
+            <Image source={logoImage} style={styles.logo} />
+          </View>
+          <View style={styles.errContainer}>
+            <Text>ログイン時に登録したパスワードの入力をお願いします</Text>
+            <Text style={styles.errText}>{emailErr}</Text>
+          </View>
+          <View style={styles.inputContainer}>
+            <View style={styles.errContainer}>
+              <Text style={styles.errText}>{passwordErr}</Text>
+            </View>
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={(text) => { setPassword(text); }}
+              autoCapitalize="none"
+              placeholder="パスワード"
+              secureTextEntry
+              textContentType="password"
+            />
+            <Button
+              label="ログイン"
+              onPress={() => loginPress()}
+            />
+          </View>
+        </KeyboardSafeView>
+      </ScrollView>
+    );
+  }
+  if (LoginOption === 'email-signup') {
+    return (
+      <ScrollView>
+        <KeyboardSafeView style={styles.container}>
+          <View style={styles.logoContainer}>
+            <Image source={logoImage} style={styles.logo} />
+          </View>
+          <View style={styles.errContainer}>
+            <Text>新規登録のためにパスワードの登録をお願いします。</Text>
+            <Text>※パスワードは8文字以上かつ数字、大文字、数字を1文字以上でお願いいたします。</Text>
+            <Text style={styles.errText}>{emailErr}</Text>
+          </View>
+          <View style={styles.inputContainer}>
+            <View style={styles.errContainer}>
+              <Text style={styles.errText}>{passwordErr}</Text>
+            </View>
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={(text) => { setPassword(text); }}
+              autoCapitalize="none"
+              placeholder="登録パスワード"
+              secureTextEntry
+              textContentType="password"
+            />
+            <Button
+              label="新規登録"
+              onPress={() => registerPress()}
+            />
+          </View>
+        </KeyboardSafeView>
+      </ScrollView>
+    );
   }
   return (
     <ScrollView>
@@ -79,7 +195,7 @@ export default function GoogleLoginScreen(props) {
           <View style={styles.errContainer}>
             <Text style={styles.errText}>{passwordErr}</Text>
           </View>
-          <TextInput
+          {/* <TextInput
             style={styles.input}
             value={password}
             onChangeText={(text) => { setPassword(text); }}
@@ -87,7 +203,7 @@ export default function GoogleLoginScreen(props) {
             placeholder="パスワード"
             secureTextEntry
             textContentType="password"
-          />
+          /> */}
           <Button
             label="ログイン（新規登録）"
             onPress={() => handlePress()}
