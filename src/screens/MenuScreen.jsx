@@ -84,6 +84,25 @@ export default function MenuScreen() {
     { key: 'topping', title: 'トッピング' },
   ]);
 
+  function isTodayInJapan(firebaseTimestamp) {
+    if (!firebaseTimestamp) {
+      return false;
+    }
+
+    // FirebaseのタイムスタンプからDateオブジェクトを作成
+    const firebaseDate = firebaseTimestamp.toDate();
+
+    // 日本のタイムゾーンに合わせて調整（日本はUTC+9）
+    const japanDate = new Date(firebaseDate.getTime() + (9 * 60 * 60 * 1000));
+
+    // 今日の日付を取得（日本時間）
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 時刻を0時0分0秒に設定
+
+    // 日付が今日かどうかをチェック
+    return today.getTime() === japanDate.setHours(0, 0, 0, 0);
+  }
+
   const renderScene = ({ route }) => (
     <SceneComponent
       route={route}
@@ -118,7 +137,8 @@ export default function MenuScreen() {
 
   const fetchMenuAndUpdateCache = async () => {
     // 最後の更新日時を取得
-    const lastUpdate = await AsyncStorage.getItem('last_update_menu');
+    // const lastUpdate = await AsyncStorage.getItem('last_update_menu');
+    const lastUpdate = new Date(2010, 0, 1);
     const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : new Date(2010, 0, 1);
     // Firebaseから新しいメニューのみを取得
     const menuRef = query(collection(db, 'ramens'), where('updatedAt', '>', lastUpdateDate));
@@ -136,7 +156,7 @@ export default function MenuScreen() {
         price: data.price,
         student: data.student,
         favorite: data.favorite,
-        today: data.today,
+        today: !data.today || (data.today && isTodayInJapan(data.today)),
         topping: data.topping,
         limit: data.limit,
       };
@@ -157,7 +177,7 @@ export default function MenuScreen() {
     // マップから配列に変換します
     const updatedMenusArray = Array.from(cachedMenusMap.values());
 
-    // todayがtrueのものを先頭に、falseのものは後にするためのソート関数
+    // // todayがtrueのものを先頭に、falseのものは後にするためのソート関数
     const sortByToday = (a, b) => (b.today === true) - (a.today === true);
 
     // 分類されたメニュー配列を更新し、todayがtrueのものを先頭に
