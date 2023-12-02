@@ -80,7 +80,7 @@ export default function MenuScreen() {
 
   const [routes] = useState([
     { key: 'menu', title: 'レギュラー' },
-    { key: 'limit', title: '期間限定' },
+    { key: 'limit', title: '日替わり' },
     { key: 'topping', title: 'トッピング' },
   ]);
 
@@ -89,7 +89,6 @@ export default function MenuScreen() {
       return false;
     }
 
-    // FirebaseのタイムスタンプからDateオブジェクトを作成
     const firebaseDate = firebaseTimestamp.toDate();
 
     // 日本のタイムゾーンに合わせて調整（日本はUTC+9）
@@ -137,8 +136,7 @@ export default function MenuScreen() {
 
   const fetchMenuAndUpdateCache = async () => {
     // 最後の更新日時を取得
-    // const lastUpdate = await AsyncStorage.getItem('last_update_menu');
-    const lastUpdate = new Date(2010, 0, 1);
+    const lastUpdate = await AsyncStorage.getItem('last_update_menu');
     const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : new Date(2010, 0, 1);
     // Firebaseから新しいメニューのみを取得
     const menuRef = query(collection(db, 'ramens'), where('updatedAt', '>', lastUpdateDate));
@@ -182,7 +180,7 @@ export default function MenuScreen() {
 
     // 分類されたメニュー配列を更新し、todayがtrueのものを先頭に
     const limitMenu = updatedMenusArray
-      .filter((menu) => menu.limit === true)
+      .filter((menu) => menu.limit === true && menu.topping === false)
       .sort(sortByToday);
     const toppingMenu = updatedMenusArray
       .filter((menu) => menu.topping === true)
