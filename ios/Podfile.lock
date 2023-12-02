@@ -537,12 +537,22 @@ PODS:
   - RNGestureHandler (2.13.4):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+  - RNImageCropPicker (0.40.2):
+    - React-Core
+    - React-RCTImage
+    - RNImageCropPicker/QBImagePickerController (= 0.40.2)
+    - TOCropViewController
+  - RNImageCropPicker/QBImagePickerController (0.40.2):
+    - React-Core
+    - React-RCTImage
+    - TOCropViewController
   - RNScreens (3.22.1):
     - React-Core
     - React-RCTImage
   - RNSVG (13.14.0):
     - React-Core
   - SocketRocket (0.6.1)
+  - TOCropViewController (2.6.1)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.9)
   - ZXingObjC/OneD (3.6.9):
@@ -617,6 +627,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -626,6 +637,7 @@ SPEC REPOS:
     - fmt
     - libevent
     - SocketRocket
+    - TOCropViewController
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -758,6 +770,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-picker/picker"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNImageCropPicker:
+    :path: "../node_modules/react-native-image-crop-picker"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSVG:
@@ -832,9 +846,11 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
   RNCPicker: 529d564911e93598cc399b56cc0769ce3675f8c8
   RNGestureHandler: 6e46dde1f87e5f018a54fe5d40cd0e0b942b49ee
+  RNImageCropPicker: d9616a0cb9b72e8551ff94a7a5021fbd29050aa5
   RNScreens: 50ffe2fa2342eabb2d0afbe19f7c1af286bc7fb3
   RNSVG: d00c8f91c3cbf6d476451313a18f04d220d4f396
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
+  TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: 86fed2e4d425ee4c6eab3813ba1791101ee153c6
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 

@@ -68,6 +68,7 @@ Menu.propTypes = {
     price: number,
     student: bool,
     favorite: number,
+    today: bool,
   })).isRequired,
 };
 

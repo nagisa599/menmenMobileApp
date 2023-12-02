@@ -7,25 +7,33 @@ import {
 import LoadingScreen from '../screens/LoadingScreen';
 
 export default function Calendar() {
-  const [schedule, setSchedule] = useState([]);
+  const [businessHours, setBusinessHours] = useState({});
   const [dayoff, setDayoff] = useState([]);
   const [isLoading, setLoading] = useState(true);
 
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth() + 1;
-  const todayDayOfWeek = today.getDay();
-  const daysOfWeek = ['月', '火', '水', '木', '金', '土', '日'];
-  const dayMapping = {
-    'monday': '月',
-    'tuesday': '火',
-    'wednesday': '水',
-    'thursday': '木',
-    'friday': '金',
-    'saturday': '土',
-    'sunday': '日',
-  };
-  const todayLabel = daysOfWeek[todayDayOfWeek - 1];
+
+  // 今日が休業日かどうかを判断する関数
+  function isTodayDayOff() {
+    const todayStr = `${currentMonth}/${today.getDate()}`;
+    return dayoff.includes(todayStr);
+  }
+
+  // 今日が平日か土曜か日曜かを判断する関数
+  function getTodayDayType() {
+    const day = today.getDay(); // 日曜日 = 0, 月曜日 = 1, ..., 土曜日 = 6
+    if (day === 0) return 'sunday';
+    if (day === 6) return 'saturday';
+    return 'weekday';
+  }
+
+  // 今日が営業日で、かつ平日/土曜/日曜のいずれであるかに基づいて背景色を設定する関数
+  function getDayStyle(dayType) {
+    if (isTodayDayOff()) return {};
+    return getTodayDayType() === dayType ? styles.todayBackground : {};
+  }
 
   useEffect(() => {
     const db = getFirestore();
@@ -39,32 +47,17 @@ export default function Calendar() {
     const fetchData = async () => {
       try {
         const querySnapshot = await getDocs(calendarRef);
-        const fetchedSchedule = {
-          '月': null, '火': null, '水': null, '木': null, '金': null, '土': null, '日': null,
-        };
-        const fetchedDayoff = [];
 
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          if (data.schedule) {
-            Object.keys(data.schedule).forEach((dayKey) => {
-              const japaneseDay = dayMapping[dayKey];
-              fetchedSchedule[japaneseDay] = data.schedule[dayKey];
-            });
+          if (data.businessHours) {
+            setBusinessHours(data.businessHours);
           }
           if (data.dayoff) {
-            fetchedDayoff.push({
-              day: data.dayoff.day,
-            });
+            setDayoff(data.dayoff);
           }
         });
-        const sortedSchedule = daysOfWeek.map((day) => ({
-          day,
-          ...fetchedSchedule[day],
-        }));
 
-        setSchedule(sortedSchedule);
-        setDayoff(fetchedDayoff);
         setLoading(false);
       } catch (error) {
         console.error('error getting documents:', error);
@@ -74,12 +67,6 @@ export default function Calendar() {
 
     fetchData();
   }, [currentYear, currentMonth]);
-
-  // 今日の日付が休業日リストに含まれているかチェックする関数
-  function isTodayDayOff() {
-    const todayStr = `${currentMonth}/${today.getDate()}`;
-    return dayoff.some((d) => d.day === todayStr);
-  }
 
   const dayOffStyle = {
     backgroundColor: 'orange',
@@ -91,30 +78,27 @@ export default function Calendar() {
         <View>
           <Text style={styles.headerText}>営業日 / 営業時間</Text>
           <View style={styles.calendarContainer}>
-            {schedule.map((item, index) => (
-              <View
-              // eslint-disable-next-line react/no-array-index-key
-                key={index}
-                style={[
-                  styles.dayContainer,
-                  todayLabel === item.day && !isTodayDayOff() && styles.todayBackground,
-                ]}
-              >
-                <Text style={styles.dayText}>{item.day}</Text>
-                <Text style={styles.timeText}>{item.lunch}</Text>
-                <Text style={styles.timeText}>{item.dinner}</Text>
-              </View>
-            ))}
+            <View style={[styles.dayContainer, getDayStyle('weekday')]}>
+              <Text>平日</Text>
+              <Text>{`${businessHours.weekday.lunch.start}~${businessHours.weekday.lunch.end}`}</Text>
+              <Text>{`${businessHours.weekday.dinner.start}~${businessHours.weekday.dinner.end}`}</Text>
+            </View>
+            <View style={[styles.dayContainer, getDayStyle('saturday')]}>
+              <Text>土曜</Text>
+              <Text>{`${businessHours.saturday.lunch.start}~${businessHours.saturday.lunch.end}`}</Text>
+              <Text>{`${businessHours.saturday.dinner.start}~${businessHours.saturday.dinner.end}`}</Text>
+            </View>
+            <View style={[styles.dayContainer, getDayStyle('sunday')]}>
+              <Text>日曜</Text>
+              <Text>{`${businessHours.sunday.lunch.start}~${businessHours.sunday.lunch.end}`}</Text>
+              <Text>{`${businessHours.sunday.dinner.start}~${businessHours.sunday.dinner.end}`}</Text>
+            </View>
           </View>
           <Text style={styles.headerText}>休業日</Text>
           <View style={styles.dayOffContainer}>
-            {dayoff.map((item, index) => (
-              <View
-                // eslint-disable-next-line react/no-array-index-key
-                key={index}
-                style={[styles.dayOffWrapper, isTodayDayOff() && dayOffStyle]}
-              >
-                <Text style={styles.dayOffText}>{item.day}</Text>
+            {dayoff.map((item) => (
+              <View key={item} style={[styles.dayOffWrapper, isTodayDayOff() && dayOffStyle]}>
+                <Text style={styles.dayOffText}>{item}</Text>
               </View>
             ))}
           </View>
@@ -162,13 +146,14 @@ const styles = StyleSheet.create({
   dayOffContainer: {
     flexWrap: 'wrap',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-start',
   },
   dayOffWrapper: {
     backgroundColor: '#EEE', // 休業日の背景色を明るい赤色に設定
     borderRadius: 10,
     padding: 20,
     marginVertical: 5, // 休業日のアイテム間のマージン
+    marginHorizontal: 5,
   },
   dayOffText: {
     fontSize: 16,
