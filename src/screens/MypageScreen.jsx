@@ -5,7 +5,6 @@ import {
 } from 'react-native';
 
 import StampCard from '../components/StampCard';
-import Generator from '../components/Generator';
 import CircleTitle from '../components/CircleTitle';
 import userInfoContext from '../utils/UserInfoContext';
 import { ChangeIDtoName } from '../utils/Data';
@@ -22,7 +21,6 @@ export default function MypageScreen(props) {
   useEffect(() => {
     (async () => {
       if (userInfo) {
-        console.log(userInfo.ramen);
         const ramen = await ChangeIDtoName(userInfo.ramen ? userInfo.ramen : '');
         const topping = await ChangeIDtoName(userInfo.topping ? userInfo.topping : '');
         setRamenName(ramen);
@@ -114,7 +112,6 @@ export default function MypageScreen(props) {
             <Text style={styles.changeIcon}>{'>'}</Text>
           </TouchableOpacity>
         </View>
-        <Generator />
       </ScrollView>
     </View>
   );

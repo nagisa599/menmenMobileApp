@@ -129,6 +129,13 @@ export default function SignUpScreen() {
       } catch (error) {
         console.log('Error uploading image:', error);
       }
+    } else {
+      const storageRef = ref(storage, 'users/sample.jpg');
+      try {
+        imageUrl = await getDownloadURL(storageRef);
+      } catch (error) {
+        console.log('initial image cannnot download', error);
+      }
     }
 
     try {
