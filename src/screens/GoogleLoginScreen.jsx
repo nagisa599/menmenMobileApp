@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import {
-  View, Image, StyleSheet, TextInput, ScrollView, Text,
+  View, Image, StyleSheet, TextInput, ScrollView, Text, Alert,
 } from 'react-native';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import { func } from 'prop-types';
@@ -9,6 +9,7 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendSignInLinkToEmail,
 } from 'firebase/auth';
 
 import GoogleLoginButton from '../components/GoogleLoginButton';
@@ -30,6 +31,23 @@ export default function GoogleLoginScreen(props) {
   const [emailErr, setEmailErr] = useState('');
   const [LoginOption, setLoginOption] = useState('');
   const auth = getAuth();
+  // emailを送信するための設定
+  const actionCodeSettings = {
+    // URL you want to redirect back to. The domain (www.example.com) for this
+    // URL must be in the authorized domains list in the Firebase Console.
+    url: 'https://example.co.jp/',
+    // This must be true.
+    handleCodeInApp: true,
+    iOS: {
+      bundleId: 'com.example.ios',
+    },
+    android: {
+      packageName: 'com.example.android',
+      installApp: true,
+      minimumVersion: '12',
+    },
+    dynamicLinkDomain: 'menmensingup.page.link',
+  };
 
   // メールアドレスとパスワードでアカウント作成した場合
   async function handlePress() {
@@ -39,7 +57,17 @@ export default function GoogleLoginScreen(props) {
       if (userSnap.exists()) {
         setLoginOption('email-login');
       } else {
-        setLoginOption('email-signup');
+        await sendSignInLinkToEmail(auth, email, actionCodeSettings).then(() => {
+          console.log(email);
+          setLoginOption('email-signup');
+          Alert.alert('メールを送信しました。メールのリンクをクリックしてください');
+        })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+          });
+     
       }
     } catch (error) {
       console.error('エラーが発生しました:', error);
