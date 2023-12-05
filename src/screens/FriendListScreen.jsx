@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Modal, Button,
 } from 'react-native';
@@ -9,9 +9,11 @@ import db from '../../firebaseConfig';
 import Tab from '../components/Tab';
 import AddButton from '../components/AddButton';
 import FriendListItem from '../components/FriendListItem';
+import userInfoContext from '../utils/UserInfoContext';
 
 export default function FriendListScrenn() {
   const navigation = useNavigation();
+  const { userInfo } = useContext(userInfoContext);
   const [friendlist, setFriendList] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const auth = getAuth();
@@ -37,6 +39,15 @@ export default function FriendListScrenn() {
       Alert.alert('データの読み込みに失敗しました');
     }
   };
+  useEffect(() => {
+    const loadFriendListData = async () => {
+      setLoading(true);
+      await fetchFriendList();
+      setLoading(false);
+    };
+
+    loadFriendListData();
+  }, [userInfo.friends]);
   const [modalVisible, setModalVisible] = useState(false);
   const handleSort = (sortOption) => {
     const sortedList = [...friendlist];
@@ -58,15 +69,7 @@ export default function FriendListScrenn() {
     setFriendList(sortedList);
     setModalVisible(false);
   };
-  useEffect(() => {
-    const loadFriendListData = async () => {
-      setLoading(true);
-      await fetchFriendList();
-      setLoading(false);
-    };
-
-    loadFriendListData();
-  }, []);
+  
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
@@ -100,7 +103,9 @@ export default function FriendListScrenn() {
           <AddButton
             label={'フレンド\n追加'}
             onPress={() => {
-              navigation.navigate('FriendSearchScreen');
+              navigation.navigate('FriendSearchScreen', {
+                friendlist,
+              });
             }}
           />
           <Tab

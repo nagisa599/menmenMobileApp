@@ -44,7 +44,6 @@ export default function App() {
             const downloadImageUrl = await downloadUserImage(userData.imageUrl);
             userData.imageUrl = downloadImageUrl;
           }
-
           let lastVisitDate = null;
           if (userData.times && userData.times.length > 0) {
             lastVisitDate = userData.times[userData.times.length - 1];
