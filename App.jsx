@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { Alert } from 'react-native';
 // eslint-disable-next-line import/no-unresolved
 import ENV from './env.json'; // eslint-disable-line
 import * as Google from 'expo-auth-session/providers/google';
@@ -38,46 +39,42 @@ export default function App() {
         try {
           const userInfoDocRef = doc(db, `users/${user.uid}`);
           const userDoc = await getDoc(userInfoDocRef);
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            if (userData.imageUrl) { //
-              const downloadImageUrl = await downloadUserImage(userData.imageUrl);
-              userData.imageUrl = downloadImageUrl;
-            }
-
-            let lastVisitDate = null;
-            if (userData.times && userData.times.length > 0) {
-              lastVisitDate = userData.times[userData.times.length - 1];
-              lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
-              lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
-            }
-            const today = formatDateToYYYYMMDD(new Date());
-
-            setUserInfo({
-              ...userInfo,
-              uid: auth.currentUser.uid,
-              email: userData.email,
-              name: userData.name,
-              ramen: userData.ramen,
-              topping: userData.topping,
-              visited: lastVisitDate === today,
-              imageUrl: userData.imageUrl,
-              title: userData.title,
-              birthday: userData.birthday,
-              createdAt: userData.createdAt,
-              updatedAt: userData.updatedAt,
-              times: userData.times,
-              friends: userData.friends,
-            });
-          } else { // これはいらない
-            console.log('ユーザー情報ない');
+          const userData = userDoc.data();
+          if (userData.imageUrl) { //
+            const downloadImageUrl = await downloadUserImage(userData.imageUrl);
+            userData.imageUrl = downloadImageUrl;
           }
+
+          let lastVisitDate = null;
+          if (userData.times && userData.times.length > 0) {
+            lastVisitDate = userData.times[userData.times.length - 1];
+            lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
+            lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
+          }
+          const today = formatDateToYYYYMMDD(new Date());
+
+          setUserInfo({
+            ...userInfo,
+            uid: auth.currentUser.uid,
+            email: userData.email,
+            name: userData.name,
+            ramen: userData.ramen,
+            topping: userData.topping,
+            visited: lastVisitDate === today,
+            imageUrl: userData.imageUrl,
+            title: userData.title,
+            birthday: userData.birthday,
+            createdAt: userData.createdAt,
+            updatedAt: userData.updatedAt,
+            times: userData.times,
+            friends: userData.friends,
+          });
           setLoading(false);
         } catch (e) {
+          Alert('ユーザ情報の取得に失敗しました。');
           setLoading(false);
         }
       } else {
-        console.log('ユーザー未作成');
         setLoading(false);
       }
     });

@@ -110,7 +110,8 @@ export default function GoogleLoginScreen(props) {
             email: user.email,
           });
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           setEmailErr('正しいメールアドレスを入力してください');
         });
     } else {
