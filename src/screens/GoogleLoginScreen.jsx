@@ -67,7 +67,6 @@ export default function GoogleLoginScreen(props) {
             const errorMessage = error.message;
             console.log(errorCode, errorMessage);
           });
-     
       }
     } catch (error) {
       console.error('エラーが発生しました:', error);
