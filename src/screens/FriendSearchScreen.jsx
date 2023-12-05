@@ -11,11 +11,9 @@ import SearchButton from '../components/SearchButton';
 import db from '../../firebaseConfig';
 
 export default function FriendSearchScreen(props) {
-  const { navigation } = props;
-  // const [userId, setUserId] = useState('');
-  // const auth = getAuth();
-  // const username = auth.currentUser.name;
-  // console.log(username);
+  const { route, navigation } = props;
+  const { friendlist } = route.params;
+  console.log(friendlist.name);
   async function createUserDict() {
     const userRef = collection(db, 'username');
     const querySnapshot = await getDocs(userRef);
@@ -62,6 +60,7 @@ export default function FriendSearchScreen(props) {
           maxLength={20}
           value={inputUsername}
           onChangeText={setInputUsername}
+          autoCapitalize="none"
         />
         <SearchButton
           label="検索"
