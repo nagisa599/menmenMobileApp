@@ -9,11 +9,11 @@ import {
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import {
-  getStorage, ref, uploadBytes, getDownloadURL,
+  getStorage, ref, getDownloadURL, uploadBytesResumable,
 } from 'firebase/storage';
 
 // eslint-disable-next-line import/no-unresolved
-import { DEFAULT_IMAGE_URL } from '@env';
+import { DEFAULT_IMAGE_URL } from '../../env.json';
 import userInfoContext from '../utils/UserInfoContext';
 import db from '../../firebaseConfig';
 import BirthdayInput from '../components/BirthdayInput';
@@ -89,20 +89,24 @@ export default function SignUpScreen() {
 
     if (!userData) {
       Alert.alert('ユーザーデータが存在しません');
+      setIsRegistering(false);
       return;
     }
 
     if (!isUnique) {
       Alert.alert('ユーザー名がすでに使われています\n 変更してください');
+      setIsRegistering(false);
       return;
     }
 
     if (!name.trim()) {
       Alert.alert('ユーザー名を入力してください');
+      setIsRegistering(false);
       return;
     }
     if (!birthday.trim()) {
       Alert.alert('誕生日を入力してください');
+      setIsRegistering(false);
       return;
     }
 
@@ -120,10 +124,17 @@ export default function SignUpScreen() {
       const imageBlob = await uriToBlob(image);
       const storageRef = ref(storage, `users/${userData.uid}`);
       try {
-        await uploadBytes(storageRef, imageBlob);
+        await uploadBytesResumable(storageRef, imageBlob);
         imageUrl = await getDownloadURL(storageRef);
       } catch (error) {
         console.log('Error uploading image:', error);
+      }
+    } else {
+      const storageRef = ref(storage, 'users/sample.jpg');
+      try {
+        imageUrl = await getDownloadURL(storageRef);
+      } catch (error) {
+        console.log('initial image cannnot download', error);
       }
     }
 
@@ -141,6 +152,7 @@ export default function SignUpScreen() {
         visited: false,
         imageUrl,
         title: 0,
+        friends: [],
       });
 
       setUserInfo({
@@ -155,9 +167,13 @@ export default function SignUpScreen() {
         visited: false,
         imageUrl,
         title: 0,
+        friends: [],
       });
 
       await setDoc(doc(db, `username/${name}`), {
+        uid: userData.uid,
+      });
+      await setDoc(doc(db, `email/${userInfo.email}`), {
         uid: userData.uid,
       });
     } catch (error) {
@@ -169,7 +185,7 @@ export default function SignUpScreen() {
   return (
     <View style={styles.container}>
       {isLoading || isRegistering ? (
-        <LoadingScreen />
+        <LoadingScreen content="データ登録中" />
       ) : (
         <>
           <View style={styles.titleContainer}>
@@ -195,19 +211,6 @@ export default function SignUpScreen() {
                   <Text style={styles.item}>プロフィール画像</Text>
                   <ProfileImageUpload image={image} setImage={setImage} />
                 </View>
-                {/* <View style={styles.itemContainer}>
-                  <Text style={styles.item}>電話番号</Text>
-                  <TextInput
-                    value={phoneNumber}
-                    style={styles.input}
-                    onChangeText={(text) => {
-                      setPhoneNumber(text);
-                    }}
-                    autoCapitalize="none"
-                    placeholder="電話番号"
-                    textContentType="telephoneNumber"
-                  />
-                </View> */}
                 <View style={styles.itemContainer}>
                   <Text style={styles.item}>
                     ユーザー名

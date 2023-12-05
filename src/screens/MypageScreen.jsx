@@ -5,11 +5,11 @@ import {
 } from 'react-native';
 
 import StampCard from '../components/StampCard';
-import Generator from '../components/Generator';
 import CircleTitle from '../components/CircleTitle';
 import userInfoContext from '../utils/UserInfoContext';
 import { ChangeIDtoName } from '../utils/Data';
 import LoadingScreen from './LoadingScreen';
+import { getDownloadedImageUri } from '../utils/DownloadImage';
 
 export default function MypageScreen(props) {
   const { navigation } = props;
@@ -20,16 +20,18 @@ export default function MypageScreen(props) {
 
   useEffect(() => {
     (async () => {
-      const ramen = await ChangeIDtoName(userInfo.ramen);
-      const topping = await ChangeIDtoName(userInfo.topping);
-      setRamenName(ramen);
-      setToppingName(topping);
+      if (userInfo) {
+        const ramen = await ChangeIDtoName(userInfo.ramen ? userInfo.ramen : '');
+        const topping = await ChangeIDtoName(userInfo.topping ? userInfo.topping : '');
+        setRamenName(ramen);
+        setToppingName(topping);
+      }
       setLoading(false);
     })();
-  }, [userInfo.ramen, userInfo.topping]);
+  }, [userInfo]);
 
   if (isLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen content="データ取得中" />;
   }
 
   return (
@@ -43,7 +45,7 @@ export default function MypageScreen(props) {
         >
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: userInfo.imageUrl }}
+              source={{ uri: `${getDownloadedImageUri(userInfo.imageUrl)}?timestamp=${new Date().getTime()}` }}
               style={styles.icon}
             />
           </View>
@@ -110,7 +112,6 @@ export default function MypageScreen(props) {
             <Text style={styles.changeIcon}>{'>'}</Text>
           </TouchableOpacity>
         </View>
-        <Generator />
       </ScrollView>
     </View>
   );

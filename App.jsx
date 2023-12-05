@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { Alert } from 'react-native';
 // eslint-disable-next-line import/no-unresolved
-import { IOS_CLIENT_ID, ANDROID_CLIENT_ID } from '@env';
+import ENV from './env.json'; // eslint-disable-line
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import {
   GoogleAuthProvider, signInWithCredential, getAuth, onAuthStateChanged,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import * as FileSystem from 'expo-file-system';
 import SignUpStack from './src/navigators/SignUpNavigator';
 import GoogleSignUpStack from './src/navigators/GoogleSignUpNavigation';
 import db from './firebaseConfig';
@@ -18,122 +17,121 @@ import userInfoContext from './src/utils/UserInfoContext';
 import MainStackNavigator from './src/navigators/MainStackNavigator';
 import LoadingScreen from './src/screens/LoadingScreen';
 import { convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from './src/utils/Data';
+import { downloadUserImage } from './src/utils/DownloadImage';
 
 WebBrowser.maybeCompleteAuthSession();
-export default function App() {
-  const [isSplashVisible, setSplashVisible] = useState(true);
-  const [isLoading, setLoading] = useState(true);
-  const [userInfo, setUserInfo] = useState(null);
-  const value = useMemo(() => ({ userInfo, setUserInfo }), [userInfo]);
 
+export default function App() {
+  const [isSplashVisible, setSplashVisible] = useState(true); // 最初のロゴ画面を表示するかどうか
+  const [isLoading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState(null); // ユーザ情報の監視
+  const value = useMemo(() => ({ userInfo, setUserInfo }), [userInfo]); // useContextのためのvalue
   const auth = getAuth();
-  const storage = getStorage();
   // eslint-disable-next-line no-unused-vars
   const [request, response, promptAsync] = Google.useAuthRequest({
-    iosClientId: IOS_CLIENT_ID,
-    androidClientId: ANDROID_CLIENT_ID,
+    iosClientId: ENV.IOS_CLIENT_ID,
+    androidClientId: ENV.ANDROID_CLIENT_ID,
   });
-
-  async function downloadImage(imageURL) {
-    const imageRef = ref(storage, imageURL);
-    const url = await getDownloadURL(imageRef);
-
-    const filename = url.split('/').pop();
-    const downloadDest = `${FileSystem.documentDirectory}${filename}`;
-
-    const downloadResult = await FileSystem.downloadAsync(url, downloadDest);
-
-    if (downloadResult.status !== 200) {
-      console.error('Error downloading the image:', downloadResult);
-      return null;
-    }
-
-    return downloadResult.uri;
-  }
-
+  // user情報が端末に保存されているかどうか(最初のページの判定)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const userInfoDocRef = doc(db, `users/${user.uid}`);
         try {
+          const userInfoDocRef = doc(db, `users/${user.uid}`);
           const userDoc = await getDoc(userInfoDocRef);
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            if (userData.imageUrl) {
-              const downloadImageUrl = await downloadImage(userData.imageUrl);
-              userData.imageUrl = downloadImageUrl;
-            }
-
-            let lastVisitDate = null;
-            if (userData.times && userData.times.length > 0) {
-              lastVisitDate = userData.times[userData.times.length - 1];
-              lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
-              lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
-            }
-            const today = formatDateToYYYYMMDD(new Date());
-
-            setUserInfo({
-              ...userInfo,
-              uid: auth.currentUser.uid,
-              email: userData.email,
-              name: userData.name,
-              ramen: userData.ramen,
-              topping: userData.topping,
-              visited: lastVisitDate === today,
-              imageUrl: userData.imageUrl,
-              title: userData.title,
-              birthday: userData.birthday,
-              createdAt: userData.createdAt,
-              updatedAt: userData.updatedAt,
-              times: userData.times,
-              friends: userData.friends,
-            });
-          } else {
-            console.log('ユーザー情報ない');
+          const userData = userDoc.data();
+          if (userData.imageUrl) { //
+            const downloadImageUrl = await downloadUserImage(userData.imageUrl);
+            userData.imageUrl = downloadImageUrl;
           }
+          let lastVisitDate = null;
+          if (userData.times && userData.times.length > 0) {
+            lastVisitDate = userData.times[userData.times.length - 1];
+            lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
+            lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
+          }
+          const today = formatDateToYYYYMMDD(new Date());
+
+          setUserInfo({
+            ...userInfo,
+            uid: auth.currentUser.uid,
+            email: userData.email,
+            name: userData.name,
+            ramen: userData.ramen,
+            topping: userData.topping,
+            visited: lastVisitDate === today,
+            imageUrl: userData.imageUrl,
+            title: userData.title,
+            birthday: userData.birthday,
+            createdAt: userData.createdAt,
+            updatedAt: userData.updatedAt,
+            times: userData.times,
+            friends: userData.friends,
+          });
           setLoading(false);
         } catch (e) {
+          Alert('ユーザ情報の取得に失敗しました。');
           setLoading(false);
         }
       } else {
-        console.log('ユーザー未作成');
         setLoading(false);
       }
     });
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-  }, [userInfo]);
+  // useEffect(() => {
+  // }, [userInfo]);  //12月4日に除外
 
   useEffect(() => {
     // Googleアカウントでの認証に成功した場合
     if (response?.type === 'success') {
-      setLoading(true);
+      console.log('Googleアカウントでの認証に成功');
       /* eslint-disable */
       const { id_token } = response.params;
+   
       /* eslint-enable */
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential)
-        .then((authResult) => {
+        .then(async (authResult) => {
           const { user } = authResult;
           const userRef = doc(db, `users/${user.uid}`);
-          setDoc(userRef, {
-            email: user.email,
-            uid: user.uid,
-          }, { merge: true })
-            .then(() => {
-              console.log('googleユーザー登録成功');
-            })
-            .catch((error) => {
-              console.error('error googleユーザー登録:', error);
+          const docSnap = await getDoc(userRef);
+          if (docSnap.exists()) {
+            const exitUserData = docSnap.data();
+            console.log(exitUserData);
+            console.log('googleユーザー登録済み');
+            setUserInfo({
+              name: exitUserData.name,
+              birthday: exitUserData.birthday,
+              ramen: exitUserData.ramen,
+              topping: exitUserData.topping,
+              createdAt: exitUserData.createdAt,
+              updatedAt: exitUserData.updatedAt,
+              times: exitUserData.times,
+              visited: exitUserData.visited,
+              imageUrl: exitUserData.imageUrl,
+              title: exitUserData.title,
+              friends: exitUserData.friends,
             });
-          setUserInfo({
-            ...userInfo,
-            email: user.email,
-            uid: auth.currentUser.uid,
-          });
-          setLoading(false);
+          } else {
+            setDoc(userRef, {
+              email: user.email,
+              uid: user.uid,
+            }, { merge: true })
+              .then(() => {
+                console.log('googleユーザー登録成功');
+              })
+              .catch((error) => {
+                console.error('error googleユーザー登録:', error);
+              });
+            setUserInfo({
+              ...userInfo,
+              email: user.email,
+              uid: auth.currentUser.uid,
+            });
+            setLoading(false);
+          }
         })
         .catch((error) => {
           console.error('Error signing in with Google:', error);
@@ -143,7 +141,7 @@ export default function App() {
   }, [response]);
 
   if (isLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen content="データ取得中" />;
   }
   if (userInfo) {
     if (!userInfo.name) {

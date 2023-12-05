@@ -4,19 +4,20 @@ import {
 } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import {
-  getDoc, getFirestore, doc, setDoc, Timestamp,
+  getDoc, getFirestore, doc, setDoc, Timestamp, addDoc, collection,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import userInfoContext from '../utils/UserInfoContext';
+import LoadingScreen from './LoadingScreen';
 
-export default function ComingCheckScreen(props) {
-  const { navigation } = props;
+export default function ComingCheckScreen({ navigation }) {
   const { setUserInfo } = useContext(userInfoContext);
   // アプリはカメラを使う許可が認められるかどうか
   const [hasPermission, setHasPermission] = useState(null);
   // アプリはQRコードをスキャンしたかどうか
   const [scanned, setScanned] = useState(false);
   const [todayToken, setTodayToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getJSTDate = () => {
     const now = new Date();
@@ -70,35 +71,44 @@ export default function ComingCheckScreen(props) {
           title: userData.title + 1,
           visited: true,
         });
+      } else {
+        console.log('ここでエラー');
       }
-
+    } catch (e) {
+      console.log('Firebaseの更新に失敗');
+      return e;
+    }
+    try {
       const newVisitData = {
         userID: auth.currentUser.uid,
         visitDate: Timestamp.fromDate(new Date()), // 現在の日時
       };
-      db.collection('visits').add(newVisitData).then((docRef) => {
-        console.log('新しい来店記録が作成されました。ID: ', docRef.id);
-      }).catch((error) => {
-        console.error('エラー発生: ', error);
-      });
+
+      await addDoc(collection(db, 'visits'), newVisitData);
     } catch (e) {
-      Alert.alert('Firebaseの更新に失敗');
-      return e;
+      Alert.alert('通信に失敗しました。アプリを再起動してお試し下さい。');
     }
   }
 
-  // QRコードがスキャンされると、読み取ったリンクを開く
-  // リンクを開く事がでない場合にはメッセージを表示する
   const handleBarCodeScanned = async ({ data }) => {
+    if (scanned || isLoading) {
+      return; // すでにスキャンが完了している場合は何もしない
+    }
+
+    setScanned(true); // スキャンが開始されたことを記録
+    setIsLoading(true);
+
     if (todayToken === data) {
       await EatCountCheck();
-      // activateStamp(getJSTDate());
-      navigation.goBack();
-      // Alert.alert('記録しました!');
+      Alert.alert('スキャン成功!\n記録しました!');
     } else {
-      navigation.goBack();
       Alert.alert('不正な来店です');
     }
+    setIsLoading(false);
+    // 処理が完了したらスキャン状態をリセット
+    setTimeout(() => setScanned(false), 3000); // 3秒後にリセット
+
+    navigation.goBack();
   };
 
   return (
@@ -108,27 +118,11 @@ export default function ComingCheckScreen(props) {
       {/* カメラアにクセスすることが拒否されている合 */}
       {hasPermission === false && <Text>カメラにアクセスできません</Text>}
       {/* カメラアにクセスすることが許可されている場合 */}
+      {isLoading && (<LoadingScreen content="登録中" />)}
       {hasPermission && (
         <BarCodeScanner
           barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-          onBarCodeScanned={(scannerResult) => {
-            if (!scanned) {
-              setScanned(true);
-              Alert.alert(
-                'スキャン成功',
-                '記録しました！',
-                [
-                  {
-                    test: '閉じる',
-                    onPress: () => {
-                      setScanned(false);
-                      handleBarCodeScanned(scannerResult);
-                    },
-                  },
-                ],
-              );
-            }
-          }}
+          onBarCodeScanned={handleBarCodeScanned}
           style={StyleSheet.absoluteFillObject}
         />
       )}

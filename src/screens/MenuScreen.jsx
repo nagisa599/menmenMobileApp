@@ -80,9 +80,27 @@ export default function MenuScreen() {
 
   const [routes] = useState([
     { key: 'menu', title: 'レギュラー' },
-    { key: 'limit', title: '期間限定' },
+    { key: 'limit', title: '日替わり' },
     { key: 'topping', title: 'トッピング' },
   ]);
+
+  function isTodayInJapan(firebaseTimestamp) {
+    if (!firebaseTimestamp) {
+      return false;
+    }
+
+    const firebaseDate = firebaseTimestamp.toDate();
+
+    // 日本のタイムゾーンに合わせて調整（日本はUTC+9）
+    const japanDate = new Date(firebaseDate.getTime() + (9 * 60 * 60 * 1000));
+
+    // 今日の日付を取得（日本時間）
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 時刻を0時0分0秒に設定
+
+    // 日付が今日かどうかをチェック
+    return today.getTime() === japanDate.setHours(0, 0, 0, 0);
+  }
 
   const renderScene = ({ route }) => (
     <SceneComponent
@@ -120,7 +138,6 @@ export default function MenuScreen() {
     // 最後の更新日時を取得
     const lastUpdate = await AsyncStorage.getItem('last_update_menu');
     const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : new Date(2010, 0, 1);
-
     // Firebaseから新しいメニューのみを取得
     const menuRef = query(collection(db, 'ramens'), where('updatedAt', '>', lastUpdateDate));
     const snapshot = await getDocs(menuRef);
@@ -137,12 +154,11 @@ export default function MenuScreen() {
         price: data.price,
         student: data.student,
         favorite: data.favorite,
-        today: data.today,
+        today: !data.today || (data.today && isTodayInJapan(data.today)),
         topping: data.topping,
         limit: data.limit,
       };
     });
-
     const newMenus = await Promise.all(newMenusPromises);
 
     const cachedMenusString = await AsyncStorage.getItem('cached_menus');
@@ -159,12 +175,12 @@ export default function MenuScreen() {
     // マップから配列に変換します
     const updatedMenusArray = Array.from(cachedMenusMap.values());
 
-    // todayがtrueのものを先頭に、falseのものは後にするためのソート関数
+    // // todayがtrueのものを先頭に、falseのものは後にするためのソート関数
     const sortByToday = (a, b) => (b.today === true) - (a.today === true);
 
     // 分類されたメニュー配列を更新し、todayがtrueのものを先頭に
     const limitMenu = updatedMenusArray
-      .filter((menu) => menu.limit === true)
+      .filter((menu) => menu.limit === true && menu.topping === false)
       .sort(sortByToday);
     const toppingMenu = updatedMenusArray
       .filter((menu) => menu.topping === true)
@@ -199,7 +215,7 @@ export default function MenuScreen() {
 
   return (
     <View style={styles.container}>
-      {isLoading ? <LoadingScreen /> : (
+      {isLoading ? <LoadingScreen content={'データ取得中\n(初回は少し長いです)'} /> : (
         <TabView
           navigationState={{ index, routes }}
           renderScene={renderScene}

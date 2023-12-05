@@ -5,19 +5,21 @@ import {
 } from 'react-native';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  doc, getDoc, setDoc, getDocs, collection,
+  doc, getDoc, setDoc, getDocs, collection, deleteDoc,
 } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import {
-  getStorage, ref, uploadBytes, getDownloadURL,
+  getStorage, ref, getDownloadURL, uploadBytesResumable,
 } from 'firebase/storage';
 
+import * as FileSystem from 'expo-file-system';
 import db from '../../firebaseConfig';
-
 import DropdownSelect from '../components/DropdownSelect';
 import userInfoContext from '../utils/UserInfoContext';
 import LoadingScreen from './LoadingScreen';
 import ProfileImageUpload from '../components/ProfileImageUpload';
+import createImagesDirectory from '../utils/createImagesDirectory';
+import { getDownloadedImageUri } from '../utils/DownloadImage';
 
 export default function EditUserInfoScreen(props) {
   const { navigation } = props;
@@ -30,7 +32,7 @@ export default function EditUserInfoScreen(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [ramenItems, setRamenItems] = useState([]);
   const [toppingItems, setToppingItems] = useState([]);
-  const [image, setImage] = useState(userInfo.imageUrl);
+  const [image, setImage] = useState(getDownloadedImageUri(userInfo.imageUrl));
   const [isRegistering, setIsRegistering] = useState(false);
 
   useEffect(() => {
@@ -63,6 +65,12 @@ export default function EditUserInfoScreen(props) {
     setIsLoading(true);
     fetchData();
   }, []);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: !(isLoading || isRegistering),
+    });
+  }, [isLoading, isRegistering, navigation]);
 
   const isUsernameUnique = async (username) => {
     const userRef = doc(db, `username/${username}`);
@@ -124,7 +132,9 @@ export default function EditUserInfoScreen(props) {
       try {
         const imageBlob = await uriToBlob(image);
         const storageRef = ref(storage, `users/${userData.uid}`);
-        await uploadBytes(storageRef, imageBlob);
+
+        await uploadBytesResumable(storageRef, imageBlob);
+
         imageUrl = await getDownloadURL(storageRef);
       } catch (e) {
         console.log('Error uploading image:', e);
@@ -133,30 +143,37 @@ export default function EditUserInfoScreen(props) {
       }
     }
 
-    try {
-      await setDoc(userDoc, {
-        ...userData,
-        name,
-        ramen,
-        topping,
-        updatedAt,
-        imageUrl,
-      });
+    await createImagesDirectory('user');
+    const relativePath = `user/${auth.currentUser.uid}`;
+    const downloadDest = `${FileSystem.documentDirectory}${relativePath}`;
+    const downloadResult = await FileSystem.downloadAsync(imageUrl, downloadDest);
 
+    if (downloadResult.status !== 200) {
+      console.error('Error downloading the image:', downloadResult);
+    }
+
+    try {
       setUserInfo({
         ...userData,
         name,
         ramen,
         topping,
         updatedAt,
+        imageUrl: relativePath,
+      });
+      const deleteTask = deleteDoc(doc(db, `username/${userInfo.name}`));
+      const setUserTask = setDoc(userDoc, {
+        ...userData,
+        name,
+        ramen,
+        topping,
+        updatedAt,
         imageUrl,
       });
-
-      // 変更前の名前の削除
-
-      await setDoc(doc(db, `username/${name}`), {
+      const setUsernameTask = setDoc(doc(db, `username/${name}`), {
         uid: userData.uid,
       });
+      await Promise.all([deleteTask, setUserTask, setUsernameTask]);
 
       Alert.alert(
         '変更完了',
@@ -165,7 +182,7 @@ export default function EditUserInfoScreen(props) {
           {
             text: 'OK',
             onPress: () => {
-              navigation.navigate('MypageScreen');
+              navigation.goBack();
               setIsRegistering(false);
             },
           },
@@ -176,93 +193,91 @@ export default function EditUserInfoScreen(props) {
     }
   };
 
+  if (isLoading || isRegistering) {
+    return <LoadingScreen content={'データ登録中\nしばらくお待ちください'} />;
+  }
+
   return (
     <View style={styles.container}>
-      {isLoading || isRegistering ? (
-        <LoadingScreen />
-      ) : (
-        <>
-          <View style={styles.titleContainer}>
-            <Text>
-              <Text style={styles.star}>＊</Text>
-              は必須項目です
-            </Text>
-          </View>
-          <ScrollView style={{ paddingHorizontal: 30 }}>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <View>
-                <View style={styles.itemContainer}>
-                  <Text style={styles.item}>メールアドレス</Text>
-                  <TextInput
-                    value={userInfo.email}
-                    style={styles.mail}
-                    autoCapitalize="none"
-                    editable={false}
+      <View style={styles.titleContainer}>
+        <Text>
+          <Text style={styles.star}>＊</Text>
+          は必須項目です
+        </Text>
+      </View>
+      <ScrollView style={{ paddingHorizontal: 30 }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View>
+            <View style={styles.itemContainer}>
+              <Text style={styles.item}>メールアドレス</Text>
+              <TextInput
+                value={userInfo.email}
+                style={styles.mail}
+                autoCapitalize="none"
+                editable={false}
+              />
+            </View>
+            <View styel={styles.itemContainer}>
+              <Text style={styles.item}>プロフィール画像</Text>
+              <ProfileImageUpload image={image} setImage={setImage} />
+            </View>
+            <View style={styles.itemContainer}>
+              <Text style={styles.item}>
+                ユーザー名
+                <Text style={styles.star}>＊</Text>
+              </Text>
+              {!isUnique && <Text style={styles.star}>このユーザー名はすでに使われています</Text>}
+              <TextInput
+                value={name}
+                style={styles.input}
+                onChangeText={(text) => {
+                  checkUsername(text);
+                  setName(text);
+                }}
+                autoCapitalize="none"
+                placeholder="ユーザー名"
+                textContentType="username"
+              />
+            </View>
+            <View style={styles.itemContainer}>
+              <Text style={styles.item}>お気に入りラーメン</Text>
+              <View style={styles.dropdownContainer}>
+                {ramenItems && ramenItems.length > 0 ? (
+                  <DropdownSelect
+                    contentItems={ramenItems}
+                    setChange={setRamen}
+                    previous={ramen}
                   />
-                </View>
-                <View styel={styles.itemContainer}>
-                  <Text style={styles.item}>プロフィール画像</Text>
-                  <ProfileImageUpload image={image} setImage={setImage} />
-                </View>
-                <View style={styles.itemContainer}>
-                  <Text style={styles.item}>
-                    ユーザー名
-                    <Text style={styles.star}>＊</Text>
-                  </Text>
-                  {!isUnique && <Text style={styles.star}>このユーザー名はすでに使われています</Text>}
-                  <TextInput
-                    value={name}
-                    style={styles.input}
-                    onChangeText={(text) => {
-                      checkUsername(text);
-                      setName(text);
-                    }}
-                    autoCapitalize="none"
-                    placeholder="ユーザー名"
-                    textContentType="username"
-                  />
-                </View>
-                <View style={styles.itemContainer}>
-                  <Text style={styles.item}>お気に入りラーメン</Text>
-                  <View style={styles.dropdownContainer}>
-                    {ramenItems && ramenItems.length > 0 ? (
-                      <DropdownSelect
-                        contentItems={ramenItems}
-                        setChange={setRamen}
-                        previous={ramen}
-                      />
-                    ) : (
-                      <Text>ロード中</Text>
-                    )}
-                  </View>
-                </View>
-                <View style={styles.itemContainer}>
-                  <Text style={styles.item}>お気に入りトッピング</Text>
-                  <View style={styles.dropdownContainer}>
-                    {toppingItems && toppingItems.length > 0 ? (
-                      <DropdownSelect
-                        contentItems={toppingItems}
-                        setChange={setTopping}
-                        previous={topping}
-                      />
-                    ) : (
-                      <Text>ロード中</Text>
-                    )}
-                  </View>
-                </View>
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity
-                    style={styles.registerButton}
-                    onPress={() => handleRegister(userInfo)}
-                  >
-                    <Text style={styles.buttonText}>登録</Text>
-                  </TouchableOpacity>
-                </View>
+                ) : (
+                  <Text>ロード中</Text>
+                )}
               </View>
-            </TouchableWithoutFeedback>
-          </ScrollView>
-        </>
-      )}
+            </View>
+            <View style={styles.itemContainer}>
+              <Text style={styles.item}>お気に入りトッピング</Text>
+              <View style={styles.dropdownContainer}>
+                {toppingItems && toppingItems.length > 0 ? (
+                  <DropdownSelect
+                    contentItems={toppingItems}
+                    setChange={setTopping}
+                    previous={topping}
+                  />
+                ) : (
+                  <Text>ロード中</Text>
+                )}
+              </View>
+            </View>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.registerButton}
+                onPress={() => handleRegister(userInfo)}
+              >
+                <Text style={styles.buttonText}>登録</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </ScrollView>
     </View>
   );
 }
