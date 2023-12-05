@@ -8,8 +8,6 @@ import {
   GoogleAuthProvider, signInWithCredential, getAuth, onAuthStateChanged,
 } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import * as FileSystem from 'expo-file-system';
 import SignUpStack from './src/navigators/SignUpNavigator';
 import GoogleSignUpStack from './src/navigators/GoogleSignUpNavigation';
 import db from './firebaseConfig';
@@ -18,51 +16,32 @@ import userInfoContext from './src/utils/UserInfoContext';
 import MainStackNavigator from './src/navigators/MainStackNavigator';
 import LoadingScreen from './src/screens/LoadingScreen';
 import { convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from './src/utils/Data';
-import createImagesDirectory from './src/utils/createImagesDirectory';
+import { downloadUserImage } from './src/utils/DownloadImage';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
-  const [isSplashVisible, setSplashVisible] = useState(true);
+  const [isSplashVisible, setSplashVisible] = useState(true); // 最初のロゴ画面を表示するかどうか
   const [isLoading, setLoading] = useState(true);
-  const [userInfo, setUserInfo] = useState(null);
-  const value = useMemo(() => ({ userInfo, setUserInfo }), [userInfo]);
-
+  const [userInfo, setUserInfo] = useState(null); // ユーザ情報の監視
+  const value = useMemo(() => ({ userInfo, setUserInfo }), [userInfo]); // useContextのためのvalue
   const auth = getAuth();
-  const storage = getStorage();
   // eslint-disable-next-line no-unused-vars
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: ENV.IOS_CLIENT_ID,
     androidClientId: ENV.ANDROID_CLIENT_ID,
   });
-  async function downloadImage(imageURL) {
-    const imageRef = ref(storage, imageURL);
-    const url = await getDownloadURL(imageRef);
-
-    await createImagesDirectory('user');
-    const relativePath = `user/${auth.currentUser.uid}`;
-    const downloadDest = `${FileSystem.documentDirectory}${relativePath}`;
-
-    const downloadResult = await FileSystem.downloadAsync(url, downloadDest);
-
-    if (downloadResult.status !== 200) {
-      console.error('Error downloading the image:', downloadResult);
-      return null;
-    }
-
-    return relativePath;
-  }
-
+  // user情報が端末に保存されているかどうか(最初のページの判定)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const userInfoDocRef = doc(db, `users/${user.uid}`);
         try {
+          const userInfoDocRef = doc(db, `users/${user.uid}`);
           const userDoc = await getDoc(userInfoDocRef);
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            if (userData.imageUrl) {
-              const downloadImageUrl = await downloadImage(userData.imageUrl);
+            if (userData.imageUrl) { //
+              const downloadImageUrl = await downloadUserImage(userData.imageUrl);
               userData.imageUrl = downloadImageUrl;
             }
 
@@ -90,7 +69,7 @@ export default function App() {
               times: userData.times,
               friends: userData.friends,
             });
-          } else {
+          } else { // これはいらない
             console.log('ユーザー情報ない');
           }
           setLoading(false);
@@ -105,14 +84,13 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-  }, [userInfo]);
+  // useEffect(() => {
+  // }, [userInfo]);  //12月4日に除外
 
   useEffect(() => {
     // Googleアカウントでの認証に成功した場合
     if (response?.type === 'success') {
       console.log('Googleアカウントでの認証に成功');
-      setLoading(true);
       /* eslint-disable */
       const { id_token } = response.params;
    

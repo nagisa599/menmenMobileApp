@@ -6,7 +6,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { number, string } from 'prop-types';
 import Icon from './icon';
 import CircleTitle from './CircleTitle';
-import getDownloadedImageUri from '../utils/getDownloadImage';
+import { getDownloadedImageUri } from '../utils/DownloadImage';
 
 export default function RankingList(props) {
   const {

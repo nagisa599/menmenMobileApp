@@ -19,7 +19,7 @@ import userInfoContext from '../utils/UserInfoContext';
 import LoadingScreen from './LoadingScreen';
 import ProfileImageUpload from '../components/ProfileImageUpload';
 import createImagesDirectory from '../utils/createImagesDirectory';
-import getDownloadedImageUri from '../utils/getDownloadImage';
+import { getDownloadedImageUri } from '../utils/DownloadImage';
 
 export default function EditUserInfoScreen(props) {
   const { navigation } = props;

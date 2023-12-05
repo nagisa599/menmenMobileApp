@@ -9,7 +9,7 @@ import CircleTitle from '../components/CircleTitle';
 import userInfoContext from '../utils/UserInfoContext';
 import { ChangeIDtoName } from '../utils/Data';
 import LoadingScreen from './LoadingScreen';
-import getDownloadedImageUri from '../utils/getDownloadImage';
+import { getDownloadedImageUri } from '../utils/DownloadImage';
 
 export default function MypageScreen(props) {
   const { navigation } = props;

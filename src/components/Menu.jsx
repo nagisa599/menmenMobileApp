@@ -5,7 +5,7 @@ import {
 import {
   string, number, arrayOf, shape, bool,
 } from 'prop-types';
-import getDownloadedImageUri from '../utils/getDownloadImage';
+import { getDownloadedImageUri } from '../utils/DownloadImage';
 
 export default function Menu(props) {
   const { menus } = props;
