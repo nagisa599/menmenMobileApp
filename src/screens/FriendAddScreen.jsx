@@ -1,46 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import React, { useState, useEffect, useContext } from 'react';
+import { doc, getDoc, arrayUnion, updateDoc } from 'firebase/firestore';
 import {
   View, Text, StyleSheet, ScrollView, Image, Alert,
 } from 'react-native';
 import PropTypes, { string, instanceOf, number } from 'prop-types';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
 import db from '../../firebaseConfig';
 import Tab from '../components/Tab';
 import PassButton from '../components/PassButton';
 import BackButton from '../components/BackButton';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import userInfoContext from '../utils/UserInfoContext';
 
 export default function FriendAddScreen(props) {
   const { route, navigation } = props;
   const { name, uid } = route.params;
-  // const [imageUrl, setImageUrl] = useState(null);
-  // const [url, setUrl] = useState('');
-  // useEffect(() => {
-  //   const fetchImageUrl = async () => {
-  //     try {
-  //       const docRef = doc(db, 'users', uid);
-  //       const docSnap = await getDoc(docRef);
-  //       setImageUrl(docSnap.data().imageUrl);
-  //     } catch (error) {
-  //       console.error("Error fetching document: ", error);
-  //     }
-  //   };
-  //   fetchImageUrl();
-  // }, [uid]);
-  // useEffect(() => {
-  //   const storage = getStorage();
-  //   const imageRef = ref(storage, imageUrl);
-  //   getDownloadURL(imageRef)
-  //     .then((downloadUrl) => {
-  //       setUrl(downloadUrl);
-  //     })
-  //     .catch((error) => {
-  //       console.error('画像のダウンロードURLの取得に失敗しました: ', error);
-  //     });
-  // }, [imageUrl]);
-  // console.log(uid);
-  // console.log(imageUrl);
-  // console.log(url);
+  const { userInfo } = useContext(userInfoContext);
+  const { friends } = userInfo;
+  console.log(friends);
+
+  /* firebaseからimageUrlを取得するまでの処理 */
+  const [imageUrl, setImageUrl] = useState(null);
+  const fetchImageUrl = async (uid) => {
+    try {
+      const useruidRef = doc(db, 'users', uid);
+      const userDocSnapshot = await getDoc(useruidRef);
+      const userData = userDocSnapshot.data();
+      const { imageUrl } = userData;
+      return imageUrl;
+    } catch (error) {
+      Alert.alert('データの読み込みに失敗しました');
+    }
+  };
+  /* firebaseからimageUrlを取得してからの処理 */
+  const [url, setUrl] = useState('');
+  const storage = getStorage();
+  useEffect(() => {
+    // 内部の非同期関数を定義
+    const fetchAndSetUrl = async () => {
+      try {
+        const imageUrl = await fetchImageUrl(uid); // FirestoreからimageUrlを取得
+        if (imageUrl) {
+          const imageRef = ref(storage, imageUrl); // Storageの参照を作成
+          const downloadUrl = await getDownloadURL(imageRef); // ダウンロードURLを取得
+          setUrl(downloadUrl); // ステートを更新
+        }
+      } catch (error) {
+        console.error('画像のダウンロードURLの取得に失敗しました: ', error);
+      }
+    };
+
+    fetchAndSetUrl(); // 定義した関数を実行
+  }, [uid]);
+
+  const [errorMessage, setErrorMessage] = useState('');
+  const addUserInFriends = async (uid) => {
+    friends.push(uid);
+    const userfriendsRef = doc(db, 'users', userInfo.uid);
+    console.log(userInfo);
+    console.log(userfriendsRef);
+    console.log('########');
+    try {
+      // Firestoreのドキュメントを更新
+      await updateDoc(userfriendsRef, {
+        friends: arrayUnion(uid), // Firestoreに配列を保存
+      });
+      console.log('Firestoreが更新されました');
+    } catch (error) {
+      console.error('Firestoreの更新に失敗しました:', error);
+    }
+  };
+  const isFriend = (uid) => {
+    if (friends.includes(uid)) {
+      console.log('This user is already a friend');
+      setErrorMessage('このユーザーはすでにフレンドです');
+    } else {
+      console.log('yes');
+      addUserInFriends(uid);
+      navigation.navigate('FriendListScreen');
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
@@ -54,10 +93,14 @@ export default function FriendAddScreen(props) {
       </View>
       <ScrollView style={styles.profile}>
         <Image
-          // source={{ uri: url }}
+          source={{ uri: url }}
           style={styles.image}
         />
-        <Text style={styles.profileinfo}>名前 : { name }</Text>
+        <Text style={styles.profileinfo}>
+          名前 :
+          {' '}
+          { name }
+        </Text>
         <Text style={styles.profileinfo}>ランキング : 15位</Text>
         <Text style={styles.profileinfo}>称号 : ラーメン好き</Text>
         <Text style={styles.profileinfo}>最終来店 : 2023/10/10 18:55</Text>
@@ -74,7 +117,14 @@ export default function FriendAddScreen(props) {
             navigation.goBack();
           }}
         />
-        <PassButton label="友達登録する" />
+        <PassButton
+          label="友達登録する"
+          onPress={() => {
+            isFriend(uid);
+            console.log('');
+          }}
+        />
+        {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
       </View>
     </View>
   );

@@ -23,6 +23,7 @@ export default function FriendListItem({
         console.error('画像のダウンロードURLの取得に失敗しました: ', error);
       });
   }, [imageUrl]);
+  console.log('!!!!!!!!!!!!!');
   console.log(url);
   return (
     <TouchableOpacity

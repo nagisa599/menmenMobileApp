@@ -15,9 +15,11 @@ export default function App() {
   const [isLoading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null); // ユーザ情報の監視
   const value = useMemo(() => ({ userInfo, setUserInfo }), [userInfo]); // useContextのためのvalue
+
   // if (isLoading) {
   //   return <LoadingScreen content="データ取得中" />;
   // }
+  
   if (userInfo) {
     if (!userInfo.name) {
       return (
