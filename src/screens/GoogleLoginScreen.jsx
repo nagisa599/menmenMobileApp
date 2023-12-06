@@ -1,42 +1,49 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   View, Image, StyleSheet, TextInput, ScrollView, Text, Alert,
 } from 'react-native';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
-import { func } from 'prop-types';
-import { doc, getDoc } from 'firebase/firestore';
+// import { func } from 'prop-types';
+import * as Google from 'expo-auth-session/providers/google';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import {
   getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  onAuthStateChanged,
   sendSignInLinkToEmail,
+  GoogleAuthProvider,
+  signInWithCredential,
 } from 'firebase/auth';
-
+import * as WebBrowser from 'expo-web-browser';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 import AppleLoginButton from '../components/AppleLoginButton';
 import NotLoginButton from '../components/NotLoginButton';
 import KeyboardSafeView from '../components/KeyBoradAvoidingView';
-import validatePassword from '../utils/Validation';
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
-import Button from '../components/Button';
 import userInfoContext from '../utils/UserInfoContext';
+import Button from '../components/Button';
 import db from '../../firebaseConfig';
+import ENV from '../../env.json';
+import { convertFirestoreTimestampToDate, formatDateToYYYYMMDD } from '../utils/Data';
+import { downloadUserImage } from '../utils/DownloadImage';
 
+WebBrowser.maybeCompleteAuthSession();
 export default function GoogleLoginScreen(props) {
-  const { promptAsync } = props;
+  const { navigation } = props;
   const { setUserInfo } = useContext(userInfoContext);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordErr, setPasswordErr] = useState('');
+  // eslint-disable-next-line no-unused-vars
+  const [isLoading, setLoading] = useState(true);
   const [emailErr, setEmailErr] = useState('');
-  const [LoginOption, setLoginOption] = useState('');
   const auth = getAuth();
+  const { userInfo } = useContext(userInfoContext);
+  // eslint-disable-next-line no-unused-vars
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    iosClientId: ENV.IOS_CLIENT_ID,
+    androidClientId: ENV.ANDROID_CLIENT_ID,
+  });
   // emailを送信するための設定
   const actionCodeSettings = {
-    // URL you want to redirect back to. The domain (www.example.com) for this
-    // URL must be in the authorized domains list in the Firebase Console.
     url: 'https://example.co.jp/',
-    // This must be true.
     handleCodeInApp: true,
     iOS: {
       bundleId: 'com.example.ios',
@@ -55,142 +62,137 @@ export default function GoogleLoginScreen(props) {
       const emailRef = doc(db, `email/${email}`);
       const userSnap = await getDoc(emailRef);
       if (userSnap.exists()) {
-        setLoginOption('email-login');
+        // setLoginOption('email-login');
+        navigation.navigate('EmailLogin', { email });
       } else {
         await sendSignInLinkToEmail(auth, email, actionCodeSettings).then(() => {
           console.log(email);
-          setLoginOption('email-signup');
+          // setLoginOption('email-signup');
+          navigation.navigate('EmailRegister', { email });
           Alert.alert('メールを送信しました。メールのリンクをクリックしてください');
         })
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode, errorMessage);
+            setEmailErr('ただしいメールアドレスを入力してください');
           });
       }
     } catch (error) {
       console.error('エラーが発生しました:', error);
     }
   }
-  function loginPress() {
-    signInWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        const { user } = userCredential;
-        const userRef = doc(db, `users/${user.uid}`);
-        const docSnap = await docSnap.getDoc(userRef);
-        if (docSnap.exists()) {
-          const exitUserData = docSnap.data();
-          setUserInfo({
-            name: exitUserData.name,
-            birthday: exitUserData.birthday,
-            ramen: exitUserData.ramen,
-            topping: exitUserData.topping,
-            createdAt: exitUserData.createdAt,
-            updatedAt: exitUserData.updatedAt,
-            times: exitUserData.times,
-            visited: exitUserData.visited,
-            imageUrl: exitUserData.imageUrl,
-            title: exitUserData.title,
-            friends: exitUserData.friends,
-          });
-        }
-      })
-      .catch(() => {
-        setPasswordErr('登録したパスワードを入力してください');
-      });
-  }
-
-  function registerPress() {
-    if (!validatePassword(password)) {
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const { user } = userCredential;
-          setUserInfo({
-            uid: auth.currentUser.uid,
-            email: user.email,
-          });
-        })
-        .catch((e) => {
-          console.log(e);
-          setEmailErr('正しいメールアドレスを入力してください');
-        });
-    } else {
-      setPasswordErr(validatePassword(password));
-    }
-  }
+  // ログインしていない場合
   function notLogin() {
     const user = {
       name: 'notLogin',
     };
     setUserInfo(user);
   }
-  if (LoginOption === 'email-login') {
-    return (
-      <ScrollView>
-        <KeyboardSafeView style={styles.container}>
-          <View style={styles.logoContainer}>
-            <Image source={logoImage} style={styles.logo} />
-          </View>
-          <View style={styles.errContainer}>
-            <Text>ログイン時に登録したパスワードの入力をお願いします</Text>
-            <Text style={styles.errText}>{emailErr}</Text>
-          </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.errContainer}>
-              <Text style={styles.errText}>{passwordErr}</Text>
-            </View>
-            <TextInput
-              style={styles.input}
-              value={password}
-              onChangeText={(text) => { setPassword(text); }}
-              autoCapitalize="none"
-              placeholder="パスワード"
-              secureTextEntry
-              textContentType="password"
-            />
-            <Button
-              label="ログイン"
-              onPress={() => loginPress()}
-            />
-          </View>
-        </KeyboardSafeView>
-      </ScrollView>
-    );
-  }
-  if (LoginOption === 'email-signup') {
-    return (
-      <ScrollView>
-        <KeyboardSafeView style={styles.container}>
-          <View style={styles.logoContainer}>
-            <Image source={logoImage} style={styles.logo} />
-          </View>
-          <View style={styles.errContainer}>
-            <Text>新規登録のためにパスワードの登録をお願いします。</Text>
-            <Text>※パスワードは8文字以上かつ数字、大文字、数字を1文字以上でお願いいたします。</Text>
-            <Text style={styles.errText}>{emailErr}</Text>
-          </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.errContainer}>
-              <Text style={styles.errText}>{passwordErr}</Text>
-            </View>
-            <TextInput
-              style={styles.input}
-              value={password}
-              onChangeText={(text) => { setPassword(text); }}
-              autoCapitalize="none"
-              placeholder="登録パスワード"
-              secureTextEntry
-              textContentType="password"
-            />
-            <Button
-              label="新規登録"
-              onPress={() => registerPress()}
-            />
-          </View>
-        </KeyboardSafeView>
-      </ScrollView>
-    );
-  }
+  // user情報が端末に保存されているかどうか(最初のページの判定)
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userInfoDocRef = doc(db, `users/${user.uid}`);
+          const userDoc = await getDoc(userInfoDocRef);
+          const userData = userDoc.data();
+          if (userData.imageUrl) { //
+            const downloadImageUrl = await downloadUserImage(userData.imageUrl);
+            userData.imageUrl = downloadImageUrl;
+          }
+
+          let lastVisitDate = null;
+          if (userData.times && userData.times.length > 0) {
+            lastVisitDate = userData.times[userData.times.length - 1];
+            lastVisitDate = convertFirestoreTimestampToDate(lastVisitDate);
+            lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
+          }
+          const today = formatDateToYYYYMMDD(new Date());
+
+          setUserInfo({
+            ...userInfo,
+            uid: auth.currentUser.uid,
+            email: userData.email,
+            name: userData.name,
+            ramen: userData.ramen,
+            topping: userData.topping,
+            visited: lastVisitDate === today,
+            imageUrl: userData.imageUrl,
+            title: userData.title,
+            birthday: userData.birthday,
+            createdAt: userData.createdAt,
+            updatedAt: userData.updatedAt,
+            times: userData.times,
+            friends: userData.friends,
+          });
+          setLoading(false);
+        } catch (e) {
+          Alert('ユーザ情報の取得に失敗しました。');
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+  useEffect(() => {
+    // Googleアカウントでの認証に成功した場合
+    if (response?.type === 'success') {
+      console.log('Googleアカウントでの認証に成功');
+      /* eslint-disable */
+      const { id_token } = response.params;
+   
+      /* eslint-enable */
+      const credential = GoogleAuthProvider.credential(id_token);
+      signInWithCredential(auth, credential)
+        .then(async (authResult) => {
+          const { user } = authResult;
+          const userRef = doc(db, `users/${user.uid}`);
+          const docSnap = await getDoc(userRef);
+          if (docSnap.exists()) {
+            const exitUserData = docSnap.data();
+            console.log(exitUserData);
+            console.log('googleユーザー登録済み');
+            setUserInfo({
+              name: exitUserData.name,
+              birthday: exitUserData.birthday,
+              ramen: exitUserData.ramen,
+              topping: exitUserData.topping,
+              createdAt: exitUserData.createdAt,
+              updatedAt: exitUserData.updatedAt,
+              times: exitUserData.times,
+              visited: exitUserData.visited,
+              imageUrl: exitUserData.imageUrl,
+              title: exitUserData.title,
+              friends: exitUserData.friends,
+            });
+          } else {
+            setDoc(userRef, {
+              email: user.email,
+              uid: user.uid,
+            }, { merge: true })
+              .then(() => {
+                console.log('googleユーザー登録成功');
+              })
+              .catch((error) => {
+                console.error('error googleユーザー登録:', error);
+              });
+            setUserInfo({
+              ...userInfo,
+              email: user.email,
+              uid: auth.currentUser.uid,
+            });
+            setLoading(false);
+          }
+        })
+        .catch((error) => {
+          console.error('Error signing in with Google:', error);
+          setLoading(false);
+        });
+    }
+  }, [response]);
   return (
     <ScrollView>
       <KeyboardSafeView style={styles.container}>
@@ -207,7 +209,7 @@ export default function GoogleLoginScreen(props) {
           <NotLoginButton onPress={() => notLogin()} />
         </View>
         <View style={styles.errContainer}>
-          <Text>※パスワードは8文字以上かつ数字、大文字、数字を1文字以上でお願いいたします。</Text>
+          <Text>※emailアドレスを入力をお願いします。</Text>
           <Text style={styles.errText}>{emailErr}</Text>
         </View>
         <View style={styles.inputContainer}>
@@ -220,18 +222,6 @@ export default function GoogleLoginScreen(props) {
             placeholder="メールアドレス"
             textContentType="emailAddress"
           />
-          <View style={styles.errContainer}>
-            <Text style={styles.errText}>{passwordErr}</Text>
-          </View>
-          {/* <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={(text) => { setPassword(text); }}
-            autoCapitalize="none"
-            placeholder="パスワード"
-            secureTextEntry
-            textContentType="password"
-          /> */}
           <Button
             label="ログイン（新規登録）"
             onPress={() => handlePress()}
@@ -296,7 +286,3 @@ const styles = StyleSheet.create({
     width: '80%',
   },
 });
-
-GoogleLoginScreen.propTypes = {
-  promptAsync: func.isRequired,
-};
