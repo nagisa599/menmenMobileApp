@@ -7,17 +7,12 @@ import AnimatedSplashScreen from './src/screens/AnimatedSplashScreen';
 import userInfoContext from './src/utils/UserInfoContext';
 import MainStackNavigator from './src/navigators/MainStackNavigator';
 /*eslint-disable*/
-import LoadingScreen from './src/screens/LoadingScreen';
+
 
 export default function App() {
   const [isSplashVisible, setSplashVisible] = useState(true); // 最初のロゴ画面を表示するかどうか
-  const [isLoading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null); // ユーザ情報の監視
-  const value = useMemo(() => ({ userInfo, setUserInfo }), [userInfo]); // useContextのためのvalue
-
-  // if (isLoading) {
-  //   return <LoadingScreen content="データ取得中" />;
-  // }
+  const value = useMemo(() => ({ userInfo, setUserInfo}), [userInfo]); // useContextのためのvalue
   
   if (userInfo) {
     if (!userInfo.name) {

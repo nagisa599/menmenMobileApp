@@ -1,24 +1,27 @@
 import React, { useState, useContext } from 'react';
 import {
-  View, StyleSheet, Text, TextInput, ScrollView, Image,
+  View, StyleSheet, Text, TextInput, Image,
 } from 'react-native';
 import { signInWithEmailAndPassword, getAuth } from 'firebase/auth';
 import { doc } from 'firebase/firestore';
 import userInfoContext from '../utils/UserInfoContext';
-import KeyboardSafeView from '../components/KeyBoradAvoidingView';
+
 import db from '../../firebaseConfig';
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
 import Button from '../components/Button';
+import LoadingScreen from './LoadingScreen';
 
 /* eslint-disable */
 export default function EmailLoginScreen({ route }) {
   const email = route.params.email;
+  const [loading, setLoading] = useState(false);
   /* eslint-enable */
   const { setUserInfo } = useContext(userInfoContext);
   const auth = getAuth();
   const [passwordErr, setPasswordErr] = useState('');
   const [password, setPassword] = useState('');
   function loginPress() {
+    setLoading(true);
     signInWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         const { user } = userCredential;
@@ -43,44 +46,48 @@ export default function EmailLoginScreen({ route }) {
       })
       .catch(() => {
         setPasswordErr('登録したパスワードを入力してください');
+      }).finally(() => {
+        setLoading(false);
       });
   }
-
+  if (loading) {
+    return (
+      <LoadingScreen content="認証中" />
+    );
+  }
   return (
-    <ScrollView>
-      <KeyboardSafeView style={styles.container}>
-        <View style={styles.logoContainer}>
-          <Image source={logoImage} style={styles.logo} />
-        </View>
+    <View style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Image source={logoImage} style={styles.logo} />
+      </View>
+      <View style={styles.errContainer}>
+        <Text>ログイン時に登録したパスワードの入力をお願いします</Text>
+      </View>
+      <View style={styles.inputContainer}>
         <View style={styles.errContainer}>
-          <Text>ログイン時に登録したパスワードの入力をお願いします</Text>
+          <Text style={styles.errText}>{passwordErr}</Text>
         </View>
-        <View style={styles.inputContainer}>
-          <View style={styles.errContainer}>
-            <Text style={styles.errText}>{passwordErr}</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={(text) => { setPassword(text); }}
-            autoCapitalize="none"
-            placeholder="パスワード"
-            secureTextEntry
-            textContentType="password"
-          />
-          <Button
-            label="ログイン"
-            onPress={() => loginPress()}
-          />
-        </View>
-      </KeyboardSafeView>
-    </ScrollView>
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={(text) => { setPassword(text); }}
+          autoCapitalize="none"
+          placeholder="パスワード"
+          secureTextEntry
+          textContentType="password"
+        />
+        <Button
+          label="ログイン"
+          onPress={() => loginPress()}
+        />
+      </View>
+    </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#f2f2f2', // 背景色を設定
   },
@@ -92,7 +99,7 @@ const styles = StyleSheet.create({
     width: 225, // ロゴ画像の幅を半分にする（元のサイズの半分）
     height: 225, // ロゴ画像の高さを半分にする（元のサイズの半分）
     borderRadius: 112.5, // 幅と高さの半分に設定することで円形になります
-    marginTop: 80,
+    marginTop: 20,
   },
   button: {
     padding: 30,
