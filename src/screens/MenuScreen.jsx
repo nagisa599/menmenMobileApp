@@ -13,7 +13,7 @@ import {
   shape, string, arrayOf, oneOfType, number, bool,
 } from 'prop-types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Menu from '../components/Menu';
+import Menu from '../components/Menu/Menu';
 import LoadingScreen from './LoadingScreen';
 import createImagesDirectory from '../utils/createImagesDirectory';
 

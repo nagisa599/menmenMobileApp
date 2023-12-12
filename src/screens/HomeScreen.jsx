@@ -13,7 +13,7 @@ import {
 } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { Entypo } from '@expo/vector-icons';
-import Calendar from '../components/Calendar';
+import Calendar from '../components/Home/Calendar';
 
 export default function HomeScreen() {
   const db = getFirestore();

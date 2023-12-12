@@ -7,7 +7,7 @@ import * as FileSystem from 'expo-file-system';
 import { RANKING_URL } from '../../env.json'; //eslint-disable-line
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import RankingList from '../components/RankingList';
+import RankingList from '../components/Ranking/RankingList';
 import LoadingScreen from './LoadingScreen';
 import createImagesDirectory from '../utils/createImagesDirectory';
 

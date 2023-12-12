@@ -4,9 +4,9 @@ import {
 } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { number, string } from 'prop-types';
-import Icon from './icon';
-import CircleTitle from './CircleTitle';
-import { getDownloadedImageUri } from '../utils/DownloadImage';
+import Icon from '../icon';
+import CircleTitle from '../UserIcon/CircleTitle';
+import { getDownloadedImageUri } from '../../utils/DownloadImage';
 
 export default function RankingList(props) {
   const {

@@ -8,10 +8,10 @@ import {
 import {
   setDoc, doc,
 } from 'firebase/firestore';
-import DottedLine from './DottedLine';
-import db from '../../firebaseConfig';
-import userInfoContext from '../utils/UserInfoContext';
-import couponImage from '../../assets/hiyashityuka.jpg';
+import DottedLine from '../DottedLine';
+import db from '../../../firebaseConfig';
+import userInfoContext from '../../utils/UserInfoContext';
+import couponImage from '../../../assets/hiyashityuka.jpg';
 
 export default function CouponItem(props) {
   const [isCouponUsed, setIsCouponUsed] = useState(false);

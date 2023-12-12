@@ -7,13 +7,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AnimatedSplashScreen from '../screens/AnimatedSplashScreen';
 import MypageScreen from '../screens/MypageScreen';
 import ComingCheckScreen from '../screens/ComingCheckScreen';
-import Generator from '../components/Generator';
+import Generator from '../components/StampCard/Generator';
 import MainTabs from './TabScreen';
 import InquiryScreen from '../screens/InqueryScreen';
 import TermsOfUseScreen from '../screens/TermsOfUseScreen';
 import EditUserInfoScreen from '../screens/EditUserInfoScreen';
 import userInfoContext from '../utils/UserInfoContext';
-import Message from '../components/Message';
+import Message from '../components/Home/Message';
 
 const Stack = createNativeStackNavigator();
 

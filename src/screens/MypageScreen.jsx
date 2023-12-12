@@ -4,8 +4,8 @@ import {
   View, Text, StyleSheet, Image, ScrollView, TouchableOpacity,
 } from 'react-native';
 
-import StampCard from '../components/StampCard';
-import CircleTitle from '../components/CircleTitle';
+import StampCard from '../components/StampCard/StampCard';
+import CircleTitle from '../components/UserIcon/CircleTitle';
 import userInfoContext from '../utils/UserInfoContext';
 import { ChangeIDtoName } from '../utils/Data';
 import LoadingScreen from './LoadingScreen';

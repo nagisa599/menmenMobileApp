@@ -14,9 +14,9 @@ import {
   signInWithCredential,
 } from 'firebase/auth';
 import * as WebBrowser from 'expo-web-browser';
-import GoogleLoginButton from '../components/GoogleLoginButton';
-import AppleLoginButton from '../components/AppleLoginButton';
-import NotLoginButton from '../components/NotLoginButton';
+import GoogleLoginButton from '../components/Login/GoogleLoginButton';
+import AppleLoginButton from '../components/Login/AppleLoginButton';
+import NotLoginButton from '../components/Login/NotLoginButton';
 import KeyboardSafeView from '../components/KeyBoradAvoidingView';
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
 import userInfoContext from '../utils/UserInfoContext';

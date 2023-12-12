@@ -16,8 +16,8 @@ import {
 import { DEFAULT_IMAGE_URL } from '../../env.json';
 import userInfoContext from '../utils/UserInfoContext';
 import db from '../../firebaseConfig';
-import BirthdayInput from '../components/BirthdayInput';
-import DropdownSelect from '../components/DropdownSelect';
+import BirthdayInput from '../components/InputForm/BirthdayInput';
+import DropdownSelect from '../components/InputForm/DropdownSelect';
 import LoadingScreen from './LoadingScreen';
 import ProfileImageUpload from '../components/ProfileImageUpload';
 

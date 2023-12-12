@@ -14,7 +14,7 @@ import {
 
 import * as FileSystem from 'expo-file-system';
 import db from '../../firebaseConfig';
-import DropdownSelect from '../components/DropdownSelect';
+import DropdownSelect from '../components/InputForm/DropdownSelect';
 import userInfoContext from '../utils/UserInfoContext';
 import LoadingScreen from './LoadingScreen';
 import ProfileImageUpload from '../components/ProfileImageUpload';

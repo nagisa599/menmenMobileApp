@@ -9,7 +9,6 @@ import MainStackNavigator from './src/navigators/MainStackNavigator';
 /*eslint-disable*/
 import LoadingScreen from './src/screens/LoadingScreen';
 
-
 export default function App() {
   const [isSplashVisible, setSplashVisible] = useState(true); // 最初のロゴ画面を表示するかどうか
   const [isLoading, setLoading] = useState(true);
