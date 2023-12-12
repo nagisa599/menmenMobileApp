@@ -38,53 +38,51 @@ export default function EmailRegisterScreen({ route }) {
     }
   }
   return (
-    <ScrollView>
-      <KeyboardSafeView style={styles.container}>
-        <View style={styles.logoContainer}>
-          <Image source={logoImage} style={styles.logo} />
-        </View>
+    <View style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Image source={logoImage} style={styles.logo} />
+      </View>
+      <View style={styles.errContainer}>
+        <Text>新規登録のためにパスワードの登録をお願いします。</Text>
+        <Text>※パスワードは8文字以上かつ数字、大文字、数字を1文字以上でお願いいたします。</Text>
+      </View>
+      <View style={styles.inputContainer}>
         <View style={styles.errContainer}>
-          <Text>新規登録のためにパスワードの登録をお願いします。</Text>
-          <Text>※パスワードは8文字以上かつ数字、大文字、数字を1文字以上でお願いいたします。</Text>
+          <Text style={styles.errText}>{passwordErr}</Text>
         </View>
-        <View style={styles.inputContainer}>
-          <View style={styles.errContainer}>
-            <Text style={styles.errText}>{passwordErr}</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={(text) => { setPassword(text); }}
-            autoCapitalize="none"
-            placeholder="登録パスワード"
-            secureTextEntry
-            textContentType="password"
-          />
-          <Button
-            label="新規登録"
-            onPress={() => registerPress()}
-          />
-        </View>
-      </KeyboardSafeView>
-    </ScrollView>
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={(text) => { setPassword(text); }}
+          autoCapitalize="none"
+          placeholder="登録パスワード"
+          secureTextEntry
+          textContentType="password"
+        />
+        <Button
+          label="       新規登録"
+          onPress={() => registerPress()}
+        />
+      </View>
+    </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#f2f2f2', // 背景色を設定
   },
   logoContainer: {
-    marginBottom: 40,
+    marginBottom: 0,
     paddingTop: 0,
   },
   logo: {
     width: 225, // ロゴ画像の幅を半分にする（元のサイズの半分）
     height: 225, // ロゴ画像の高さを半分にする（元のサイズの半分）
     borderRadius: 112.5, // 幅と高さの半分に設定することで円形になります
-    marginTop: 80,
+    marginTop: 20,
   },
   button: {
     padding: 30,

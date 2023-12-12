@@ -17,6 +17,7 @@ import * as WebBrowser from 'expo-web-browser';
 import GoogleLoginButton from '../components/Login/GoogleLoginButton';
 import AppleLoginButton from '../components/Login/AppleLoginButton';
 import NotLoginButton from '../components/Login/NotLoginButton';
+import LoadingScreen from './LoadingScreen';
 import KeyboardSafeView from '../components/KeyBoradAvoidingView';
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
 import userInfoContext from '../utils/UserInfoContext';
@@ -29,13 +30,12 @@ import { downloadUserImage } from '../utils/DownloadImage';
 WebBrowser.maybeCompleteAuthSession();
 export default function GoogleLoginScreen(props) {
   const { navigation } = props;
-  const { setUserInfo } = useContext(userInfoContext);
+  const { setUserInfo, userInfo } = useContext(userInfoContext);
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   // eslint-disable-next-line no-unused-vars
-  const [isLoading, setLoading] = useState(true);
   const [emailErr, setEmailErr] = useState('');
   const auth = getAuth();
-  const { userInfo } = useContext(userInfoContext);
   // eslint-disable-next-line no-unused-vars
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: ENV.IOS_CLIENT_ID,
@@ -91,6 +91,7 @@ export default function GoogleLoginScreen(props) {
   }
   // user情報が端末に保存されているかどうか(最初のページの判定)
   useEffect(() => {
+    setLoading(true);
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
@@ -101,7 +102,6 @@ export default function GoogleLoginScreen(props) {
             const downloadImageUrl = await downloadUserImage(userData.imageUrl);
             userData.imageUrl = downloadImageUrl;
           }
-
           let lastVisitDate = null;
           if (userData.times && userData.times.length > 0) {
             lastVisitDate = userData.times[userData.times.length - 1];
@@ -109,7 +109,6 @@ export default function GoogleLoginScreen(props) {
             lastVisitDate = formatDateToYYYYMMDD(lastVisitDate);
           }
           const today = formatDateToYYYYMMDD(new Date());
-
           setUserInfo({
             ...userInfo,
             uid: auth.currentUser.uid,
@@ -126,9 +125,9 @@ export default function GoogleLoginScreen(props) {
             times: userData.times,
             friends: userData.friends,
           });
-          setLoading(false);
         } catch (e) {
           Alert('ユーザ情報の取得に失敗しました。');
+        } finally {
           setLoading(false);
         }
       } else {
@@ -138,6 +137,7 @@ export default function GoogleLoginScreen(props) {
     return () => unsubscribe();
   }, []);
   useEffect(() => {
+    setLoading(true);
     // Googleアカウントでの認証に成功した場合
     if (response?.type === 'success') {
       console.log('Googleアカウントでの認証に成功');
@@ -184,15 +184,20 @@ export default function GoogleLoginScreen(props) {
               email: user.email,
               uid: auth.currentUser.uid,
             });
-            setLoading(false);
           }
         })
         .catch((error) => {
           console.error('Error signing in with Google:', error);
+        })
+        .finally(() => {
           setLoading(false);
         });
     }
   }, [response]);
+
+  if (loading) {
+    return <LoadingScreen content="認証中" />;
+  }
   return (
     <ScrollView>
       <KeyboardSafeView style={styles.container}>
