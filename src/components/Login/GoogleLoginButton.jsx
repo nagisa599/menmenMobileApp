@@ -3,13 +3,13 @@ import {
   TouchableOpacity, Text, Image, StyleSheet,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import googleLogo from '../../assets/Apple-logo.png';
+import googleLogo from '../../../assets/google-logo.png';
 
-function AppleLoginButton({ onPress }) {
+function GoogleLoginButton({ onPress }) {
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
       <Image source={googleLogo} style={styles.logo} />
-      <Text style={styles.buttonText}>Appleでログイン</Text>
+      <Text style={styles.buttonText}>Googleでログイン</Text>
     </TouchableOpacity>
   );
 }
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     height: 60,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'black',
+    backgroundColor: 'white',
     borderRadius: 30,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -27,22 +27,20 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     elevation: 2,
-
   },
   logo: {
     width: 24,
     height: 24,
     marginRight: 10,
-
   },
   buttonText: {
-    color: 'white',
+    color: 'black',
     fontSize: 25,
   },
 });
 
-AppleLoginButton.propTypes = {
+GoogleLoginButton.propTypes = {
   onPress: PropTypes.func.isRequired,
 };
 
-export default AppleLoginButton;
+export default GoogleLoginButton;

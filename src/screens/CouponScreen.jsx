@@ -10,7 +10,7 @@ import db from '../../firebaseConfig';
 
 // import { userInfoContext } from '../../App';
 import userInfoContext from '../utils/UserInfoContext';
-import CouponItem from '../components/CouponItem';
+import CouponItem from '../components/Coupon/CouponItem';
 
 export default function CouponScreen() {
   const { userInfo } = useContext(userInfoContext);

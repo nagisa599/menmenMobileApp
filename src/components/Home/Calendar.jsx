@@ -4,7 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import {
   collection, getDocs, getFirestore, query, where,
 } from 'firebase/firestore';
-import LoadingScreen from '../screens/LoadingScreen';
+import LoadingScreen from '../../screens/LoadingScreen';
 
 export default function Calendar() {
   const [businessHours, setBusinessHours] = useState({});

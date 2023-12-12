@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { number } from 'prop-types';
-import logoImage1 from '../../assets/FIRST.png';
-import logoImage2 from '../../assets/SECOND.png';
-import logoImage3 from '../../assets/THIRD.png';
-import logoImage4 from '../../assets/FOUR.png';
-import logoImage5 from '../../assets/FIVE.png';
+import logoImage1 from '../../../assets/FIRST.png';
+import logoImage2 from '../../../assets/SECOND.png';
+import logoImage3 from '../../../assets/THIRD.png';
+import logoImage4 from '../../../assets/FOUR.png';
+import logoImage5 from '../../../assets/FIVE.png';
 
 export default function CircleTitle({ title }) {
   const getImageAndStyle = () => {

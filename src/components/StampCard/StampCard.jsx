@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, Dimensions, ImageBackground,
 } from 'react-native';
-import imageStampCard from '../../assets/stampcard2.png';
-import userInfoContext from '../utils/UserInfoContext';
+import imageStampCard from '../../../assets/stampcard2.png';
+import userInfoContext from '../../utils/UserInfoContext';
 
 export default function StampCard() {
   const { userInfo } = useContext(userInfoContext);
@@ -63,6 +63,7 @@ export default function StampCard() {
       </View>
       <View style={styles.stampContainer}>
         {stamps.slice(currentPage * 10, (currentPage + 1) * 10).map((stamp, index) => (
+          /* eslint-disable */
           <View key={index} style={[styles.stamp, { backgroundColor: stamp ? 'orange' : 'gray' }]}>
             {stamp
               ? <Text style={styles.dateText}>{stamp}</Text>
