@@ -62,12 +62,10 @@ export default function GoogleLoginScreen(props) {
       const emailRef = doc(db, `email/${email}`);
       const userSnap = await getDoc(emailRef);
       if (userSnap.exists()) {
-        // setLoginOption('email-login');
         navigation.navigate('EmailLogin', { email });
       } else {
         await sendSignInLinkToEmail(auth, email, actionCodeSettings).then(() => {
           console.log(email);
-          // setLoginOption('email-signup');
           navigation.navigate('EmailRegister', { email });
           Alert.alert('メールを送信しました。メールのリンクをクリックしてください');
         })
