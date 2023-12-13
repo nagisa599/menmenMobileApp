@@ -2,18 +2,16 @@ import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TextInput,
 } from 'react-native';
-import { getAuth } from 'firebase/auth';
 import {
-  collection, query, where, getDocs,
+  collection, getDocs,
 } from 'firebase/firestore';
 import Tab from '../components/Tab';
 import SearchButton from '../components/SearchButton';
 import db from '../../firebaseConfig';
 
 export default function FriendSearchScreen(props) {
-  const { route, navigation } = props;
-  const { friendlist } = route.params;
-  console.log(friendlist.name);
+  const { navigation } = props;
+  // usernameをkey, uidをvalueとして辞書を作成する
   async function createUserDict() {
     const userRef = collection(db, 'username');
     const querySnapshot = await getDocs(userRef);
@@ -32,7 +30,7 @@ export default function FriendSearchScreen(props) {
   const [inputUsername, setInputUsername] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   function checkUsername(username) {
-    if (userDict.hasOwnProperty(username)) {
+    if (Object.prototype.hasOwnProperty.call(userDict, username)) {
       navigation.navigate('FriendAddScreen', { name: username, uid: userDict[username] });
     } else {
       console.log('no');

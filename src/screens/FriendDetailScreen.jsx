@@ -2,14 +2,16 @@ import React from 'react';
 import {
   View, Text, StyleSheet, ScrollView, Image,
 } from 'react-native';
-
+import PropTypes from 'prop-types';
 import Tab from '../components/Tab';
 import PassButton from '../components/PassButton';
 import BackButton from '../components/BackButton';
 
 export default function FriendDetailScreen(props) {
   const { route, navigation } = props;
-  const { name, updatedAt, url } = route.params;
+  const {
+    name, birthday, updatedAt, createdAt, url, ramen, topping, title,
+  } = route.params;
   return (
     <View style={styles.container}>
       <View style={styles.tabContainer}>
@@ -26,16 +28,21 @@ export default function FriendDetailScreen(props) {
           source={{ uri: url }}
           style={styles.image}
         />
-        <Text style={styles.profileinfo}>名前：{ name }</Text>
-        <Text style={styles.profileinfo}>ランキング : 2位</Text>
-        <Text style={styles.profileinfo}>称号 : ラーメンスター</Text>
+        <Text style={styles.profileinfo}>
+          名前：
+          { name }
+        </Text>
+        <Text style={styles.profileinfo}>誕生日：{ birthday }</Text>
         <Text style={styles.profileinfo}>アカウント作成日：</Text>
         <Text style={styles.profileinfo}>最終来店：</Text>
         <Text style={styles.profileinfo}>総ラーメン : 123杯</Text>
         <Text style={styles.profileinfo}>今週のラーメン : 4杯</Text>
         <Text style={styles.profileinfo}>初来店日 : 2021/08/21</Text>
-        <Text style={styles.profileinfo}>お気に入り : ラーメン汁なし</Text>
-        <Text style={styles.profileinfo}>一言コメント : No ramen no life !</Text>
+        <Text style={styles.profileinfo}>お気に入りラーメン↓</Text>
+        <Image
+          source={{ uri: ramen }}
+          style={styles.image}
+        />
       </ScrollView>
       <View style={styles.buttoncontainer}>
         <BackButton
@@ -49,6 +56,12 @@ export default function FriendDetailScreen(props) {
     </View>
   );
 }
+
+FriendDetailScreen.propTypes = {
+  route: PropTypes.shape({
+    params: PropTypes.object
+  }).isRequired,
+};
 
 const styles = StyleSheet.create({
   container: {

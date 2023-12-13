@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { doc, getDoc, arrayUnion, updateDoc } from 'firebase/firestore';
+import {
+  doc, getDoc, arrayUnion, updateDoc,
+} from 'firebase/firestore';
 import {
   View, Text, StyleSheet, ScrollView, Image, Alert,
 } from 'react-native';
@@ -17,8 +19,7 @@ export default function FriendAddScreen(props) {
   const { name, uid } = route.params;
   const { userInfo } = useContext(userInfoContext);
   const { friends } = userInfo;
-  console.log(friends);
-
+  // 検索されたユーザの情報をfirebaseから取得する
   /* firebaseからimageUrlを取得するまでの処理 */
   const [imageUrl, setImageUrl] = useState(null);
   const fetchImageUrl = async (uid) => {
@@ -54,6 +55,8 @@ export default function FriendAddScreen(props) {
   }, [uid]);
 
   const [errorMessage, setErrorMessage] = useState('');
+
+  // 検索したユーザを友達登録する（firebaseに追加する）
   const addUserInFriends = async (uid) => {
     friends.push(uid);
     const userfriendsRef = doc(db, 'users', userInfo.uid);
@@ -70,6 +73,8 @@ export default function FriendAddScreen(props) {
       console.error('Firestoreの更新に失敗しました:', error);
     }
   };
+
+  // すでに友達かどうかを確認する
   const isFriend = (uid) => {
     if (friends.includes(uid)) {
       console.log('This user is already a friend');
