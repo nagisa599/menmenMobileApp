@@ -16,7 +16,6 @@ import { Entypo } from '@expo/vector-icons';
 import Calendar from '../components/Home/Calendar';
 
 export default function HomeScreen() {
-  const db = getFirestore();
   const navigation = useNavigation();
   const [url, seturl] = useState();
   const [urlDate, setUrlDate] = useState(new Date());
@@ -31,7 +30,7 @@ export default function HomeScreen() {
   const fetchGoogleFormUrl = async () => {
     const lastUpdate = await AsyncStorage.getItem('last_update_url');
     const lastUpdateDate = lastUpdate ? new Date(lastUpdate) : new Date(2010, 0, 1);
-    const googleFormUrl = query(collection(db, 'googleFormUrl'), where('createdAt', '>', lastUpdateDate), orderBy('createdAt', 'desc'), limit(1));
+    const googleFormUrl = query(collection(getFirestore(), 'googleFormUrl'), where('createdAt', '>', lastUpdateDate), orderBy('createdAt', 'desc'), limit(1));
     const urlDoc = await getDocs(googleFormUrl);
     const newUrlSnap = urlDoc.docs.map(async (doc) => {
       const data = doc.data();

@@ -20,6 +20,7 @@ import LoadingScreen from './LoadingScreen';
 import ProfileImageUpload from '../components/ProfileImageUpload';
 import createImagesDirectory from '../utils/createImagesDirectory';
 import { getDownloadedImageUri } from '../utils/DownloadImage';
+import errorMessage from '../utils/ErrorFormat';
 
 export default function EditUserInfoScreen(props) {
   const { navigation } = props;
@@ -73,8 +74,7 @@ export default function EditUserInfoScreen(props) {
   }, [isLoading, isRegistering, navigation]);
 
   const isUsernameUnique = async (username) => {
-    const userRef = doc(db, `username/${username}`);
-    const userSnap = await getDoc(userRef);
+    const userSnap = await getDoc(doc(db, `username/${username}`));
     return !userSnap.exists();
   };
 
@@ -90,17 +90,17 @@ export default function EditUserInfoScreen(props) {
     const storage = getStorage();
 
     if (!userData) {
-      Alert.alert('ユーザーデータが存在しません');
+      errorMessage('ユーザーデータが存在しません');
       return;
     }
 
     if (!isUnique) {
-      Alert.alert('ユーザー名がすでに使われています\n 変更してください');
+      errorMessage('ユーザー名がすでに使われています\n 変更してください');
       return;
     }
 
     if (!name.trim()) {
-      Alert.alert('ユーザー名を入力してください');
+      errorMessage('ユーザー名を入力してください');
       return;
     }
 
@@ -121,8 +121,8 @@ export default function EditUserInfoScreen(props) {
           throw new Error('有効なBlobオブジェクトが取得できませんでした');
         }
         return blob;
-      } catch (e) {
-        console.error('Error converting uri to blob:', e);
+      } catch (error) {
+        errorMessage('画像の読み込みに失敗しました', error);
         throw new Error('画像の読み込みに失敗しました');
       }
     };
@@ -136,9 +136,8 @@ export default function EditUserInfoScreen(props) {
         await uploadBytesResumable(storageRef, imageBlob);
 
         imageUrl = await getDownloadURL(storageRef);
-      } catch (e) {
-        console.log('Error uploading image:', e);
-        Alert.alert('エラー', '画像のアップロードに失敗');
+      } catch (error) {
+        errorMessage('画像のアップロードに失敗しました', error);
         return;
       }
     }

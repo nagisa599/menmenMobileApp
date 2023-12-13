@@ -1,16 +1,16 @@
 import React, { useState, useContext } from 'react';
 import {
-  View, Image, StyleSheet, TextInput, ScrollView, Text, Alert,
+  View, Image, StyleSheet, TextInput, Text,
 } from 'react-native';
 import {
   getAuth,
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
-import KeyboardSafeView from '../components/KeyBoradAvoidingView';
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
 import Button from '../components/Button';
 import validatePassword from '../utils/Validation';
 import userInfoContext from '../utils/UserInfoContext';
+import errorMessage from '../utils/ErrorFormat';
 /* eslint-disable*/
 export default function EmailRegisterScreen({ route }) {
   const email = route.params.email;
@@ -29,9 +29,8 @@ export default function EmailRegisterScreen({ route }) {
             email: user.email,
           });
         })
-        .catch((e) => {
-          console.log(e);
-          Alert('ユーザ登録に失敗しました。');
+        .catch((error) => {
+          errorMessage('ユーザー登録に失敗しました', error);
         });
     } else {
       setPasswordErr(validatePassword(password));

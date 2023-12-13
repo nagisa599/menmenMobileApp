@@ -1,10 +1,9 @@
 import React from 'react';
-import {
-  Button, Image, View, Alert,
-} from 'react-native';
+import { Button, Image, View } from 'react-native';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as ImagePicker from 'expo-image-picker';
 import { func, string } from 'prop-types';
+import errorMessage from '../utils/ErrorFormat';
 
 export default function ProfileImageUpload(props) {
   const { image, setImage } = props;
@@ -17,14 +16,12 @@ export default function ProfileImageUpload(props) {
         aspect: [4, 3],
         quality: 1,
       });
-      console.log(result);
 
       if (!result.canceled) {
         setImage(result.assets[0].uri);
       }
     } catch (error) {
-      console.error('Error picking image:', error);
-      Alert.alert('画像の選択に失敗しました。');
+      errorMessage('画像の選択に失敗しました', error);
     }
   };
 

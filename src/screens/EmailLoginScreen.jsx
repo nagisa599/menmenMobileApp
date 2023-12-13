@@ -17,12 +17,11 @@ export default function EmailLoginScreen({ route }) {
   const [loading, setLoading] = useState(false);
   /* eslint-enable */
   const { setUserInfo } = useContext(userInfoContext);
-  const auth = getAuth();
   const [passwordErr, setPasswordErr] = useState('');
   const [password, setPassword] = useState('');
   function loginPress() {
     setLoading(true);
-    signInWithEmailAndPassword(auth, email, password)
+    signInWithEmailAndPassword(getAuth(), email, password)
       .then(async (userCredential) => {
         const { user } = userCredential;
         const userRef = doc(db, `users/${user.uid}`);

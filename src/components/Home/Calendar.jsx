@@ -5,6 +5,7 @@ import {
   collection, getDocs, getFirestore, query, where,
 } from 'firebase/firestore';
 import LoadingScreen from '../../screens/LoadingScreen';
+import errorMessage from '../../utils/ErrorFormat';
 
 export default function Calendar() {
   const [businessHours, setBusinessHours] = useState({});
@@ -36,9 +37,8 @@ export default function Calendar() {
   }
 
   useEffect(() => {
-    const db = getFirestore();
     const calendarRef = query(
-      collection(db, 'calendar'),
+      collection(getFirestore(), 'calendar'),
       where('year', '==', currentYear),
       where('month', '==', currentMonth),
     );
@@ -60,7 +60,7 @@ export default function Calendar() {
 
         setLoading(false);
       } catch (error) {
-        console.error('error getting documents:', error);
+        errorMessage('営業情報の取得に失敗しました', error);
         setLoading(false);
       }
     };

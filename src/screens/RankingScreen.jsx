@@ -10,6 +10,7 @@ import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import RankingList from '../components/Ranking/RankingList';
 import LoadingScreen from './LoadingScreen';
 import createImagesDirectory from '../utils/createImagesDirectory';
+import errorMessage from '../utils/ErrorFormat';
 
 export default function RankingScreen() {
   const [ranking, setRanking] = useState([]);
@@ -55,32 +56,26 @@ export default function RankingScreen() {
 
     if (!isSameDay) {
       const url = RANKING_URL;
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const rankingData = await response.json();
-        const ImageDownloadRankingData = await Promise.all(
-          rankingData.ranking.map(async (data) => {
-            const localImageURL = await downloadImage(data.imageUrl);
-            return {
-              ...data,
-              imageUrl: localImageURL,
-            };
-          }),
-        );
-        await AsyncStorage.setItem('rankingData', JSON.stringify(ImageDownloadRankingData));
-        await AsyncStorage.setItem('last_update_ranking', today.toISOString());
-        return ImageDownloadRankingData;
-      } catch (error) {
-        console.error('Fetch error:', error);
-        return null;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
-    } else {
-      const cachedRanking = await AsyncStorage.getItem('rankingData');
-      return cachedRanking ? JSON.parse(cachedRanking) : null;
+      const rankingData = await response.json();
+      const ImageDownloadRankingData = await Promise.all(
+        rankingData.ranking.map(async (data) => {
+          const localImageURL = await downloadImage(data.imageUrl);
+          return {
+            ...data,
+            imageUrl: localImageURL,
+          };
+        }),
+      );
+      await AsyncStorage.setItem('rankingData', JSON.stringify(ImageDownloadRankingData));
+      await AsyncStorage.setItem('last_update_ranking', today.toISOString());
+      return ImageDownloadRankingData;
     }
+    const cachedRanking = await AsyncStorage.getItem('rankingData');
+    return cachedRanking ? JSON.parse(cachedRanking) : null;
   }
 
   useEffect(() => {
@@ -92,9 +87,8 @@ export default function RankingScreen() {
         } else {
           console.log('ランキングが空');
         }
-        console.log('ランキング取得成功');
-      } catch (e) {
-        console.log('ランキング取得失敗', e);
+      } catch (error) {
+        errorMessage('ランキング情報の取得に失敗しました', error);
       } finally {
         setLoading(false);
       }

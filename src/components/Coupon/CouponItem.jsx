@@ -12,6 +12,7 @@ import DottedLine from '../DottedLine';
 import db from '../../../firebaseConfig';
 import userInfoContext from '../../utils/UserInfoContext';
 import couponImage from '../../../assets/hiyashityuka.jpg';
+import errorMessage from '../../utils/ErrorFormat';
 
 export default function CouponItem(props) {
   const [isCouponUsed, setIsCouponUsed] = useState(false);
@@ -23,8 +24,7 @@ export default function CouponItem(props) {
   const useCoupon = async () => {
     try {
       setIsCouponUsed(true);
-      const ref = doc(db, `users/${userInfo.uid}/hasCoupons`, coupon.id);
-      await setDoc(ref, {
+      await setDoc(doc(db, `users/${userInfo.uid}/hasCoupons`, coupon.id), {
         expire: coupon.expireDate,
         used: true,
         usedDate: new Date(),
@@ -33,7 +33,7 @@ export default function CouponItem(props) {
         preCoupon.id === coupon.id ? { ...preCoupon, used: true } : preCoupon
       )));
     } catch (error) {
-      Alert.alert('クーポンの利用に失敗しました');
+      errorMessage('クーポンの利用に失敗しました', error);
     }
   };
   // couponIdからクーポンの情報を取得
