@@ -43,7 +43,6 @@ export default function SignUpScreen() {
       const toppingItem = [];
 
       const querySnapshot = await getDocs(collection(db, 'ramens'));
-
       querySnapshot.docs.forEach((menudoc) => {
         const data = menudoc.data();
 
@@ -74,7 +73,6 @@ export default function SignUpScreen() {
     const userSnap = await getDoc(userRef);
     return !userSnap.exists();
   };
-
   // ユーザー名が固有かどうかチェックし、stateを更新
   const checkUsername = async (username) => {
     const unique = await isUsernameUnique(username);
