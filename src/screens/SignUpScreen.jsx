@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {
   View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity,
-  Alert, TouchableWithoutFeedback, Keyboard,
+  TouchableWithoutFeedback, Keyboard,
 } from 'react-native';
 import {
   collection,
@@ -20,6 +20,7 @@ import BirthdayInput from '../components/InputForm/BirthdayInput';
 import DropdownSelect from '../components/InputForm/DropdownSelect';
 import LoadingScreen from './LoadingScreen';
 import ProfileImageUpload from '../components/ProfileImageUpload';
+import errorMessage from '../utils/ErrorFormat';
 
 export default function SignUpScreen() {
   const { userInfo, setUserInfo } = useContext(userInfoContext);
@@ -86,24 +87,24 @@ export default function SignUpScreen() {
     const storage = getStorage();
 
     if (!userData) {
-      Alert.alert('ユーザーデータが存在しません');
+      errorMessage('ユーザーデータが存在しません');
       setIsRegistering(false);
       return;
     }
 
     if (!isUnique) {
-      Alert.alert('ユーザー名がすでに使われています\n 変更してください');
+      errorMessage('ユーザー名がすでに使われています\n 変更してください');
       setIsRegistering(false);
       return;
     }
 
     if (!name.trim()) {
-      Alert.alert('ユーザー名を入力してください');
+      errorMessage('ユーザー名を入力してください');
       setIsRegistering(false);
       return;
     }
     if (!birthday.trim()) {
-      Alert.alert('誕生日を入力してください');
+      errorMessage('誕生日を入力してください');
       setIsRegistering(false);
       return;
     }
@@ -175,7 +176,7 @@ export default function SignUpScreen() {
         uid: userData.uid,
       });
     } catch (error) {
-      Alert.alert(error.message);
+      errorMessage('ユーザー登録に失敗しました', error);
     }
     setIsRegistering(false);
   };

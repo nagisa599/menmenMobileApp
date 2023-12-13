@@ -9,6 +9,7 @@ import {
 import { getAuth } from 'firebase/auth';
 import userInfoContext from '../utils/UserInfoContext';
 import LoadingScreen from './LoadingScreen';
+import errorMessage from '../utils/ErrorFormat';
 
 export default function ComingCheckScreen({ navigation }) {
   const { setUserInfo } = useContext(userInfoContext);
@@ -36,10 +37,9 @@ export default function ComingCheckScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
-    const db = getFirestore();
     const fetchTodayToken = async () => {
       const today = getJSTDate();
-      const tokenDoc = await getDoc(doc(db, `tokens/${today}/`));
+      const tokenDoc = await getDoc(doc(getFirestore(), `tokens/${today}/`));
       if (tokenDoc.exists()) {
         setTodayToken(tokenDoc.data().token);
       }
@@ -48,10 +48,7 @@ export default function ComingCheckScreen({ navigation }) {
   }, []);
 
   async function EatCountCheck() {
-    const db = getFirestore();
-    const auth = getAuth();
-    const userPath = `users/${auth.currentUser.uid}/`;
-    const userRef = doc(db, userPath);
+    const userRef = doc(getFirestore(), `users/${getAuth().currentUser.uid}/`);
 
     try {
       const userDoc = await getDoc(userRef);
@@ -72,21 +69,21 @@ export default function ComingCheckScreen({ navigation }) {
           visited: true,
         });
       } else {
-        console.log('ここでエラー');
+        console.log('存在しないユーザーです');
       }
-    } catch (e) {
-      console.log('Firebaseの更新に失敗');
-      return e;
+    } catch (error) {
+      errorMessage('来店登録に失敗しました', error);
+      return error;
     }
     try {
       const newVisitData = {
-        userID: auth.currentUser.uid,
+        userID: getAuth().currentUser.uid,
         visitDate: Timestamp.fromDate(new Date()), // 現在の日時
       };
 
-      await addDoc(collection(db, 'visits'), newVisitData);
-    } catch (e) {
-      Alert.alert('通信に失敗しました。アプリを再起動してお試し下さい。');
+      await addDoc(collection(getFirestore(), 'visits'), newVisitData);
+    } catch (error) {
+      errorMessage('来店登録に失敗しました。アプリを再起動してお試し下さい。', error);
     }
   }
 
