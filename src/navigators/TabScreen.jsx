@@ -1,11 +1,11 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MenuStack from './MenuNavigator';
-import RankingStack from './RankingNavigator';
+import MenuScreen from '../screens/MenuScreen';
 import FriendListStack from './FriendNavigator';
 import CouponScreen from '../screens/CouponScreen';
 import getTabBarIcon from '../components/FooterTab';
 import HomeStack from './HomeNavigator';
+import RankingScreen from '../screens/RankingScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,7 +28,7 @@ export default function MainTabs() {
       />
       <Tab.Screen
         name="メニュー"
-        component={MenuStack}
+        component={MenuScreen}
         options={{
           tabBarIcon: getTabBarIcon({ name: 'メニュー' }),
         }}
@@ -42,7 +42,7 @@ export default function MainTabs() {
       />
       <Tab.Screen
         name="ランキング"
-        component={RankingStack}
+        component={RankingScreen}
         options={{
           tabBarIcon: getTabBarIcon({ name: 'ランキング' }),
         }}

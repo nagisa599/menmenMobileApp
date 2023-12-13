@@ -1,16 +1,18 @@
 import React, { useState, useContext } from 'react';
 import {
-  View, Image, StyleSheet, TextInput, ScrollView, Text, Alert,
+  View, Image, StyleSheet, TextInput, Text, Alert,
 } from 'react-native';
 import {
   getAuth,
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
-import KeyboardSafeView from '../components/KeyBoradAvoidingView';
+import { doc, setDoc } from 'firebase/firestore';
+import db from '../../firebaseConfig';
 import logoImage from '../../assets/menmen-logo.png'; // ロゴ画像のパスを正しいものに置き換える
 import Button from '../components/Button';
 import validatePassword from '../utils/Validation';
 import userInfoContext from '../utils/UserInfoContext';
+
 /* eslint-disable*/
 export default function EmailRegisterScreen({ route }) {
   const email = route.params.email;
@@ -19,14 +21,24 @@ export default function EmailRegisterScreen({ route }) {
   const [passwordErr, setPasswordErr] = useState('');
   const [password, setPassword] = useState('');
   const auth = getAuth();
-  function registerPress() {
+  async function registerPress() {
     if (!validatePassword(password)) {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const { user } = userCredential;
+          // useContextのuserInfoにuidとemailをセット
           setUserInfo({
             uid: auth.currentUser.uid,
             email: user.email,
+          });
+          // dbへの追加
+          const userDoc = doc(db, `users/${auth.currentUser.uid}`);
+          setDoc(userDoc, {
+            email: user.email,
+            uid: auth.currentUser.uid,
+          });
+          setDoc(doc(db, `email/${user.email}`), {
+            uid: auth.currentUser.uid,
           });
         })
         .catch((e) => {
