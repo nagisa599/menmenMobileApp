@@ -23,18 +23,19 @@ AddButton.defaultProps = {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    backgroundColor: 'black',
+    backgroundColor: 'orange',
     borderRadius: 5,
+    marginRight: 5,
     // alignSelf: 'flex-start', // 自分自身を並べる。左側に
-    marginBottom: 5,
     alignSelf: 'flex-start',
     alignItems: 'center',
-    marginLeft: 5,
   },
   buttonLabel: {
     fontSize: 18,
+    fontWeight: 'bold',
     paddingHorizontal: 6,
     paddingVertical: 6,
+    textAlign: 'center',
     color: '#ffffff',
   },
 });

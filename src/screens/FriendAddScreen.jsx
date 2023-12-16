@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { doc, getDoc, arrayUnion, updateDoc } from 'firebase/firestore';
 import {
-  View, Text, StyleSheet, ScrollView, Image, Alert,
+  doc, getDoc, arrayUnion, updateDoc,
+} from 'firebase/firestore';
+import {
+  View, Text, StyleSheet, ScrollView, Image, Alert, TouchableOpacity,
 } from 'react-native';
-import PropTypes, { string, instanceOf, number } from 'prop-types';
+import PropTypes from 'prop-types';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
 import db from '../../firebaseConfig';
-import Tab from '../components/Tab';
-import PassButton from '../components/PassButton';
-import BackButton from '../components/BackButton';
 import userInfoContext from '../utils/UserInfoContext';
 
 export default function FriendAddScreen(props) {
@@ -17,16 +15,42 @@ export default function FriendAddScreen(props) {
   const { name, uid } = route.params;
   const { userInfo } = useContext(userInfoContext);
   const { friends } = userInfo;
-  console.log(friends);
-
+  // 検索されたユーザの情報をfirebaseから取得する
   /* firebaseからimageUrlを取得するまでの処理 */
-  const [imageUrl, setImageUrl] = useState(null);
+  const [updatedAt, setUpdatedAt] = useState();
+  const [createdAt, setCreatedAt] = useState();
+  const [title, setTitle] = useState();
+  const [ramen, setRamen] = useState();
+  const [topping, setTopping] = useState();
   const fetchImageUrl = async (uid) => {
     try {
       const useruidRef = doc(db, 'users', uid);
       const userDocSnapshot = await getDoc(useruidRef);
       const userData = userDocSnapshot.data();
-      const { imageUrl } = userData;
+      const {
+        updatedAt, createdAt, topping, title, imageUrl,
+      } = userData;
+      console.log(name);
+      console.log('&&&&&&&&');
+      setUpdatedAt(updatedAt.toDate().toLocaleString('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }));
+      setCreatedAt(createdAt.toDate().toLocaleString('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }));
+      setTitle(title);
+      setRamen(ramen);
+      setTopping(topping);
       return imageUrl;
     } catch (error) {
       Alert.alert('データの読み込みに失敗しました');
@@ -54,12 +78,11 @@ export default function FriendAddScreen(props) {
   }, [uid]);
 
   const [errorMessage, setErrorMessage] = useState('');
+
+  // 検索したユーザを友達登録する（firebaseに追加する）
   const addUserInFriends = async (uid) => {
     friends.push(uid);
     const userfriendsRef = doc(db, 'users', userInfo.uid);
-    console.log(userInfo);
-    console.log(userfriendsRef);
-    console.log('########');
     try {
       // Firestoreのドキュメントを更新
       await updateDoc(userfriendsRef, {
@@ -70,6 +93,8 @@ export default function FriendAddScreen(props) {
       console.error('Firestoreの更新に失敗しました:', error);
     }
   };
+
+  // すでに友達かどうかを確認する
   const isFriend = (uid) => {
     if (friends.includes(uid)) {
       console.log('This user is already a friend');
@@ -82,7 +107,7 @@ export default function FriendAddScreen(props) {
   };
   return (
     <View style={styles.container}>
-      <View style={styles.tabContainer}>
+      {/* <View style={styles.tabContainer}>
         <Tab label="フレンド" onPress={() => { }} active />
         <Tab
           label="回数券"
@@ -90,93 +115,161 @@ export default function FriendAddScreen(props) {
             navigation.navigate('BookOfTicketScreen');
           }}
         />
-      </View>
+      </View> */}
       <ScrollView style={styles.profile}>
-        <Image
-          source={{ uri: url }}
-          style={styles.image}
-        />
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: url }}
+            style={styles.image}
+          />
+        </View>
         <Text style={styles.profileinfo}>
-          名前 :
-          {' '}
+          名前：
           { name }
         </Text>
-        <Text style={styles.profileinfo}>ランキング : 15位</Text>
-        <Text style={styles.profileinfo}>称号 : ラーメン好き</Text>
-        <Text style={styles.profileinfo}>最終来店 : 2023/10/10 18:55</Text>
-        <Text style={styles.profileinfo}>総ラーメン : 13杯</Text>
-        <Text style={styles.profileinfo}>今週のラーメン : 2杯</Text>
-        <Text style={styles.profileinfo}>初来店日 : 2023/04/23</Text>
-        <Text style={styles.profileinfo}>お気に入り : 冷やし中華</Text>
-        <Text style={styles.profileinfo}>一言コメント : ラーメンハマってます!</Text>
+        <Text style={styles.profileinfo}>
+          登録日：
+          { createdAt }
+
+        </Text>
+        <Text style={styles.profileinfo}>
+          最終来店日：
+          { updatedAt }
+        </Text>
+        <Text style={styles.profileinfo}>
+          総ラーメン：
+          { title }
+        </Text>
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: ramen }}
+            style={styles.image}
+          />
+          <Image
+            source={{ uri: topping }}
+            style={styles.image}
+          />
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <Text style={styles.profileinforamen}>
+            お気に入り
+            {'\n'}
+            ラーメン＆トッピング
+          </Text>
+        </View>
       </ScrollView>
       <View style={styles.buttoncontainer}>
-        <BackButton
-          label="戻る"
+        <TouchableOpacity
+          style={styles.backbuttonContainer}
           onPress={() => {
             navigation.goBack();
           }}
-        />
-        <PassButton
-          label="友達登録する"
+        >
+          <Text style={styles.backbuttonText}>↩︎ 戻る</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.searchbuttonContainer}
           onPress={() => {
             isFriend(uid);
-            console.log('');
           }}
-        />
-        {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
+        >
+          <Text style={styles.searchbuttonText}>友達登録する</Text>
+        </TouchableOpacity>
+        <View style={styles.errorView}>
+          {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
+        </View>
       </View>
     </View>
   );
 }
 
 FriendAddScreen.propTypes = {
-  name: string.isRequired,
-  uid: string.isRequired,
+  route: PropTypes.shape({
+    params: PropTypes.shape({
+      name: PropTypes.string,
+      uid: PropTypes.string,
+    }),
+  }).isRequired,
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  tabContainer: {
-    flexDirection: 'row',
+  imageContainer: {
     justifyContent: 'space-around',
-    paddingVertical: 30,
-    backgroundColor: 'rgb(242, 242, 242)',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.10,
-    shadowRadius: 3.84,
-    elevation: 5,
+    flexDirection: 'row',
+    margin: 10,
   },
   image: {
-    width: 125,
-    height: 125,
+    width: 170,
+    height: 170,
     borderRadius: 10,
     borderWidth: 2,
-    marginLeft: 110,
-    marginTop: 10,
   },
   profile: {
     margin: 10,
-    height: 100,
     borderWidth: 5,
     borderColor: 'rgba(0, 0, 0, 0.1)',
 
   },
   profileinfo: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     lineHeight: 24,
     marginLeft: 20,
     marginTop: 5,
   },
+  profileinforamen: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
   buttoncontainer: {
     flexDirection: 'row',
-    alignContent: 'space-between',
+    alignContent: 'center',
+  },
+  backbuttonContainer: {
+    backgroundColor: 'black',
+    borderRadius: 10,
+    alignSelf: 'center', // 自分自身を並べる。左側に
+    width: '45%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+    bottom: '1%',
+    height: 70,
+  },
+  backbuttonText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  searchbuttonContainer: {
+    backgroundColor: 'orange',
+    borderRadius: 10,
+    alignSelf: 'center', // 自分自身を並べる。左側に
+    width: '45%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+    bottom: '1%',
+    height: 70,
+  },
+  searchbuttonText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  errorView: {
+    position: 'absolute',
+    top: -50,
+    left: '15%',
+
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });

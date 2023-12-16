@@ -3,17 +3,16 @@ import {
   StyleSheet, TouchableOpacity, Text, View, Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import PropTypes, { string, instanceOf, number } from 'prop-types';
+import PropTypes, { string, number } from 'prop-types';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 export default function FriendListItem({
-  imageUrl, friends, birthday, createdAt, updatedAt, email, name, ramen, topping, title,
+  imageUrl, birthday, createdAt, updatedAt, name, ramen, topping, title,
 }) {
   const [url, setUrl] = useState('');
   const storage = getStorage();
   const imageRef = ref(storage, imageUrl);
   const navigation = useNavigation();
-
   useEffect(() => {
     getDownloadURL(imageRef)
       .then((downloadUrl) => {
@@ -23,34 +22,55 @@ export default function FriendListItem({
         console.error('画像のダウンロードURLの取得に失敗しました: ', error);
       });
   }, [imageUrl]);
-  console.log('!!!!!!!!!!!!!');
-  console.log(url);
   return (
     <TouchableOpacity
       style={styles.individual}
       onPress={() => {
         navigation.navigate('FriendDetailScreen', {
           name,
+          birthday,
           updatedAt,
+          createdAt,
           url,
+          ramen,
+          topping,
+          title,
         });
       }}
     >
       <View style={styles.sortinfo}>
-        <Image source={{ uri: url }} style={{ width: 100, height: 100 }} />
-        <Text style={styles.name}>{ name }</Text>
-        <Text style={styles.date}>
-          { updatedAt.toDate().toLocaleString('ja-JP', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-          }) }
-        </Text>
-        <Text>称号：</Text>
-        <Text>ランキング：</Text>
+        <Image source={{ uri: url }} style={styles.image} />
+        <View style={styles.textinfo}>
+          <Text style={styles.name}>{ name }</Text>
+
+          <Text style={styles.date}>
+            最終来店日：
+            { updatedAt.toDate().toLocaleString('ja-JP', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            }) }
+          </Text>
+          <Text>
+            登録日：
+            { createdAt.toDate().toLocaleString('ja-JP', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            }) }
+
+          </Text>
+          <Text>
+            誕生日：
+            { birthday }
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -59,9 +79,14 @@ export default function FriendListItem({
 FriendListItem.propTypes = {
   imageUrl: string.isRequired,
   birthday: string.isRequired,
-  createdAt: PropTypes.any.isRequired,
-  updatedAt: PropTypes.any.isRequired,
-  email: string.isRequired,
+  createdAt: PropTypes.shape({
+    nanoseconds: PropTypes.number.isRequired,
+    seconds: PropTypes.number.isRequired,
+  }).isRequired,
+  updatedAt: PropTypes.shape({
+    nanoseconds: PropTypes.number.isRequired,
+    seconds: PropTypes.number.isRequired,
+  }).isRequired,
   name: string.isRequired,
   ramen: string.isRequired,
   topping: string.isRequired,
@@ -69,10 +94,25 @@ FriendListItem.propTypes = {
 };
 
 const styles = StyleSheet.create({
-  individual: {
-    marginBottom: 2,
-    margintop: 1,
+  image: {
+    width: 90,
+    height: 90,
+    borderRadius: 10,
+    borderWidth: 2,
+  },
+  sortinfo: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 8,
+    margin: 5,
     flexDirection: 'row',
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    borderRadius: 10,
+  },
+  name: {
+    fontSize: 30,
+  },
+  textinfo: {
+    marginLeft: 20,
   },
 });

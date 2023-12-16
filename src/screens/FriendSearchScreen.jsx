@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
-  View, Text, StyleSheet, TextInput,
+  View, Text, StyleSheet, TextInput, TouchableOpacity,
 } from 'react-native';
-import { getAuth } from 'firebase/auth';
 import {
-  collection, query, where, getDocs,
+  collection, getDocs,
 } from 'firebase/firestore';
-import Tab from '../components/Tab';
-import SearchButton from '../components/SearchButton';
 import db from '../../firebaseConfig';
+import userInfoContext from '../utils/UserInfoContext';
 
 export default function FriendSearchScreen(props) {
-  const { route, navigation } = props;
-  const { friendlist } = route.params;
-  console.log(friendlist.name);
+  const { navigation } = props;
+  const { userInfo } = useContext(userInfoContext);
+  // usernameをkey, uidをvalueとして辞書を作成する
   async function createUserDict() {
     const userRef = collection(db, 'username');
     const querySnapshot = await getDocs(userRef);
@@ -32,16 +30,15 @@ export default function FriendSearchScreen(props) {
   const [inputUsername, setInputUsername] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   function checkUsername(username) {
-    if (userDict.hasOwnProperty(username)) {
+    if (Object.prototype.hasOwnProperty.call(userDict, username)) {
       navigation.navigate('FriendAddScreen', { name: username, uid: userDict[username] });
     } else {
-      console.log('no');
-      setErrorMessage('入力されたユーザー名は存在しません。');
+      setErrorMessage('入力されたユーザーは存在しません。');
     }
   }
   return (
     <View style={styles.container}>
-      <View style={styles.tabContainer}>
+      {/* <View style={styles.tabContainer}>
         <Tab label="フレンド" onPress={() => { }} active />
         <Tab
           label="回数券"
@@ -49,11 +46,11 @@ export default function FriendSearchScreen(props) {
             navigation.navigate('BookOfTicketScreen');
           }}
         />
-      </View>
+      </View> */}
       <View style={styles.searchcontainer}>
         <Text style={styles.userID}>あなたのユーザーネーム</Text>
         {/* 名前で検索 */}
-        <Text style={styles.userIDnum}>123456789</Text>
+        <Text style={styles.userIDnum}>{ userInfo.name }</Text>
         <Text style={styles.friendID}>友達のユーザーネーム</Text>
         <TextInput
           style={styles.inputID}
@@ -62,15 +59,24 @@ export default function FriendSearchScreen(props) {
           onChangeText={setInputUsername}
           autoCapitalize="none"
         />
-        <SearchButton
-          label="検索"
+        <TouchableOpacity
+          style={styles.searchbuttonContainer}
           onPress={() => {
             checkUsername(inputUsername);
           }}
-        />
-        {errorMessage && <Text style={{ color: 'red' }}>{errorMessage}</Text>}
+        >
+          <Text style={styles.searchbuttonText}>🔍検索</Text>
+        </TouchableOpacity>
+        {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
       </View>
-
+      <TouchableOpacity
+        style={styles.backbuttonContainer}
+        onPress={() => {
+          navigation.goBack();
+        }}
+      >
+        <Text style={styles.backbuttonText}>↩︎ 戻る</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -78,6 +84,7 @@ export default function FriendSearchScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    top: '15%',
   },
   tabContainer: {
     flexDirection: 'row',
@@ -124,5 +131,42 @@ const styles = StyleSheet.create({
     width: 250,
     marginBottom: 30,
     textAlign: 'center',
+  },
+  backbuttonContainer: {
+    backgroundColor: 'black',
+    borderRadius: 10,
+    alignSelf: 'center', // 自分自身を並べる。左側に
+    width: '45%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+    bottom: '1%',
+    height: 70,
+  },
+  backbuttonText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  searchbuttonContainer: {
+    backgroundColor: 'orange',
+    borderRadius: 10,
+    alignSelf: 'center', // 自分自身を並べる。左側に
+    width: '45%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 10,
+    bottom: '1%',
+    height: 70,
+  },
+  searchbuttonText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
