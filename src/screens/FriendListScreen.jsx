@@ -17,13 +17,8 @@ export default function FriendListScrenn() {
   // 現在ログインしているユーザーのフレンドをfirebaseから取り出す
   const fetchFriendList = async () => {
     try {
-      const userDocRef = doc(db, 'users', userInfo.uid);
-      const userDocSnapshot = await getDoc(userDocRef);
-      const userData = userDocSnapshot.data();
-      const friendsUIDs = userData.friends || [];
-
       const databaseFriendList = await Promise.all(
-        friendsUIDs.map(async (uid) => {
+        userInfo.friends.map(async (uid) => {
           const friendDocRef = doc(db, 'users', uid);
           const friendDocSnap = await getDoc(friendDocRef);
           if (friendDocSnap.exists()) {

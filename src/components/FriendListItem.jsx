@@ -79,8 +79,14 @@ export default function FriendListItem({
 FriendListItem.propTypes = {
   imageUrl: string.isRequired,
   birthday: string.isRequired,
-  createdAt: PropTypes.any.isRequired,
-  updatedAt: PropTypes.any.isRequired,
+  createdAt: PropTypes.shape({
+    nanoseconds: PropTypes.number.isRequired,
+    seconds: PropTypes.number.isRequired,
+  }).isRequired,
+  updatedAt: PropTypes.shape({
+    nanoseconds: PropTypes.number.isRequired,
+    seconds: PropTypes.number.isRequired,
+  }).isRequired,
   name: string.isRequired,
   ramen: string.isRequired,
   topping: string.isRequired,
@@ -105,7 +111,6 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 30,
-		
   },
   textinfo: {
     marginLeft: 20,
