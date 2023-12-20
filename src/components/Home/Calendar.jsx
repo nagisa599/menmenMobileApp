@@ -54,7 +54,7 @@ export default function Calendar() {
             setBusinessHours(data.businessHours);
           }
           if (data.dayoff) {
-            setDayoff(data.dayoff);
+            setDayoff(data.dayoff.sort());
           }
         });
 
@@ -97,7 +97,7 @@ export default function Calendar() {
           <Text style={styles.headerText}>休業日</Text>
           <View style={styles.dayOffContainer}>
             {dayoff.map((item) => (
-              <View key={item} style={[styles.dayOffWrapper, isTodayDayOff() && dayOffStyle]}>
+              <View key={item} style={[styles.dayOffWrapper, isTodayDayOff() && `${currentMonth}/${today.getDate()}` === item && dayOffStyle]}>
                 <Text style={styles.dayOffText}>{item}</Text>
               </View>
             ))}
