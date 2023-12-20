@@ -22,16 +22,18 @@ export default function FriendAddScreen(props) {
   const [title, setTitle] = useState();
   const [ramen, setRamen] = useState();
   const [topping, setTopping] = useState();
+  const [friendlist, setFriendlist] = useState();
   const fetchImageUrl = async (uid) => {
     try {
       const useruidRef = doc(db, 'users', uid);
       const userDocSnapshot = await getDoc(useruidRef);
       const userData = userDocSnapshot.data();
       const {
-        updatedAt, createdAt, topping, title, imageUrl,
+        updatedAt, createdAt, topping, title, imageUrl, friends
       } = userData;
       console.log(name);
       console.log('&&&&&&&&');
+      setFriendlist(friends);
       setUpdatedAt(updatedAt.toDate().toLocaleString('ja-JP', {
         year: 'numeric',
         month: '2-digit',
@@ -81,14 +83,19 @@ export default function FriendAddScreen(props) {
 
   // 検索したユーザを友達登録する（firebaseに追加する）
   const addUserInFriends = async (uid) => {
+    friendlist.push(userInfo.uid);
     friends.push(uid);
     const userfriendsRef = doc(db, 'users', userInfo.uid);
+    const friendfriendsRef = doc(db, 'users', uid);
     try {
       // Firestoreのドキュメントを更新
       await updateDoc(userfriendsRef, {
         friends: arrayUnion(uid), // Firestoreに配列を保存
       });
       console.log('Firestoreが更新されました');
+      await updateDoc(friendfriendsRef, {
+        friendlist: arrayUnion(userInfo.uid),
+      });
     } catch (error) {
       console.error('Firestoreの更新に失敗しました:', error);
     }
