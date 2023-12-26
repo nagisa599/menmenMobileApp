@@ -1,138 +1,108 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Modal, ActivityIndicator,
+  View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
 import { doc, getDoc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import db from '../../firebaseConfig';
-import AddButton from '../components/AddButton';
 import FriendListItem from '../components/FriendListItem';
 import userInfoContext from '../utils/UserInfoContext';
+import SortModal from '../components/SortModal';
 
 export default function FriendListScrenn() {
   const navigation = useNavigation();
   const { userInfo } = useContext(userInfoContext);
-  const [friendlist, setFriendList] = useState([]);
-  const [isLoading, setLoading] = useState(false);
   // 現在ログインしているユーザーのフレンドをfirebaseから取り出す
-  const fetchFriendList = async () => {
-    try {
-      const databaseFriendList = await Promise.all(
-        userInfo.friends.map(async (uid) => {
-          const friendDocRef = doc(db, 'users', uid);
-          const friendDocSnap = await getDoc(friendDocRef);
-          if (friendDocSnap.exists()) {
-            return { uid, ...friendDocSnap.data() };
-          }
-          return null;
-        }),
-      );
-      setFriendList(databaseFriendList);
-    } catch (error) {
-      Alert.alert('データの読み込みに失敗しました');
-    }
-  };
-  useEffect(() => {
-    const loadFriendListData = async () => {
-      setLoading(true);
-      await fetchFriendList();
-      setLoading(false);
-    };
-    loadFriendListData();
-  }, [userInfo.friends]);
+  const [friendList, setFriendList] = useState([]);
+  const [isLoading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [displayOrderName, setDisplayOrderName] = useState('最終来店');
-  const handleSort = (sortOption) => {
-    const sortedList = [...friendlist];
-    switch (sortOption) {
-      case 'sortByCreationDate':
-        sortedList.sort((a, b) => a.createdAt - b.createdAt);
-        setDisplayOrderName('登録日');
-        break;
-      case 'sortByName':
-        sortedList.sort((a, b) => a.name.localeCompare(b.name));
-        setDisplayOrderName('名前');
-        break;
-      case 'sortByLastVisit':
-        sortedList.sort((a, b) => b.updatedAt - a.updatedAt);
-        setDisplayOrderName('最終来店');
-        break;
+
+  useEffect(() => {
+    const fetchFriendList = async () => {
+      setLoading(true);
+      try {
+        const databaseFriendList = await Promise.all(
+          userInfo.friends.map(async (friendUid) => {
+            const friendDocRef = doc(db, 'users', friendUid);
+            const friendDocSnap = await getDoc(friendDocRef);
+            return friendDocSnap.exists() ? { friendUid, ...friendDocSnap.data() } : null;
+          }),
+        );
+        setFriendList(databaseFriendList);
+      } catch (error) {
+        console.log('フレンドの読み込みに失敗', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFriendList();
+  }, []);
+
+  const sortFriendList = (list, option) => {
+    switch (option) {
+      case '名前':
+        return [...list].sort((a, b) => a.name.localeCompare(b.name));
+      case '登録日':
+        return [...list].sort((a, b) => a.createdAt - b.createdAt);
+      case '最終来店':
+        return [...list].sort((a, b) => b.updatedAt - a.updatedAt);
       default:
-        break;
+        return list;
     }
+  };
+
+  const handleSort = (sortOption) => {
+    const sortedList = sortFriendList(friendList, sortOption);
     setFriendList(sortedList);
+    setDisplayOrderName(sortOption);
     setModalVisible(false);
   };
   if (isLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />; // ローディングインジケータのコンポーネントを表示
   }
+
   return (
     <View style={styles.container}>
-      {/* <View style={styles.tabContainer}>
-        <Tab label="フレンド" onPress={() => { }} active />
-        <Tab
-          label="回数券"
-          onPress={() => {
-            navigation.navigate('BookOfTicketScreen');
-          }}
+      <View style={styles.friendlistheader}>
+
+        <TouchableOpacity style={styles.displayOrder} onPress={() => setModalVisible(true)}>
+          <Text style={styles.displayOrderLabel}>
+            表示順
+            {'\n'}
+            ▶
+            {displayOrderName}
+          </Text>
+        </TouchableOpacity>
+        <SortModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          handleSort={handleSort}
         />
-      </View> */}
-      <View>
-        <View style={styles.friendlistheader}>
-          <Text style={styles.title}>フレンドリスト</Text>
-          <TouchableOpacity style={styles.displayOrder} onPress={() => setModalVisible(true)}>
-            <Text style={styles.displayOrderLabel}>
-              表示順
-              {'\n'}
-              ▶
-              {displayOrderName}
-            </Text>
-          </TouchableOpacity>
-          <Modal
-            animationType="slide"
-            transparent
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <View style={styles.modalView}>
-              <TouchableOpacity style={styles.buttonStyle} onPress={() => handleSort('sortByCreationDate')}>
-                <Text style={styles.buttonText}>登録日</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonStyle} onPress={() => handleSort('sortByName')}>
-                <Text style={styles.buttonText}>名前</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonStyle} onPress={() => handleSort('sortByLastVisit')}>
-                <Text style={styles.buttonText}>最終来店</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonStyle} onPress={() => setModalVisible(false)}>
-                <Text style={styles.buttonText}>↩︎ 閉じる</Text>
-              </TouchableOpacity>
-            </View>
-          </Modal>
-          <AddButton
-            label={'フレンド\n追加'}
-            onPress={() => {
-              navigation.navigate('FriendSearchScreen');
-            }}
-          />
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('FriendSearchScreen');
+          }}
+          style={styles.addFriend}
+        >
+          <Text style={styles.addFriendLabel}>
+            フレンド追加
+          </Text>
+        </TouchableOpacity>
       </View>
       <ScrollView>
-
-        {friendlist.map((friendlistComponent) => (
-          <View key={friendlistComponent.name}>
-            <FriendListItem
-              imageUrl={friendlistComponent.imageUrl}
-              friends={friendlistComponent.friends}
-              birthday={friendlistComponent.birthday}
-              createdAt={friendlistComponent.createdAt}
-              updatedAt={friendlistComponent.updatedAt}
-              name={friendlistComponent.name}
-              ramen={friendlistComponent.ramen}
-              topping={friendlistComponent.topping}
-              title={friendlistComponent.title}
-            />
-          </View>
+        {friendList.map((friendListComponent) => (
+          <FriendListItem
+            key={friendListComponent.uid}
+            imageUrl={friendListComponent.imageUrl}
+            friends={friendListComponent.friends}
+            createdAt={friendListComponent.createdAt}
+            updatedAt={friendListComponent.updatedAt}
+            name={friendListComponent.name}
+            ramenId={friendListComponent.ramen}
+            toppingId={friendListComponent.topping}
+            title={friendListComponent.title}
+          />
         ))}
       </ScrollView>
     </View>
@@ -164,24 +134,39 @@ const styles = StyleSheet.create({
     color: 'orange',
   },
   friendlistheader: {
+    height: 95,
     padding: 10,
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
   },
   displayOrder: {
     backgroundColor: 'orange',
-    width: 100,
+    width: '45%',
+    height: '100%',
     borderRadius: 5,
-    marginRight: 10,
+    justifyContent: 'center',
     // alignSelf: 'flex-start', // 自分自身を並べる。左側に
-    alignSelf: 'flex-start',
-    alignItems: 'center',
   },
   displayOrderLabel: {
-    fontSize: 18,
+    fontSize: 25,
     fontWeight: 'bold',
     textAlign: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 6,
+    color: '#ffffff',
+  },
+  addFriend: {
+    backgroundColor: 'orange',
+    width: '45%',
+    height: '100%',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // alignSelf: 'flex-start', // 自分自身を並べる。左側に
+  },
+  addFriendLabel: {
+    fontSize: 25,
+    fontWeight: 'bold',
     paddingHorizontal: 6,
     paddingVertical: 6,
     color: '#ffffff',

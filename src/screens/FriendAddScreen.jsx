@@ -126,7 +126,7 @@ export default function FriendAddScreen(props) {
       <ScrollView style={styles.profile}>
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: url }}
+            source={url ? { uri: url } : null}
             style={styles.image}
           />
         </View>
@@ -148,14 +148,14 @@ export default function FriendAddScreen(props) {
           { title }
         </Text>
         <View style={styles.imageContainer}>
-          <Image
+          {/* <Image
             source={{ uri: ramen }}
             style={styles.image}
           />
           <Image
             source={{ uri: topping }}
             style={styles.image}
-          />
+          /> */}
         </View>
         <View style={{ alignItems: 'center' }}>
           <Text style={styles.profileinforamen}>

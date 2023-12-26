@@ -38,15 +38,6 @@ export default function FriendSearchScreen(props) {
   }
   return (
     <View style={styles.container}>
-      {/* <View style={styles.tabContainer}>
-        <Tab label="フレンド" onPress={() => { }} active />
-        <Tab
-          label="回数券"
-          onPress={() => {
-            navigation.navigate('BookOfTicketScreen');
-          }}
-        />
-      </View> */}
       <View style={styles.searchcontainer}>
         <Text style={styles.userID}>あなたのユーザーネーム</Text>
         {/* 名前で検索 */}
