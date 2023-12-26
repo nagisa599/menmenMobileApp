@@ -5,12 +5,18 @@ import {
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { func } from 'prop-types';
 import * as Google from 'expo-auth-session/providers/google';
+import * as Crypto from 'expo-crypto';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+// eslint-disable-next-line
+import * as AppleAuthentication from 'expo-apple-authentication';
+// eslint-disable-next-line
+import { AppleButton } from '@invertase/react-native-apple-authentication';
 import {
   getAuth,
   onAuthStateChanged,
   sendSignInLinkToEmail,
   GoogleAuthProvider,
+  OAuthProvider,
   signInWithCredential,
 } from 'firebase/auth';
 import * as WebBrowser from 'expo-web-browser';
@@ -36,6 +42,15 @@ export default function GoogleLoginScreen(props) {
   // eslint-disable-next-line no-unused-vars
   const [emailErr, setEmailErr] = useState('');
   const auth = getAuth();
+  function nonceGen(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i += 1) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
   // eslint-disable-next-line no-unused-vars
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: ENV.IOS_CLIENT_ID,
@@ -86,6 +101,79 @@ export default function GoogleLoginScreen(props) {
       name: 'notLogin',
     };
     setUserInfo(user);
+  }
+  async function appleLogin() {
+    try {
+      const nonce = nonceGen(32); // ランダム文字列（ノンス）を生成
+      const digestedNonce = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        nonce,
+      ); // SHA256でノンスをハッシュ化
+      const result = await AppleAuthentication.signInAsync({
+        requestedScopes: [ // ユーザー情報のスコープを設定（名前とメールアドレスのみ可）
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+        nonce: digestedNonce, // Apple側にはハッシュ化したノンスを渡す
+      });
+      const provider = new OAuthProvider('apple.com');
+      const credential = provider.credential({
+        idToken: result.identityToken,
+        rawNonce: nonce, // Firebase側には元のノンスを渡して検証させる
+      });
+      signInWithCredential(auth, credential)
+        .then(async (authResult) => {
+          const userRef = doc(db, `users/${authResult.user.uid}`);
+          const docSnap = await getDoc(userRef);
+          if (docSnap.exists()) {
+            const exitUserData = docSnap.data();
+            // console.log(exitUserData);
+            console.log('Appleユーザー登録済み');
+            setUserInfo({
+              name: exitUserData.name,
+              birthday: exitUserData.birthday,
+              ramen: exitUserData.ramen,
+              topping: exitUserData.topping,
+              createdAt: exitUserData.createdAt,
+              updatedAt: exitUserData.updatedAt,
+              times: exitUserData.times,
+              visited: exitUserData.visited,
+              imageUrl: exitUserData.imageUrl,
+              title: exitUserData.title,
+              friends: exitUserData.friends,
+            });
+          } else {
+            setDoc(userRef, {
+              email: authResult.user.email,
+              uid: authResult.user.uid,
+            }, { merge: true })
+              .then(() => {
+                console.log('Appleユーザー登録成功');
+              })
+              .catch((error) => {
+                console.error('Appleユーザー登録:', error);
+              });
+            setUserInfo({
+              ...userInfo,
+              email: authResult.user.email,
+              uid: authResult.user.uid,
+            });
+          }
+        })
+        .catch((error) => {
+          console.error('Error signing in with Google:', error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+      // console.log(credential);
+    } catch (e) {
+      if (e.code === 'ERR_REQUEST_CANCELED') {
+        // handle that the user canceled the sign-in flow
+      } else {
+        // handle other errors
+      }
+    }
   }
   // user情報が端末に保存されているかどうか(最初のページの判定)
   useEffect(() => {
@@ -139,9 +227,9 @@ export default function GoogleLoginScreen(props) {
     // Googleアカウントでの認証に成功した場合
     if (response?.type === 'success') {
       console.log('Googleアカウントでの認証に成功');
+      console.log(response);
       /* eslint-disable */
       const { id_token } = response.params;
-   
       /* eslint-enable */
       const credential = GoogleAuthProvider.credential(id_token);
       signInWithCredential(auth, credential)
@@ -206,7 +294,7 @@ export default function GoogleLoginScreen(props) {
           <GoogleLoginButton onPress={() => promptAsync()} />
         </View>
         <View style={styles.button}>
-          <AppleLoginButton onPress={() => promptAsync()} />
+          <AppleLoginButton onPress={() => appleLogin()} />
         </View>
         <View style={styles.marginBottom}>
           <NotLoginButton onPress={() => notLogin()} />
