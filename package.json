@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
+    "@invertase/react-native-apple-authentication": "^2.3.0",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-picker/picker": "^2.4.10",
     "@react-navigation/bottom-tabs": "^6.5.9",
@@ -20,6 +21,7 @@
     "babel-plugin-dotenv-import": "^3.0.1",
     "cors": "^2.8.5",
     "expo": "~49.0.13",
+    "expo-apple-authentication": "~6.1.0",
     "expo-auth-session": "~5.0.2",
     "expo-barcode-scanner": "~12.5.3",
     "expo-crypto": "~12.4.1",

@@ -35,12 +35,14 @@ export default function Menu(props) {
           source={{ uri: getDownloadedImageUri(item.imageURL) }}
           style={styles.menuPicture}
         />
+        <Text style={styles.favoriteitem}>{` ${renderStars(item.favorite)}`}</Text>
+        {item.student && (<Text style={styles.studentDiscount}>学割</Text>)}
         <View style={styles.info}>
           <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.price}>{`¥${item.price}`}</Text>
-          <Text style={styles.item}>{item.student ? '学割対象' : '学割対象外'}</Text>
-          <Text style={styles.item}>{`人気度: ${renderStars(item.favorite)}`}</Text>
+          {/* <Text style={styles.item}>{item.student ? '学割対象' : '学割対象外'}</Text> */}
         </View>
+        <Text style={styles.price}>{`¥${item.price}`}</Text>
+
       </View>
     );
   };
@@ -100,21 +102,45 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   info: {
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   name: {
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 17,
     textAlign: 'center',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   price: {
-    fontSize: 12,
+    fontSize: 15,
+    fontWeight: 'bold',
     color: 'black',
+    position: 'absolute',
+    bottom: 2,
+    right: 10,
   },
   item: {
     fontSize: 12,
     color: 'black',
+    fontFamily: 'Hiragino Sans',
+  },
+  favoriteitem: {
+    fontSize: 12,
+    color: 'black',
+    position: 'absolute',
+    top: 10,
+    right: 20,
+  },
+  studentDiscount: {
+    padding: 3,
+    paddingHorizontal: 4,
+    fontSize: 15,
+    backgroundColor: 'pink',
+    borderRadius: 12, // This will make it a circle
+    borderWidth: 1,
+    overflow: 'hidden',
+    position: 'absolute',
+    top: 10,
+    left: 20,
   },
   explain: {
     alignItems: 'center',
