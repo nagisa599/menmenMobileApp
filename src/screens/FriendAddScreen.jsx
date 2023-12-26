@@ -31,7 +31,7 @@ export default function FriendAddScreen(props) {
       const {
         updatedAt, createdAt, topping, title, imageUrl, friends
       } = userData;
-      console.log(name);
+      console.log(imageUrl);
       console.log('&&&&&&&&');
       setFriendlist(friends);
       setUpdatedAt(updatedAt.toDate().toLocaleString('ja-JP', {
