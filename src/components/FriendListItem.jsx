@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   StyleSheet, TouchableOpacity, Text, View, Image, Button,
 } from 'react-native';
 import PropTypes, { string, number } from 'prop-types';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
-
+import userInfoContext from '../utils/UserInfoContext';
 import fetchImage from '../utils/fetchImage';
+import useCalcDaysDiff from '../utils/useCalcDaysDiff';
 
 export default function FriendListItem({
-  userimagePath, createdAt, updatedAt, name, ramenId, toppingId, title,
+  uid, userimagePath, createdAt, updatedAt, name, ramenId, toppingId, title,
 }) {
   const [friendImageurl, setFriendImageUrl] = useState('');
   const [ramenImageurl, setRamenImageUrl] = useState('');
   const [toppingImageurl, setToppingImageUrl] = useState('');
+  const { userInfo } = useContext(userInfoContext);
 
   // #############################################################
   // firebaseのusersのimageUrlがimageURLに変わるまで
@@ -59,36 +61,21 @@ export default function FriendListItem({
       });
   }, [ramenId, toppingId]);
 
-  return (
-    <TouchableOpacity
-      style={styles.individual}
-      // onPress={() => {
-      //   navigation.navigate('FriendDetailScreen', {
-      //     name,
-      //     updatedAt,
-      //     createdAt,
-      //     url,
-      //     ramen,
-      //     topping,
-      //     title,
-      //   });
-      // }}
-    >
-      <View style={styles.sortinfo}>
-        <Image source={friendImageurl ? { uri: friendImageurl } : null} style={styles.image} />
-        <View style={styles.textinfo}>
-          <Text style={styles.name}>{ name }</Text>
+  // const deleteFriend = async () => {
+  //   userInfo.friends.push(uid)
+  // }
 
+  const dispWeek = useCalcDaysDiff(updatedAt);
+
+  return (
+    <TouchableOpacity>
+      <View style={styles.indivisual}>
+        <Image source={friendImageurl ? { uri: friendImageurl } : null} style={styles.userImage} />
+        <View style={styles.textinfo}>
+          <Text style={styles.userName}>{ name }</Text>
           <Text style={styles.date}>
             最終来店日：
-            { updatedAt.toDate().toLocaleString('ja-JP', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false,
-            }) }
+            {dispWeek}
           </Text>
           <Text>
             登録日：
@@ -98,16 +85,20 @@ export default function FriendListItem({
               day: '2-digit',
             }) }
           </Text>
-          <Image source={ramenImageurl ? { uri: ramenImageurl } : null} style={styles.image} />
-          <Image source={toppingImageurl ? { uri: toppingImageurl } : null} style={styles.image} />
-          <Button title="❌" />
         </View>
+        <Image source={ramenImageurl ? { uri: ramenImageurl } : null} style={styles.ramenImage} />
+        <Image
+          source={toppingImageurl ? { uri: toppingImageurl } : null}
+          style={styles.toppingImage}
+        />
+        <Button onPress={() => { deleteFriend(); }} title="❌" />
       </View>
     </TouchableOpacity>
   );
 }
 
 FriendListItem.propTypes = {
+  uid: string.isRequired,
   userimagePath: string.isRequired,
   createdAt: PropTypes.shape({
     nanoseconds: PropTypes.number.isRequired,
@@ -124,13 +115,7 @@ FriendListItem.propTypes = {
 };
 
 const styles = StyleSheet.create({
-  image: {
-    width: 90,
-    height: 90,
-    borderRadius: 10,
-    borderWidth: 2,
-  },
-  sortinfo: {
+  indivisual: {
     flex: 1,
     alignItems: 'center',
     padding: 8,
@@ -139,7 +124,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     borderRadius: 10,
   },
-  name: {
+  userImage: {
+    width: 90,
+    height: 90,
+    borderRadius: 10,
+    borderWidth: 2,
+  },
+  ramenImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  toppingImage: {
+
+  },
+  userName: {
     fontSize: 30,
   },
   textinfo: {
