@@ -2,47 +2,80 @@ import React, { useEffect, useState } from 'react';
 import {
   StyleSheet, TouchableOpacity, Text, View, Image, Button,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import PropTypes, { string, number } from 'prop-types';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import { doc, getDoc } from 'firebase/firestore';
-import db from '../../firebaseConfig';
+
+
+import fetchImage from '../utils/fetchImage';
 
 export default function FriendListItem({
-  imageUrl, createdAt, updatedAt, name, ramen, topping, title,
+  userimagePath, createdAt, updatedAt, name, ramenId, toppingId, title,
 }) {
-  const [url, setUrl] = useState('');
-  const storage = getStorage();
-  const imageRef = ref(storage, imageUrl);
-  const navigation = useNavigation();
-  // const ramenDocRef = doc(db, 'ramens', ramen);
-  // const friendDocSnap = getDoc(ramenDocRef);
+  const [friendImageurl, setFriendImageUrl] = useState('');
+  const [ramenImageurl, setRamenImageUrl] = useState('');
+  const [toppingImageurl, setToppingImageUrl] = useState('');
+
+  // #############################################################
+  // firebaseのusersのimageUrlがimageURLに変わるまで
+  const getDownloadableUrl = async (imagePath) => {
+    const storage = getStorage();
+    const imageRef = ref(storage, imagePath);
+    try {
+      const downloadedImageUrl = await getDownloadURL(imageRef);
+      return downloadedImageUrl;
+    } catch (error) {
+      console.error('画像のダウンロードURLの取得に失敗しました', error);
+      return null;
+    }
+  };
+  // useEffect内では非同期処理を直接実行ではなく、非同期関数を定義してその関数を呼び出す必要がある
   useEffect(() => {
-    getDownloadURL(imageRef)
-      .then((downloadUrl) => {
-        setUrl(downloadUrl);
+    const fetchUserImageUrl = async () => {
+      try {
+        const downloadedImageUrl = await getDownloadableUrl(userimagePath);
+        setFriendImageUrl(downloadedImageUrl);
+      } catch (error) {
+        console.error('画像のダウンロードURLの取得に失敗しました', error);
+      }
+    };
+    fetchUserImageUrl();
+  }, [userimagePath]);
+  // ###############################################################
+
+  useEffect(() => {
+    fetchImage('ramens', ramenId)
+      .then((imageUrl) => {
+        setRamenImageUrl(imageUrl);
       })
       .catch((error) => {
-        console.error('画像のダウンロードURLの取得に失敗しました: ', error);
+        console.log('エラー:', error);
       });
-  }, [imageUrl]);
+    fetchImage('ramens', toppingId)
+      .then((imageUrl) => {
+        setToppingImageUrl(imageUrl);
+      })
+      .catch((error) => {
+        console.log('エラー:', error);
+      });
+  }, [ramenId, toppingId]);
+
   return (
     <TouchableOpacity
       style={styles.individual}
-      onPress={() => {
-        navigation.navigate('FriendDetailScreen', {
-          name,
-          updatedAt,
-          createdAt,
-          url,
-          ramen,
-          topping,
-          title,
-        });
-      }}
+      // onPress={() => {
+      //   navigation.navigate('FriendDetailScreen', {
+      //     name,
+      //     updatedAt,
+      //     createdAt,
+      //     url,
+      //     ramen,
+      //     topping,
+      //     title,
+      //   });
+      // }}
     >
       <View style={styles.sortinfo}>
-        <Image source={url ? { uri: url } : null} style={styles.image} />
+        <Image source={friendImageurl ? { uri: friendImageurl } : null} style={styles.image} />
         <View style={styles.textinfo}>
           <Text style={styles.name}>{ name }</Text>
 
@@ -65,14 +98,8 @@ export default function FriendListItem({
               day: '2-digit',
             }) }
           </Text>
-          <Text>
-            ラーメン：
-
-          </Text>
-          <Text>
-            トッピング：
-
-          </Text>
+          <Image source={ramenImageurl ? { uri: ramenImageurl } : null} style={styles.image} />
+          <Image source={toppingImageurl ? { uri: toppingImageurl } : null} style={styles.image} />
           <Button title="❌" />
         </View>
       </View>
@@ -81,7 +108,7 @@ export default function FriendListItem({
 }
 
 FriendListItem.propTypes = {
-  imageUrl: string.isRequired,
+  userimagePath: string.isRequired,
   createdAt: PropTypes.shape({
     nanoseconds: PropTypes.number.isRequired,
     seconds: PropTypes.number.isRequired,
@@ -91,8 +118,8 @@ FriendListItem.propTypes = {
     seconds: PropTypes.number.isRequired,
   }).isRequired,
   name: string.isRequired,
-  ramen: string.isRequired,
-  topping: string.isRequired,
+  ramenId: string.isRequired,
+  toppingId: string.isRequired,
   title: number.isRequired,
 };
 

@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
 import { doc, getDoc } from 'firebase/firestore';
-import { useNavigation } from '@react-navigation/native';
 import db from '../../firebaseConfig';
+
+import SortModal from '../components/SortModal';
 import FriendListItem from '../components/FriendListItem';
 import userInfoContext from '../utils/UserInfoContext';
-import SortModal from '../components/SortModal';
 
 export default function FriendListScrenn() {
   const navigation = useNavigation();
@@ -94,7 +95,8 @@ export default function FriendListScrenn() {
         {friendList.map((friendListComponent) => (
           <FriendListItem
             key={friendListComponent.uid}
-            imageUrl={friendListComponent.imageUrl}
+            uid={friendListComponent.uid}
+            userimagePath={friendListComponent.imageUrl}
             friends={friendListComponent.friends}
             createdAt={friendListComponent.createdAt}
             updatedAt={friendListComponent.updatedAt}
