@@ -37,9 +37,6 @@ export default function FriendDetailScreen(props) {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
           }) }
 
         </Text>
@@ -60,14 +57,14 @@ export default function FriendDetailScreen(props) {
           { title }
         </Text>
         <View style={styles.imageContainer}>
-          <Image
+          {/* <Image
             source={{ uri: ramen }}
             style={styles.image}
           />
           <Image
             source={{ uri: topping }}
             style={styles.image}
-          />
+          /> */}
         </View>
         <View style={{ alignItems: 'center' }}>
           <Text style={styles.profileinforamen}>
@@ -85,7 +82,6 @@ export default function FriendDetailScreen(props) {
       >
         <Text style={styles.buttonText}>↩︎ 戻る</Text>
       </TouchableOpacity>
-      {/* <PassButton label="回数券を渡す" /> */}
     </View>
   );
 }
@@ -94,7 +90,6 @@ FriendDetailScreen.propTypes = {
   route: PropTypes.shape({
     params: PropTypes.shape({
       name: PropTypes.string,
-      birthday: PropTypes.string,
       createdAt: PropTypes.shape({
         nanoseconds: PropTypes.number.isRequired,
         seconds: PropTypes.number.isRequired,
@@ -106,7 +101,7 @@ FriendDetailScreen.propTypes = {
       url: PropTypes.string,
       ramen: PropTypes.string,
       topping: PropTypes.string,
-      title: PropTypes.string,
+      title: PropTypes.number,
     }),
   }).isRequired,
 };

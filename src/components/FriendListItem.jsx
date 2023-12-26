@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet, TouchableOpacity, Text, View, Image,
+  StyleSheet, TouchableOpacity, Text, View, Image, Button,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes, { string, number } from 'prop-types';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { doc, getDoc } from 'firebase/firestore';
+import db from '../../firebaseConfig';
 
 export default function FriendListItem({
-  imageUrl, birthday, createdAt, updatedAt, name, ramen, topping, title,
+  imageUrl, createdAt, updatedAt, name, ramen, topping, title,
 }) {
   const [url, setUrl] = useState('');
   const storage = getStorage();
   const imageRef = ref(storage, imageUrl);
   const navigation = useNavigation();
+  // const ramenDocRef = doc(db, 'ramens', ramen);
+  // const friendDocSnap = getDoc(ramenDocRef);
   useEffect(() => {
     getDownloadURL(imageRef)
       .then((downloadUrl) => {
@@ -28,7 +32,6 @@ export default function FriendListItem({
       onPress={() => {
         navigation.navigate('FriendDetailScreen', {
           name,
-          birthday,
           updatedAt,
           createdAt,
           url,
@@ -39,7 +42,7 @@ export default function FriendListItem({
       }}
     >
       <View style={styles.sortinfo}>
-        <Image source={{ uri: url }} style={styles.image} />
+        <Image source={url ? { uri: url } : null} style={styles.image} />
         <View style={styles.textinfo}>
           <Text style={styles.name}>{ name }</Text>
 
@@ -60,16 +63,17 @@ export default function FriendListItem({
               year: 'numeric',
               month: '2-digit',
               day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false,
             }) }
+          </Text>
+          <Text>
+            ラーメン：
 
           </Text>
           <Text>
-            誕生日：
-            { birthday }
+            トッピング：
+
           </Text>
+          <Button title="❌" />
         </View>
       </View>
     </TouchableOpacity>
@@ -78,7 +82,6 @@ export default function FriendListItem({
 
 FriendListItem.propTypes = {
   imageUrl: string.isRequired,
-  birthday: string.isRequired,
   createdAt: PropTypes.shape({
     nanoseconds: PropTypes.number.isRequired,
     seconds: PropTypes.number.isRequired,
