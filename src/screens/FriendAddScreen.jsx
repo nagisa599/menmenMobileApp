@@ -82,9 +82,8 @@ export default function FriendAddScreen(props) {
   const [errorMessage, setErrorMessage] = useState('');
 
   // 検索したユーザを友達登録する（firebaseに追加する）
+  
   const addUserInFriends = async (uid) => {
-    friendlist.push(userInfo.uid);
-    friends.push(uid);
     const userfriendsRef = doc(db, 'users', userInfo.uid);
     const friendfriendsRef = doc(db, 'users', uid);
     try {

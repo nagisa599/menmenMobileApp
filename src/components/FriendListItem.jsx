@@ -2,21 +2,20 @@ import React, { useContext, useEffect, useState } from 'react';
 import {
   StyleSheet, TouchableOpacity, Text, View, Image, Button,
 } from 'react-native';
-import PropTypes, { string, number } from 'prop-types';
+import PropTypes, { string, number, any, object } from 'prop-types';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 import userInfoContext from '../utils/UserInfoContext';
 import fetchImage from '../utils/fetchImage';
 import useCalcDaysDiff from '../utils/useCalcDaysDiff';
+import useChangeFriendList from '../utils/useChangeFriends';
 
 export default function FriendListItem({
-  uid, userimagePath, createdAt, updatedAt, name, ramenId, toppingId, title,
+  uid, userimagePath, createdAt, updatedAt, name, ramenId, toppingId, title, friends,
 }) {
   const [friendImageurl, setFriendImageUrl] = useState('');
   const [ramenImageurl, setRamenImageUrl] = useState('');
   const [toppingImageurl, setToppingImageUrl] = useState('');
-  const { userInfo } = useContext(userInfoContext);
-
   // #############################################################
   // firebaseのusersのimageUrlがimageURLに変わるまで
   const getDownloadableUrl = async (imagePath) => {
@@ -61,11 +60,8 @@ export default function FriendListItem({
       });
   }, [ramenId, toppingId]);
 
-  // const deleteFriend = async () => {
-  //   userInfo.friends.push(uid)
-  // }
-
   const dispWeek = useCalcDaysDiff(updatedAt);
+  const changeFriendList = useChangeFriendList();
 
   return (
     <TouchableOpacity>
@@ -91,7 +87,7 @@ export default function FriendListItem({
           source={toppingImageurl ? { uri: toppingImageurl } : null}
           style={styles.toppingImage}
         />
-        <Button onPress={() => { deleteFriend(); }} title="❌" />
+        <Button onPress={() => changeFriendList('remove', uid, name)} title="❌" />
       </View>
     </TouchableOpacity>
   );
@@ -112,6 +108,11 @@ FriendListItem.propTypes = {
   ramenId: string.isRequired,
   toppingId: string.isRequired,
   title: number.isRequired,
+  friends: PropTypes.arrayOf(PropTypes.string),
+};
+
+FriendListItem.defaultProps = {
+  friends: [], // デフォルト値として空の配列を設定
 };
 
 const styles = StyleSheet.create({
@@ -137,7 +138,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   toppingImage: {
-
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+    borderWidth: 1,
   },
   userName: {
     fontSize: 30,

@@ -18,7 +18,6 @@ export default function FriendListScrenn() {
   const [isLoading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [displayOrderName, setDisplayOrderName] = useState('最終来店');
-
   useEffect(() => {
     const fetchFriendList = async () => {
       setLoading(true);
@@ -38,7 +37,7 @@ export default function FriendListScrenn() {
       }
     };
     fetchFriendList();
-  }, []);
+  }, [userInfo.friends]);
 
   const sortFriendList = (list, option) => {
     switch (option) {
@@ -47,7 +46,7 @@ export default function FriendListScrenn() {
       case '登録日':
         return [...list].sort((a, b) => a.createdAt - b.createdAt);
       case '最終来店':
-        return [...list].sort((a, b) => b.updatedAt - a.updatedAt);
+        return [...list].sort((a, b) => a.updatedAt - b.updatedAt);
       default:
         return list;
     }
