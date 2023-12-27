@@ -1,21 +1,24 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet, TouchableOpacity, Text, View, Image, Button,
+  StyleSheet, Text, View, Image, Button, Modal, TouchableOpacity, TouchableWithoutFeedback,
 } from 'react-native';
-import PropTypes, { string, number, any, object } from 'prop-types';
+import PropTypes, { string, number } from 'prop-types';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
-import userInfoContext from '../utils/UserInfoContext';
-import fetchImage from '../utils/fetchImage';
+import RamensItem from './RamensItem';
+import { fetchImage, getFirebaseData } from '../utils/fetchImage';
 import useCalcDaysDiff from '../utils/useCalcDaysDiff';
 import useChangeFriendList from '../utils/useChangeFriends';
 
 export default function FriendListItem({
-  uid, userimagePath, createdAt, updatedAt, name, ramenId, toppingId, title, friends,
+  uid, userimagePath, createdAt, updatedAt, name, ramenId, toppingId, title,
 }) {
-  const [friendImageurl, setFriendImageUrl] = useState('');
-  const [ramenImageurl, setRamenImageUrl] = useState('');
-  const [toppingImageurl, setToppingImageUrl] = useState('');
+  const [friendImageUrl, setFriendImageUrl] = useState('');
+  const [ramenImageUrl, setRamenImageUrl] = useState('');
+  const [toppingImageUrl, setToppingImageUrl] = useState('');
+  const dispWeek = useCalcDaysDiff(updatedAt);
+  const changeFriendList = useChangeFriendList();
+  const [modalVisible, setModalVisible] = useState(false);
   // #############################################################
   // firebaseのusersのimageUrlがimageURLに変わるまで
   const getDownloadableUrl = async (imagePath) => {
@@ -59,37 +62,54 @@ export default function FriendListItem({
         console.log('エラー:', error);
       });
   }, [ramenId, toppingId]);
-
-  const dispWeek = useCalcDaysDiff(updatedAt);
-  const changeFriendList = useChangeFriendList();
-
   return (
-    <TouchableOpacity>
-      <View style={styles.indivisual}>
-        <Image source={friendImageurl ? { uri: friendImageurl } : null} style={styles.userImage} />
-        <View style={styles.textinfo}>
-          <Text style={styles.userName}>{ name }</Text>
-          <Text style={styles.date}>
-            最終来店日：
-            {dispWeek}
-          </Text>
-          <Text>
-            登録日：
-            { createdAt.toDate().toLocaleString('ja-JP', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-            }) }
-          </Text>
-        </View>
-        <Image source={ramenImageurl ? { uri: ramenImageurl } : null} style={styles.ramenImage} />
+    <View style={styles.indivisual}>
+      <Image source={friendImageUrl ? { uri: friendImageUrl } : null} style={styles.userImage} />
+      <View style={styles.textinfo}>
+        <Text style={styles.userName}>{ name }</Text>
+        <Text style={styles.date}>
+          最終来店日：
+          {dispWeek}
+        </Text>
+        <Text>
+          登録日：
+          { createdAt.toDate().toLocaleString('ja-JP', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          }) }
+        </Text>
+        <Text>
+          来店回数：
+          { title }
+        </Text>
+      </View>
+      <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.ramenAndtopping}>
+        <Image source={ramenImageUrl ? { uri: ramenImageUrl } : null} style={styles.ramenImage} />
         <Image
-          source={toppingImageurl ? { uri: toppingImageurl } : null}
+          source={toppingImageUrl ? { uri: toppingImageUrl } : null}
           style={styles.toppingImage}
         />
-        <Button onPress={() => changeFriendList('remove', uid, name)} title="❌" />
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+      <Modal
+        animationType="slide"
+        transparent
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.ramenModalView}>
+          <RamensItem ramensId={ramenId} ramensImageUrl={ramenImageUrl} />
+          <RamensItem ramensId={toppingId} ramensImageUrl={toppingImageUrl} />
+          <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.removeFriend}>
+            <Text style={styles.backFriendText}>×</Text>
+          </TouchableOpacity>
+        </View>
+
+      </Modal>
+      <TouchableOpacity onPress={() => changeFriendList('remove', uid, name)} style={styles.removeFriend}>
+        <Text style={styles.removeFriendText}>×</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -108,12 +128,12 @@ FriendListItem.propTypes = {
   ramenId: string.isRequired,
   toppingId: string.isRequired,
   title: number.isRequired,
-  friends: PropTypes.arrayOf(PropTypes.string),
+  // friends: PropTypes.arrayOf(PropTypes.string),
 };
 
-FriendListItem.defaultProps = {
-  friends: [], // デフォルト値として空の配列を設定
-};
+// FriendListItem.defaultProps = {
+//   friends: [], // デフォルト値として空の配列を設定
+// };
 
 const styles = StyleSheet.create({
   indivisual: {
@@ -124,6 +144,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     borderRadius: 10,
+    positoin: 'relative',
+  },
+  ramenModalView: {
+    flex: 0.5,
+    top: '25%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', // 半透明の背景色
+    margin: 10,
+    borderRadius: 10,
+    position: 'relative',
+  },
+  ramenImageModal: {
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+    borderWidth: 2,
+  },
+  toppingImageModal: {
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+    borderWidth: 2,
+  },
+  backModal: {
+    fontSize: 20,
+    position: 'absolute',
+    top: 50,
+    right: 10,
+
   },
   userImage: {
     width: 90,
@@ -131,15 +182,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
   },
+  ramenAndtopping: {
+    flexDirection: 'row',
+    position: 'absolute',
+    bottom: 5,
+    right: 10,
+  },
   ramenImage: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
+    margin: 1,
     borderRadius: 10,
     borderWidth: 1,
   },
   toppingImage: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
+    margin: 1,
     borderRadius: 10,
     borderWidth: 1,
   },
@@ -147,6 +206,21 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   textinfo: {
-    marginLeft: 20,
+    marginLeft: 15,
+  },
+  removeFriend: {
+    position: 'absolute',
+    top: 0,
+    right: 10,
+  },
+  removeFriendText: {
+    fontSize: 30,
+    color: 'red',
+    fontWeight: 'bold',
+  },
+  backFriendText: {
+    fontSize: 50,
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
