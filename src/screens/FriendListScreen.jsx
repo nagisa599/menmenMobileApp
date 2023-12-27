@@ -26,6 +26,7 @@ export default function FriendListScrenn() {
           userInfo.friends.map(async (friendUid) => {
             const friendDocRef = doc(db, 'users', friendUid);
             const friendDocSnap = await getDoc(friendDocRef);
+
             return friendDocSnap.exists() ? { friendUid, ...friendDocSnap.data() } : null;
           }),
         );
@@ -114,28 +115,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 30,
-    backgroundColor: 'rgb(242, 242, 242)',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.10,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    marginLeft: 10,
-    color: 'orange',
-  },
   friendlistheader: {
-    height: 95,
+    height: '13%',
     padding: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -180,17 +161,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // 半透明の背景色
     margin: 10,
     borderRadius: 10,
-  },
-  buttonStyle: {
-    width: 150,
-    padding: 10,
-    margin: 10,
-    alignItems: 'center',
-    borderRadius: 10,
-  },
-  buttonText: {
-    fontSize: 30,
-    color: 'white',
-    fontWeight: 'bold',
   },
 });

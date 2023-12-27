@@ -8,7 +8,7 @@ import db from '../../firebaseConfig';
 import userInfoContext from './UserInfoContext';
 
 const useChangeFriendList = () => {
-  const { userInfo } = useContext(userInfoContext);
+  const { userInfo, setUserInfo } = useContext(userInfoContext);
   const { uid } = userInfo;
   const changeFriendList = async (option, friendUid, friendName) => {
     const userFriendsRef = doc(db, 'users', uid);
@@ -18,6 +18,8 @@ const useChangeFriendList = () => {
       if (option === 'add') {
         // userFriendList.push(friendUid);
         // friendFriendList.push(uid);
+        const newFriends = userInfo.friends.push(friendUid);
+        setUserInfo({ ...userInfo, friends: newFriends });
         await updateDoc(userFriendsRef, {
           friends: arrayUnion(friendUid),
         });
@@ -38,6 +40,8 @@ const useChangeFriendList = () => {
             {
               text: 'はい',
               onPress: async () => {
+                const newFriends = userInfo.friends.filter((item) => item !== friendUid);
+                setUserInfo({ ...userInfo, friends: newFriends });
                 await updateDoc(userFriendsRef, {
                   friends: arrayRemove(friendUid),
                 });
