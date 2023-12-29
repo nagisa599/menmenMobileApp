@@ -143,7 +143,7 @@ export default function FriendAddScreen(props) {
           { updatedAt }
         </Text>
         <Text style={styles.profileinfo}>
-          総ラーメン：
+          来店回数：
           { title }
         </Text>
         <View style={styles.imageContainer}>

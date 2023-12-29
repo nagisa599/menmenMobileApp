@@ -1,42 +1,55 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
 } from 'react-native';
-import {
-  collection, getDocs,
-} from 'firebase/firestore';
-
+import { getDoc, doc } from 'firebase/firestore';
+import { FontAwesome } from '@expo/vector-icons';
 import db from '../../firebaseConfig';
+
 import userInfoContext from '../utils/UserInfoContext';
 
 export default function FriendSearchScreen(props) {
   const { navigation } = props;
   const { userInfo } = useContext(userInfoContext);
-  // usernameをkey, uidをvalueとして辞書を作成する
-  async function createUserDict() {
-    const userRef = collection(db, 'username');
-    const querySnapshot = await getDocs(userRef);
-    const userDict = {};
-    querySnapshot.forEach((doc) => {
-      userDict[doc.id] = doc.data().uid;
-    });
-    return userDict;
-  }
-  const [userDict, setUserDict] = useState({});
-  useEffect(() => {
-    createUserDict().then((dict) => {
-      setUserDict(dict);
-    });
-  }, []);
   const [inputUsername, setInputUsername] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  function checkUsername(username) {
-    if (Object.prototype.hasOwnProperty.call(userDict, username)) {
-      navigation.navigate('FriendAddScreen', { name: username, uid: userDict[username] });
+  const checkUserExists = async (username) => {
+    const userRef = doc(db, 'username', username);
+    const docSnap = await getDoc(userRef);
+    if (docSnap.exists()) {
+      navigation.navigate('FriendAddScreen', { friendName: username, friendUid: docSnap.data().uid });
+      console.log('遷移成功');
     } else {
       setErrorMessage('入力されたユーザーは存在しません。');
+      console.log('入力されたユーザーは存在しない');
     }
-  }
+  };
+
+  // usernameをkey, uidをvalueとして辞書を作成する
+  // async function createUserDict() {
+  //   const userRef = collection(db, 'username');
+  //   const querySnapshot = await getDocs(userRef);
+  //   const userDict = {};
+  //   querySnapshot.forEach((doc) => {
+  //     userDict[doc.id] = doc.data().uid;
+  //   });
+  //   return userDict;
+  // }
+  // const [userDict, setUserDict] = useState({});
+  // useEffect(() => {
+  //   createUserDict().then((dict) => {
+  //     setUserDict(dict);
+  //   });
+  // }, []);
+  // const [inputUsername, setInputUsername] = useState('');
+  // const [errorMessage, setErrorMessage] = useState('');
+  // function checkUsername(username) {
+  //   if (Object.prototype.hasOwnProperty.call(userDict, username)) {
+  //     navigation.navigate('FriendAddScreen', { name: username, uid: userDict[username] });
+  //   } else {
+  //     setErrorMessage('入力されたユーザーは存在しません。');
+  //   }
+  // }
   return (
     <View style={styles.container}>
       <View style={styles.searchcontainer}>
@@ -54,10 +67,11 @@ export default function FriendSearchScreen(props) {
         <TouchableOpacity
           style={styles.searchbuttonContainer}
           onPress={() => {
-            checkUsername(inputUsername);
+            checkUserExists(inputUsername);
           }}
         >
-          <Text style={styles.searchbuttonText}>🔍検索</Text>
+          <FontAwesome name="search" size={24} color="white" />
+          <Text style={styles.searchbuttonText}> 検索</Text>
         </TouchableOpacity>
         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
       </View>
@@ -77,27 +91,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     top: '15%',
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 30,
-    backgroundColor: 'rgb(242, 242, 242)',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.10,
-    shadowRadius: 3.84,
-    elevation: 5,
+    alignItems: 'center',
   },
   searchcontainer: {
-    margin: 30,
+    padding: 20,
     alignItems: 'center',
     borderWidth: 5,
     borderColor: 'rgba(0, 0, 0, 0.1)',
-    height: 300,
+    height: 330,
   },
   userID: {
     fontSize: 28,
@@ -127,26 +128,25 @@ const styles = StyleSheet.create({
   backbuttonContainer: {
     backgroundColor: 'black',
     borderRadius: 10,
-    alignSelf: 'center', // 自分自身を並べる。左側に
-    width: '45%',
+    width: 150,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 10,
-    bottom: '1%',
+    top: 20,
     height: 70,
   },
   backbuttonText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: 'white',
   },
   searchbuttonContainer: {
     backgroundColor: 'orange',
     borderRadius: 10,
     alignSelf: 'center', // 自分自身を並べる。左側に
-    width: '45%',
+    width: 150,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
     marginLeft: 10,
     bottom: '1%',
     height: 70,
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   searchbuttonText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: 'white',
   },
   errorText: {
     color: 'red',
