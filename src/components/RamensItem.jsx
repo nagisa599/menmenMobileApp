@@ -2,7 +2,7 @@ import React, {
   Text, View, Image, StyleSheet,
 } from 'react-native';
 import { useState, useEffect } from 'react';
-import PropTypes, { string, number } from 'prop-types';
+import { string } from 'prop-types';
 
 import { getFirebaseData } from '../utils/fetchImage';
 

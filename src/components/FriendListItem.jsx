@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet, Text, View, Image, Button, Modal, TouchableOpacity, TouchableWithoutFeedback,
+  StyleSheet, Text, View, Image, Modal, TouchableOpacity,
 } from 'react-native';
 import PropTypes, { string, number } from 'prop-types';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import { AntDesign } from '@expo/vector-icons';
 
 import RamensItem from './RamensItem';
-import { fetchImage, getFirebaseData } from '../utils/fetchImage';
+import { fetchImage } from '../utils/fetchImage';
 import useCalcDaysDiff from '../utils/useCalcDaysDiff';
 import useChangeFriendList from '../utils/useChangeFriends';
 
@@ -107,7 +108,7 @@ export default function FriendListItem({
 
       </Modal>
       <TouchableOpacity onPress={() => changeFriendList('remove', uid, name)} style={styles.removeFriend}>
-        <Text style={styles.removeFriendText}>×</Text>
+        <AntDesign name="delete" size={24} color="black" />
       </TouchableOpacity>
     </View>
   );
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
   },
   removeFriend: {
     position: 'absolute',
-    top: 0,
+    top: 5,
     right: 10,
   },
   removeFriendText: {

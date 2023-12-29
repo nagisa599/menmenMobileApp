@@ -70,10 +70,11 @@ export default function FriendListScrenn() {
         <TouchableOpacity style={styles.displayOrder} onPress={() => setModalVisible(true)}>
           <Text style={styles.displayOrderLabel}>
             表示順
-            {'\n'}
+            {/* {'\n'}
             ▶
-            {displayOrderName}
+            {displayOrderName} */}
           </Text>
+          <Text style={styles.displayOrderLabel}>▶{displayOrderName}</Text>
         </TouchableOpacity>
         <SortModal
           modalVisible={modalVisible}
@@ -133,8 +134,6 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     textAlign: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 6,
     color: '#ffffff',
   },
   addFriend: {

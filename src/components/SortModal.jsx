@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     top: '25%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 半透明の背景色
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', // 半透明の背景色
     margin: 10,
     borderRadius: 10,
   },
