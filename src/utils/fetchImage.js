@@ -36,4 +36,10 @@ const fetchImage = async (col, id) => {
   return imagePath ? getDownloadableUrl(imagePath) : null;
 };
 
-export { getFirebaseData, fetchImage };
+const fetchImage2 = async (col, id) => {
+  const imageData = await getFirebaseData(col, id);
+  const imagePath = imageData.imageUrl;
+  return imagePath ? getDownloadableUrl(imagePath) : null;
+};
+
+export { getFirebaseData, fetchImage, fetchImage2 };
