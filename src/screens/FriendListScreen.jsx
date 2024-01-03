@@ -74,7 +74,10 @@ export default function FriendListScrenn() {
             ▶
             {displayOrderName} */}
           </Text>
-          <Text style={styles.displayOrderLabel}>▶{displayOrderName}</Text>
+          <Text style={styles.displayOrderLabel}>
+            ▶
+            {displayOrderName}
+          </Text>
         </TouchableOpacity>
         <SortModal
           modalVisible={modalVisible}

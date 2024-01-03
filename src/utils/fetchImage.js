@@ -3,18 +3,20 @@ import { doc, getDoc } from 'firebase/firestore';
 import db from '../../firebaseConfig';
 
 const getFirebaseData = async (col, id) => {
+  console.log('%%%%%%%%%%%');
+  console.log(col, id);
   try {
     const imageDocRef = doc(db, col, id);
     const imageDocSnap = await getDoc(imageDocRef);
-
+    console.log(col, id);
     if (imageDocSnap.exists()) {
       const imageData = imageDocSnap.data();
-      return imageData; // imageUrl フィールドの値を返す
+      return imageData;
     }
     console.log('imageUrlが見つかりません');
     return null;
   } catch (error) {
-    console.error('imagePathの取得に失敗しました', error);
+    console.error('imagePathの取得に失敗しました', error, col, id);
     return null;
   }
 };

@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-
 import db from '../../firebaseConfig';
 import userInfoContext from '../utils/UserInfoContext';
 import { fetchImage, fetchImage2, getFirebaseData } from '../utils/fetchImage';
@@ -23,8 +22,8 @@ export default function FriendAddScreen(props) {
   const [friendInfo, setFriendInfo] = useState({});
   const [ramenImageUrl, setRamenImageUrl] = useState('');
   const [toppingImageUrl, setToppingImageUrl] = useState('');
-  const [ramen, setRamen] = useState('');
-  const [topping, setTopping] = useState('');
+  const [friendRamenId, setFriendRamenId] = useState('');
+  const [friendToppingId, setFriendToppingId] = useState('');
   const [updatedAt, setUpdatedAt] = useState('');
   const dispWeek = useCalcDaysDiff(updatedAt);
 
@@ -33,17 +32,19 @@ export default function FriendAddScreen(props) {
       const friendData = await getFirebaseData('users', friendUid);
       if (friendData) {
         const {
-          name, title, ramen: friendRamen, topping: friendTopping, createdAt, updatedAt: friendUpdatedAt,
+          name, title, imageUrl, ramen, topping, createdAt, updatedAt: friendUpdatedAt,
         } = friendData;
+        console.log(imageUrl);
         setFriendInfo({ name, title, createdAt });
-        setRamen(friendRamen);
-        setTopping(friendTopping);
+        setFriendRamenId(ramen);
+        setFriendToppingId(topping);
         setUpdatedAt(friendUpdatedAt);
       }
     };
     fetchData();
   }, [friendUid]);
-
+  console.log('@@@@@@@@@@');
+  console.log(friendRamenId);
   useEffect(() => {
     fetchImage2('users', friendUid)
       .then((imageUrl) => {
@@ -52,22 +53,28 @@ export default function FriendAddScreen(props) {
       .catch((error) => {
         console.log('エラー', error);
       });
-    fetchImage('ramens', ramen)
-      .then((imageUrl) => {
-        setRamenImageUrl(imageUrl);
-      })
-      .catch((error) => {
-        console.log('エラー', error);
-      });
-    fetchImage('ramens', topping)
-      .then((imageUrl) => {
-        setToppingImageUrl(imageUrl);
-      })
-      .catch((error) => {
-        console.log('エラー', error);
-      });
-  }, [ramen, topping]);
-
+    console.log('ramens', friendRamenId);
+    console.log('fetchImage-> Ramen');
+    if (friendRamenId) {
+      fetchImage('ramens', friendRamenId)
+        .then((imageUrl) => {
+          setRamenImageUrl(imageUrl);
+        })
+        .catch((error) => {
+          console.log('エラー', error);
+        });
+    }
+    if (friendToppingId) {
+      fetchImage('ramens', friendToppingId)
+        .then((imageUrl) => {
+          setToppingImageUrl(imageUrl);
+        })
+        .catch((error) => {
+          console.log('エラー', error);
+        });
+    }
+  }, [friendUid, friendRamenId, friendToppingId]);
+  console.log(friendImageUrl);
   // 検索されたユーザの情報をfirebaseから取得する
   /* firebaseからimageUrlを取得するまでの処理 */
   // const [updatedAt, setUpdatedAt] = useState();
@@ -209,7 +216,7 @@ export default function FriendAddScreen(props) {
           style={styles.image}
         />
       </View>
-      {/* <View style={styles.buttoncontainer}>
+      <View style={styles.buttoncontainer}>
         <TouchableOpacity
           style={styles.backbuttonContainer}
           onPress={() => {
@@ -218,7 +225,7 @@ export default function FriendAddScreen(props) {
         >
           <Text style={styles.backbuttonText}>↩︎ 戻る</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.searchbuttonContainer}
           onPress={() => {
             isFriend(uid);
@@ -228,8 +235,8 @@ export default function FriendAddScreen(props) {
         </TouchableOpacity>
         <View style={styles.errorView}>
           {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
-        </View>
-      </View> */}
+        </View> */}
+      </View>
     </View>
   );
 }
@@ -237,8 +244,8 @@ export default function FriendAddScreen(props) {
 FriendAddScreen.propTypes = {
   route: PropTypes.shape({
     params: PropTypes.shape({
-      name: PropTypes.string,
-      uid: PropTypes.string,
+      friendName: PropTypes.string,
+      friendUid: PropTypes.string,
     }),
   }).isRequired,
 };
