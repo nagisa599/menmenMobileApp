@@ -18,7 +18,7 @@ const useChangeFriendList = () => {
       if (option === 'add') {
         // userFriendList.push(friendUid);
         // friendFriendList.push(uid);
-        const newFriends = userInfo.friends.push(friendUid);
+        const newFriends = [...userInfo.friends, friendUid];
         setUserInfo({ ...userInfo, friends: newFriends });
         await updateDoc(userFriendsRef, {
           friends: arrayUnion(friendUid),

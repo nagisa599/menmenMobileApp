@@ -26,6 +26,8 @@ export default function FriendAddScreen(props) {
   const [friendToppingId, setFriendToppingId] = useState('');
   const [updatedAt, setUpdatedAt] = useState('');
   const dispWeek = useCalcDaysDiff(updatedAt);
+  const [errorMessage, setErrorMessage] = useState('');
+  const changeFriendList = useChangeFriendList();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,8 +45,6 @@ export default function FriendAddScreen(props) {
     };
     fetchData();
   }, [friendUid]);
-  console.log('@@@@@@@@@@');
-  console.log(friendRamenId);
   useEffect(() => {
     fetchImage2('users', friendUid)
       .then((imageUrl) => {
@@ -53,8 +53,6 @@ export default function FriendAddScreen(props) {
       .catch((error) => {
         console.log('エラー', error);
       });
-    console.log('ramens', friendRamenId);
-    console.log('fetchImage-> Ramen');
     if (friendRamenId) {
       fetchImage('ramens', friendRamenId)
         .then((imageUrl) => {
@@ -74,7 +72,6 @@ export default function FriendAddScreen(props) {
         });
     }
   }, [friendUid, friendRamenId, friendToppingId]);
-  console.log(friendImageUrl);
   // 検索されたユーザの情報をfirebaseから取得する
   /* firebaseからimageUrlを取得するまでの処理 */
   // const [updatedAt, setUpdatedAt] = useState();
@@ -139,7 +136,7 @@ export default function FriendAddScreen(props) {
   //   fetchAndSetUrl(); // 定義した関数を実行
   // }, [uid]);
 
-  // const [errorMessage, setErrorMessage] = useState('');
+  
 
   // 検索したユーザを友達登録する（firebaseに追加する）
 
@@ -160,17 +157,17 @@ export default function FriendAddScreen(props) {
   //   }
   // };
 
-  // // すでに友達かどうかを確認する
-  // const isFriend = (uid) => {
-  //   if (friends.includes(uid)) {
-  //     console.log('This user is already a friend');
-  //     setErrorMessage('このユーザーはすでにフレンドです');
-  //   } else {
-  //     console.log('yes');
-  //     addUserInFriends(uid);
-  //     navigation.navigate('FriendListScreen');
-  //   }
-  // };
+  // すでに友達かどうかを確認する
+  const isFriend = (name, uid) => {
+    if (userFriendList.includes(uid)) {
+      console.log('This user is already a friend');
+      setErrorMessage('このユーザーはすでにフレンドです');
+    } else {
+      console.log(friendName, 'をフレンドに追加する');
+      changeFriendList('add', uid, name);
+      navigation.navigate('FriendListScreen');
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.profile}>
@@ -207,14 +204,16 @@ export default function FriendAddScreen(props) {
             ラーメン＆トッピング
           </Text>
         </View>
-        <Image
-          source={ramenImageUrl ? { uri: ramenImageUrl } : null}
-          style={styles.image}
-        />
-        <Image
-          source={toppingImageUrl ? { uri: toppingImageUrl } : null}
-          style={styles.image}
-        />
+        <View style={styles.ramenAndtopping}>
+          <Image
+            source={ramenImageUrl ? { uri: ramenImageUrl } : null}
+            style={styles.ramenimage}
+          />
+          <Image
+            source={toppingImageUrl ? { uri: toppingImageUrl } : null}
+            style={styles.ramenimage}
+          />
+        </View>
       </View>
       <View style={styles.buttoncontainer}>
         <TouchableOpacity
@@ -225,17 +224,17 @@ export default function FriendAddScreen(props) {
         >
           <Text style={styles.backbuttonText}>↩︎ 戻る</Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={styles.searchbuttonContainer}
           onPress={() => {
-            isFriend(uid);
+            isFriend(friendName, friendUid);
           }}
         >
           <Text style={styles.searchbuttonText}>友達登録する</Text>
         </TouchableOpacity>
         <View style={styles.errorView}>
           {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
-        </View> */}
+        </View>
       </View>
     </View>
   );
@@ -329,5 +328,19 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  ramenAndtopping: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    bottom: 5,
+    right: 10,
+  },
+  ramenimage: {
+    width: 150,
+    height: 150,
+    margin: 2,
+    borderRadius: 10,
+    borderWidth: 2,
   },
 });

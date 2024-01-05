@@ -3,12 +3,9 @@ import { doc, getDoc } from 'firebase/firestore';
 import db from '../../firebaseConfig';
 
 const getFirebaseData = async (col, id) => {
-  console.log('%%%%%%%%%%%');
-  console.log(col, id);
   try {
     const imageDocRef = doc(db, col, id);
     const imageDocSnap = await getDoc(imageDocRef);
-    console.log(col, id);
     if (imageDocSnap.exists()) {
       const imageData = imageDocSnap.data();
       return imageData;
