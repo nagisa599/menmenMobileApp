@@ -2,7 +2,7 @@ import React, {
   Text, View, Image, StyleSheet,
 } from 'react-native';
 import { useState, useEffect } from 'react';
-import { string } from 'prop-types';
+import { number, string } from 'prop-types';
 
 import { getFirebaseData } from '../utils/fetchImage';
 
@@ -45,6 +45,14 @@ export default function RamensItem({ ramensId, ramensImageUrl }) {
   );
 }
 
+Stars.propTypes = {
+  count: number.isRequired,
+};
+RamensItem.propTypes = {
+  ramensId: string.isRequired,
+  ramensImageUrl: string.isRequired,
+};
+
 const styles = StyleSheet.create({
   ramenContainer: {
     padding: 10,
@@ -63,8 +71,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-RamensItem.propTypes = {
-  ramensId: string.isRequired,
-  ramensImageUrl: string.isRequired,
-};

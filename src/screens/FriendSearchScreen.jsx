@@ -3,7 +3,8 @@ import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
 } from 'react-native';
 import { getDoc, doc } from 'firebase/firestore';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, AntDesign, Entypo } from '@expo/vector-icons';
+
 import db from '../../firebaseConfig';
 
 import userInfoContext from '../utils/UserInfoContext';
@@ -25,31 +26,6 @@ export default function FriendSearchScreen(props) {
     }
   };
 
-  // usernameをkey, uidをvalueとして辞書を作成する
-  // async function createUserDict() {
-  //   const userRef = collection(db, 'username');
-  //   const querySnapshot = await getDocs(userRef);
-  //   const userDict = {};
-  //   querySnapshot.forEach((doc) => {
-  //     userDict[doc.id] = doc.data().uid;
-  //   });
-  //   return userDict;
-  // }
-  // const [userDict, setUserDict] = useState({});
-  // useEffect(() => {
-  //   createUserDict().then((dict) => {
-  //     setUserDict(dict);
-  //   });
-  // }, []);
-  // const [inputUsername, setInputUsername] = useState('');
-  // const [errorMessage, setErrorMessage] = useState('');
-  // function checkUsername(username) {
-  //   if (Object.prototype.hasOwnProperty.call(userDict, username)) {
-  //     navigation.navigate('FriendAddScreen', { name: username, uid: userDict[username] });
-  //   } else {
-  //     setErrorMessage('入力されたユーザーは存在しません。');
-  //   }
-  // }
   return (
     <View style={styles.container}>
       <View style={styles.searchcontainer}>
@@ -81,7 +57,8 @@ export default function FriendSearchScreen(props) {
           navigation.goBack();
         }}
       >
-        <Text style={styles.backbuttonText}>↩︎ 戻る</Text>
+        <Entypo name="back" size={24} color="white" />
+        <Text style={styles.backbuttonText}> 戻る</Text>
       </TouchableOpacity>
     </View>
   );
@@ -125,7 +102,24 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
   },
+  searchbuttonContainer: {
+    backgroundColor: 'orange',
+    borderRadius: 10,
+    alignSelf: 'center', // 自分自身を並べる。左側に
+    width: 150,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    bottom: '1%',
+    height: 70,
+  },
+  searchbuttonText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: 'white',
+  },
   backbuttonContainer: {
+    flexDirection: 'row',
     backgroundColor: 'black',
     borderRadius: 10,
     width: 150,
@@ -135,23 +129,6 @@ const styles = StyleSheet.create({
     height: 70,
   },
   backbuttonText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  searchbuttonContainer: {
-    backgroundColor: 'orange',
-    borderRadius: 10,
-    alignSelf: 'center', // 自分自身を並べる。左側に
-    width: 150,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    marginLeft: 10,
-    bottom: '1%',
-    height: 70,
-  },
-  searchbuttonText: {
     fontSize: 28,
     fontWeight: 'bold',
     color: 'white',
