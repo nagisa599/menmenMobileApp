@@ -3,7 +3,7 @@ import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
 } from 'react-native';
 import { getDoc, doc } from 'firebase/firestore';
-import { FontAwesome, AntDesign, Entypo } from '@expo/vector-icons';
+import { FontAwesome, Entypo } from '@expo/vector-icons';
 
 import db from '../../firebaseConfig';
 
