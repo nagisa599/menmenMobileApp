@@ -99,8 +99,36 @@ export default function FriendListItem({
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.ramenModalView}>
-          <RamensItem ramensId={ramenId} ramensImageUrl={ramenImageUrl} />
-          <RamensItem ramensId={toppingId} ramensImageUrl={toppingImageUrl} />
+          <RamensItem
+            ramensId={ramenId}
+            ramensImageUrl={ramenImageUrl}
+            imageStyle={{
+              width: 150,
+              height: 150,
+              margin: 1,
+              borderRadius: 10,
+              borderWidth: 1,
+            }}
+            textStyle={{
+              fontSize: 25,
+              color: 'white',
+            }}
+          />
+          <RamensItem
+            ramensId={toppingId}
+            ramensImageUrl={toppingImageUrl}
+            imageStyle={{
+              width: 150,
+              height: 150,
+              margin: 1,
+              borderRadius: 10,
+              borderWidth: 1,
+            }}
+            textStyle={{
+              fontSize: 25,
+              color: 'white',
+            }}
+          />
           <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.removeFriend}>
             <Text style={styles.backFriendText}>×</Text>
           </TouchableOpacity>

@@ -111,19 +111,35 @@ export default function FriendAddScreen(props) {
           }) }
         </Text>
 
-        {/* <View style={styles.ramenAndtopping}>
-          <Image
-            source={ramenImageUrl ? { uri: ramenImageUrl } : null}
-            style={styles.ramenimage}
-          />
-          <Image
-            source={toppingImageUrl ? { uri: toppingImageUrl } : null}
-            style={styles.ramenimage}
-          />
-        </View> */}
         <View style={styles.ramenAndtopping}>
-          <RamensItem ramensId={friendRamenId} ramensImageUrl={ramenImageUrl} />
-          <RamensItem ramensId={friendToppingId} ramensImageUrl={toppingImageUrl} />
+          <RamensItem
+            ramensId={friendRamenId}
+            ramensImageUrl={ramenImageUrl}
+            imageStyle={{
+              width: 150,
+              height: 150,
+              borderRadius: 10,
+              borderWidth: 1,
+            }}
+            textStyle={{
+              fontSize: 20,
+              color: 'black',
+            }}
+          />
+          <RamensItem
+            ramensId={friendToppingId}
+            ramensImageUrl={toppingImageUrl}
+            imageStyle={{
+              width: 150,
+              height: 150,
+              borderRadius: 10,
+              borderWidth: 1,
+            }}
+            textStyle={{
+              fontSize: 20,
+              color: 'black',
+            }}
+          />
         </View>
       </View>
       <View style={styles.buttoncontainer}>

@@ -1,22 +1,25 @@
 import React, {
-  Text, View, Image, StyleSheet,
+  Text, View, Image, StyleSheet, ViewProps
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import { number, string } from 'prop-types';
+import { Fontisto } from '@expo/vector-icons';
 
 import { getFirebaseData } from '../utils/fetchImage';
 
 function Stars({ count }) {
   return (
     <View style={{ flexDirection: 'row' }}>
-      {Array.from({ length: count }, (_, i) => i).map((_, index) => (
-        <Text key={index} style={styles.star}>⭐️</Text>
+      {Array.from({ length: count }, (_, i) => i).map(() => (
+        <Fontisto name="star" size={22} color="gold" />
       ))}
     </View>
   );
 }
 
-export default function RamensItem({ ramensId, ramensImageUrl }) {
+export default function RamensItem({
+  ramensId, ramensImageUrl, imageStyle, textStyle,
+}) {
   const [ramenInfo, setRamenInfo] = useState({ name: '', price: 0, favorite: 0 });
   useEffect(() => {
     const fetchData = async () => {
@@ -31,12 +34,14 @@ export default function RamensItem({ ramensId, ramensImageUrl }) {
 
   return (
     <View style={styles.ramenContainer}>
-      <Image source={ramensImageUrl ? { uri: ramensImageUrl } : null} style={styles.ramenImage} />
-      <Text style={styles.nameText}>
+      <Image
+        source={ramensImageUrl ? { uri: ramensImageUrl } : null}
+        style={[styles.ramenImage, imageStyle]}
+      />
+      <Text style={[styles.nameText, textStyle]}>
         { ramenInfo.name }
-        {' '}
       </Text>
-      <Text style={styles.nameText}>
+      <Text style={[styles.nameText, textStyle]}>
         { ramenInfo.price }
         円
       </Text>
@@ -51,23 +56,18 @@ Stars.propTypes = {
 RamensItem.propTypes = {
   ramensId: string.isRequired,
   ramensImageUrl: string.isRequired,
+  
 };
 
 const styles = StyleSheet.create({
   ramenContainer: {
-    padding: 10,
+    padding: 5,
     alignItems: 'center',
   },
   ramenImage: {
-    width: 150,
-    height: 150,
-    margin: 1,
-    borderRadius: 10,
-    borderWidth: 1,
+
   },
   nameText: {
-    fontSize: 25,
-    color: 'white',
     fontWeight: 'bold',
   },
 });
