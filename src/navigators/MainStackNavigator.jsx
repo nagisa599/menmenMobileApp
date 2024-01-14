@@ -13,6 +13,7 @@ import TermsOfUseScreen from '../screens/TermsOfUseScreen';
 import EditUserInfoScreen from '../screens/EditUserInfoScreen';
 import userInfoContext from '../utils/UserInfoContext';
 import Message from '../components/Home/Message';
+import Calendar from '../components/Home/Calendar';
 
 const Stack = createNativeStackNavigator();
 
@@ -86,6 +87,7 @@ export default function MainStackNavigator({ isSplashVisible, setSplashVisible }
       <Stack.Screen name="TermsOfUseScreen" component={TermsOfUseScreen} options={{ headerTitle: '利用規約' }} />
       <Stack.Screen name="EditUserInfoScreen" component={EditUserInfoScreen} options={{ headerTitle: 'プロフィール編集' }} />
       <Stack.Screen name="Message" component={Message} options={{ headerTitle: 'コールについて' }} />
+      <Stack.Screen name="Calendar" component={Calendar} options={{ headerTitle: '営業カレンダー' }} />
     </Stack.Navigator>
   );
 }

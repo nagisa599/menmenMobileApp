@@ -76,7 +76,7 @@ export default function Calendar() {
     <View style={styles.container}>
       {isLoading ? <LoadingScreen content="データ取得中" /> : (
         <View>
-          <Text style={styles.headerText}>営業日 / 営業時間</Text>
+          {/* <Text style={styles.headerText}>営業日 / 営業時間</Text> */}
           <View style={styles.calendarContainer}>
             <View style={[styles.dayContainer, getDayStyle('weekday')]}>
               <Text>平日</Text>

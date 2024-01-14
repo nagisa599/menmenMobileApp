@@ -23,9 +23,8 @@ export default function HomeScreen() {
     Linking.openURL(url).catch((err) => console.error('URLを開けませんでした', err));
   };
   const today = new Date();
-  const currentYear = today.getFullYear();
   const currentMonth = today.getMonth() + 1;
-  const displayMonthYear = `${currentYear}年${currentMonth}月`;
+  const displayMonthYear = `${currentMonth}月`;
 
   const fetchGoogleFormUrl = async () => {
     const lastUpdate = await AsyncStorage.getItem('last_update_url');
@@ -80,7 +79,7 @@ export default function HomeScreen() {
         <View style={styles.separator} />
         <View style={styles.titleContainer}>
           <Entypo name="check" size={48} color="#000" />
-          <Text style={styles.title}>{`${displayMonthYear}カレンダー`}</Text>
+          <Text style={styles.title}>{`${displayMonthYear}営業カレンダー`}</Text>
         </View>
         <View style={styles.calendarContainer}>
           <Calendar />
