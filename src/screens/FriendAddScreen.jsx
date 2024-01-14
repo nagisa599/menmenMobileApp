@@ -110,8 +110,8 @@ export default function FriendAddScreen(props) {
             day: '2-digit',
           }) }
         </Text>
-
         <View style={styles.ramenAndtopping}>
+          {friendRamenId && (
           <RamensItem
             ramensId={friendRamenId}
             ramensImageUrl={ramenImageUrl}
@@ -126,6 +126,8 @@ export default function FriendAddScreen(props) {
               color: 'black',
             }}
           />
+          )}
+          {friendToppingId && (
           <RamensItem
             ramensId={friendToppingId}
             ramensImageUrl={toppingImageUrl}
@@ -140,6 +142,7 @@ export default function FriendAddScreen(props) {
               color: 'black',
             }}
           />
+          )}
         </View>
       </View>
       <View style={styles.buttoncontainer}>

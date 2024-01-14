@@ -1,5 +1,5 @@
 import React, {
-  Text, View, Image, StyleSheet, ViewProps
+  Text, View, Image, StyleSheet,
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import { number, string } from 'prop-types';
@@ -10,8 +10,8 @@ import { getFirebaseData } from '../utils/fetchImage';
 function Stars({ count }) {
   return (
     <View style={{ flexDirection: 'row' }}>
-      {Array.from({ length: count }, (_, i) => i).map(() => (
-        <Fontisto name="star" size={22} color="gold" />
+      {Array.from({ length: count }, (_, i) => i).map((index) => (
+        <Fontisto name="star" size={22} color="gold" key={index} />
       ))}
     </View>
   );
@@ -56,7 +56,7 @@ Stars.propTypes = {
 RamensItem.propTypes = {
   ramensId: string.isRequired,
   ramensImageUrl: string.isRequired,
-  
+
 };
 
 const styles = StyleSheet.create({
